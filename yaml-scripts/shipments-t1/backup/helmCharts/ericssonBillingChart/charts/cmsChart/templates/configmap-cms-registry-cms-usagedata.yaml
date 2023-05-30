@@ -1,0 +1,314 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-cms-usagedata.xml
+data:
+  Registry_CMS_UsageData.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+
+    <ComponentRegistry>
+
+        <Node name="CMS Settings">
+
+            <KeyValue key="CDRCallAnonymization" comment="avoid confilcts with clir?!" value="false" type="Boolean"/>
+
+        <KeyValue key="CDRLimitNumberOfResults" comment="The maximum number of results for UDR queries. A higher value will result in higher memory usage of the server process. Therefore adjust carefully." value="50" type="Integer"/>
+            <KeyValue key="CDRDefaultNumberOfResults" comment="The default number of results for UDR queries." value="50" type="Integer"/>
+            <KeyValue key="CDRAnonymousString" comment="String to use with anonymization of Calls" value="****"/>
+        <KeyValue key="UDRSessionPoolSize" comment="Size of the pool of sessions in the UDR library. The number is representing the number of parallel sessions when reading UDRs from the database." value="10" type="Integer"/>
+        <KeyValue key="CallRecordDatabasePurpose" comment="Purpose to select the database for UDR records. Corresponds to UDS_DATABASE_VIEW.DB_PURPOSE." value="BILLING" />
+
+        <!--  Criteria applied on database level for retrieving UDRs- they must correspond to the fields of the search context. -->
+        <!--  If the criteria are empty, it means that blob mode is not supported and all criteria are applied on db level-->
+        <Node name="DBFilterCriteria">
+          <KeyValue key="41.37"   value="RECORD_PART"  comment="Customer Id"/>
+          <KeyValue key="41.36"   value="RECORD_PART"  comment="Contract Id"/>
+          <KeyValue key="36.62"   value="RECORD_PART"  comment="CDR_ID"/>
+          <KeyValue key="36.63"   value="RECORD_PART"  comment="CDR_SUB_ID"/>
+          <KeyValue key="36.730"  value="RECORD_PART"  comment="RERATE_SEQNO"/>
+          <KeyValue key="441.729" value="RECORD_PART"  comment="RERATE_RECORD_TYPE"/>
+          <!-- KeyValue key="381.793" value="RECORD_PART"  comment="RECORD_TYPE_SUMMARY_IND"/ -->
+          <KeyValue key="118.1"   value="RECORD_PART"  comment="Start time"/>
+          <KeyValue key="55.1"    value="RECORD_PART"  comment="Entry time"/>
+          <KeyValue key="10.9"    value="RECORD_PART"  comment="S_P_NUMBER_ADDRESS"/>
+          <KeyValue key="17.9"    value="RECORD_PART"  comment="O_P_NUMBER_ADDRESS" />
+          <KeyValue key="52.91"   value="RECORD_PART"  comment="CALL_DEST"/>
+          <KeyValue key="487.789" value="RECORD_PART"  comment="AGGREG_INFO_SUMMARY_ID"/>
+        </Node>
+
+            <Node name="CDRTemplateSL">
+          <!-- pattern key = "UDS_MEMBER.UDS_ELEMENT" value=determined by entry in UDS_STRUCTURE.UDS_NODE_CODE
+            1 : RECORD_PART, 2 : BASE_PART 3 : CHARGE_PART 4: FREE_UNIT_PART -->
+
+                 <!-- RECORD PART data -->
+
+          <KeyValue key="26.32"   value="RECORD_PART"  comment="Market Id - SCCODE"/>
+          <KeyValue key="36.59"   value="RECORD_PART"  comment="UDR_FILE_ID"/>
+          <KeyValue key="36.60"   value="RECORD_PART"  comment="CALL_ID"/>
+          <KeyValue key="36.61"   value="RECORD_PART"  comment="ORIG_CDR_ID"/>
+          <KeyValue key="36.62"   value="RECORD_PART"  comment="CDR_ID"/>
+          <KeyValue key="36.63"   value="RECORD_PART"  comment="CDR_SUB_ID"/>
+          <KeyValue key="36.730"  value="RECORD_PART"  comment="RERATE_SEQNO"/>
+          <KeyValue key="36.65"   value="RECORD_PART"  comment="TAP_SEQUENCE_NUM"/>
+          <KeyValue key="36.66"   value="RECORD_PART"  comment="RAP_SEQUENCE_NUM"/>
+          <KeyValue key="10.9"    value="RECORD_PART"  comment="S_P_NUMBER_ADDRESS"/>
+          <KeyValue key="17.9"    value="RECORD_PART"  comment="O_P_NUMBER_ADDRESS" />
+          <KeyValue key="52.91"   value="RECORD_PART"  comment="CALL_DEST"/>
+          <KeyValue key="65.14"   value="RECORD_PART"  comment="Home Network Code"/>
+          <KeyValue key="41.34"   value="RECORD_PART"  comment="Port Id"/>
+          <KeyValue key="41.36"   value="RECORD_PART"  comment="Contract Id"/>
+          <KeyValue key="41.37"   value="RECORD_PART"  comment="Customer Id"/>
+          <KeyValue key="12.18"   value="RECORD_PART"  comment="Served party equipment no."/>
+          <KeyValue key="12.19"   value="RECORD_PART"  comment="Served party equipment class"/>
+          <KeyValue key="25.9"    value="RECORD_PART"  comment="CAMEL_MSC_ADDRESS"/>
+          <KeyValue key="39.79"   value="RECORD_PART"  comment="CAMEL_REFERENCE_NUMBER"/>
+          <KeyValue key="10.13"   value="RECORD_PART"  comment="S_P_NUMBER_CLIR"/>
+          <KeyValue key="23.9"    value="RECORD_PART"  comment="SCU_ID_ADDRESS"/>
+          <KeyValue key="15.9"    value="RECORD_PART"  comment="Served party network element (switch) address" />
+          <KeyValue key="22.24"   value="RECORD_PART"  comment="Priority code"/>
+          <KeyValue key="41.167"  value="RECORD_PART"  comment="User profile Id (Feature 82602)"/>
+          <KeyValue key="55.1"    value="RECORD_PART"  comment="Entry date timestamp"/>
+          <KeyValue key="18.9"    value="RECORD_PART"  comment="Third party address (info)"/>
+          <KeyValue key="99.290"  value="RECORD_PART"  comment="Charging characteristics"/>
+          <KeyValue key="441.728" value="RECORD_PART"  comment="RERATE_REASON_ID"/>
+          <KeyValue key="441.729" value="RECORD_PART"  comment="RERATE_RECORD_TYPE"/>
+          <KeyValue key="118.1"   value="RECORD_PART"  comment="Start time"/>
+          <KeyValue key="15.14"   value="RECORD_PART"  comment="NET_ELEMENT_NETWORK_CODE" type="String"/>
+          <KeyValue key="487.454" value="RECORD_PART"  comment="AGGR_RECORD_COUNTER"/>
+          <KeyValue key="487.785" value="RECORD_PART"  comment="AGGREG_INFO_APPLIED_PACK_ID"/>
+          <KeyValue key="487.786" value="RECORD_PART"  comment="AGGREG_INFO_APPLIED_PACK_PKEY"/>
+          <KeyValue key="487.789" value="RECORD_PART"  comment="AGGREG_INFO_SUMMARY_ID"/>
+          <KeyValue key="487.790" value="RECORD_PART"  comment="AGGREGATION_PURPOSE"/>
+          <KeyValue key="381.792" value="RECORD_PART"  comment="RECORD_CATEGORY"/>
+          <KeyValue key="381.793" value="RECORD_PART"  comment="RECORD_TYPE_SUMMARY_IND"/>
+          <KeyValue key="118.2"   value="RECORD_PART"  comment="INITIAL_START_TIME_TIME_OFFSET"/>
+          <KeyValue key="597.945" value="RECORD_PART"  comment="CS_RECORD_IDENT_NODE_ID"/>
+          <KeyValue key="597.946" value="RECORD_PART"  comment="CS_RECORD_IDENT_RECORD_ID"/>
+          <KeyValue key="689.764" value="RECORD_PART"  comment="DISPUTE_INFO_DISPUTED_IND"/>
+          <KeyValue key="689.1124" value="RECORD_PART" comment="DISPUTE_INFO_TRACKING_NUMBER"/>
+          <KeyValue key="99.64" value="RECORD_PART" comment="Call type for call scenario"/>
+          <KeyValue key="41.32" value="RECORD_PART" comment="Market (SCCODE)"/>
+          <KeyValue key="96.9" value="RECORD_PART" comment="Address"/>
+          <KeyValue key="96.10" value="RECORD_PART" comment="Numbering Plan"/>
+          <KeyValue key="289.452" value="RECORD_PART" comment="Business Partner Contract PKey"/>
+          <KeyValue key="11.167" value="RECORD_PART" comment="User Profile Id"/>
+
+          <!-- BASE PART data -->
+
+          <KeyValue key="76.102"  value="BASE_PART"    comment="Base part Id" />
+          <KeyValue key="13.9"    value="BASE_PART"    comment="Served party location (cell) address" />
+          <KeyValue key="46.39"   value="BASE_PART"    comment="Tariff model (rateplan) Id" />
+          <KeyValue key="46.40"   value="BASE_PART"    comment="Tariff model (rateplan) version Id" />
+          <KeyValue key="46.43"   value="BASE_PART"    comment="Service package code used for rating"/>
+          <KeyValue key="46.44"   value="BASE_PART"    comment="Service code (SNCODE)"/>
+          <KeyValue key="5.3"     value="BASE_PART"    comment="Duration volume"/>
+          <KeyValue key="5.4"     value="BASE_PART"    comment="Duration Unit of Measurement code"/>
+          <KeyValue key="1.64"    value="BASE_PART"    comment="Call type from call scenario"/>
+          <KeyValue key="1.97"    value="BASE_PART"    comment="Follow Up call type - BSCS internal"/>
+          <KeyValue key="26.26"   value="BASE_PART"    comment="Reverse charging indicator"/>
+          <KeyValue key="46.47"   value="BASE_PART"    comment="Tariff zone"/>
+          <KeyValue key="1.70"    value="BASE_PART"    comment="Indicates who has generated the CDR H=home, V=VPLMN (roaming), I=inter exchange carrier"/>
+          <KeyValue key="34.90"   value="BASE_PART"    comment="Remark"/>
+          <KeyValue key="84.3"    value="BASE_PART"    comment="UPLINK_VOLUME"/>
+          <KeyValue key="84.4"    value="BASE_PART"    comment="UPLINK_VOLUME_UMCODE" />
+          <KeyValue key="85.3"    value="BASE_PART"    comment="DOWNLINK_VOLUME_VOLUME"/>
+          <KeyValue key="85.4"    value="BASE_PART"    comment="DOWNLINK_VOLUME_UMCODE"/>
+          <KeyValue key="37.3"    value="BASE_PART"    comment="DATA_VOLUME"/>
+          <KeyValue key="37.4"    value="BASE_PART"    comment="DATA_VOLUME_UMCODE"/>
+          <KeyValue key="38.3"    value="BASE_PART"    comment="Message volume"/>
+          <KeyValue key="38.4"    value="BASE_PART"    comment="UOM of Messages"/>
+          <KeyValue key="98.3"    value="BASE_PART"    comment="Event volume"/>
+          <KeyValue key="98.4"    value="BASE_PART"    comment="UOM of Event"/>
+          <KeyValue key="81.126"  value="BASE_PART"    comment="GPRS QOS Precedence class req"/>
+          <KeyValue key="81.127" value="BASE_PART"    comment="GPRS QOS Reliability class req"/>
+          <KeyValue key="81.112" value="BASE_PART"    comment="GPRS QOS Delay class req"/>
+          <KeyValue key="81.113" value="BASE_PART"    comment="GPRS QOS Peak throughput req"/>
+          <KeyValue key="81.114" value="BASE_PART"    comment="GPRS QOS Mean throughput req"/>
+          <KeyValue key="82.126" value="BASE_PART"    comment="GPRS QOS Precedence class neg"/>
+          <KeyValue key="82.127" value="BASE_PART"    comment="GPRS QOS Reliability class neg"/>
+          <KeyValue key="82.112" value="BASE_PART"    comment="GPRS QOS Delay class neg"/>
+          <KeyValue key="82.113" value="BASE_PART"    comment="GPRS QOS Peak throughput neg"/>
+          <KeyValue key="82.114" value="BASE_PART"    comment="GPRS QOS Mean throughput neg"/>
+          <KeyValue key="88.125" value="BASE_PART"    comment="GPRS QOS Profile"/>
+          <KeyValue key="167.280" value="BASE_PART"    comment="UMTS Traffic class req"/>
+          <KeyValue key="167.282" value="BASE_PART"    comment="UMTS Max Bit Rate downlink  req"/>
+          <KeyValue key="167.281" value="BASE_PART"    comment="UMTS Max Bit Rate uplink req"/>
+          <KeyValue key="167.285" value="BASE_PART"    comment="UMTS SDU error ratio req"/>
+          <KeyValue key="167.287" value="BASE_PART"    comment="UMTS Erroneous SDUs req"/>
+          <KeyValue key="167.289" value="BASE_PART"    comment="UMTS Allocation retention priority req"/>
+          <KeyValue key="167.283" value="BASE_PART"    comment="UMTS Delivery order req"/>
+          <KeyValue key="167.291" value="BASE_PART"    comment="UMTS Transfer delay req"/>
+          <KeyValue key="167.284" value="BASE_PART"    comment="UMTS Max SDU size req"/>
+          <KeyValue key="167.286" value="BASE_PART"    comment="UMTS Residual BER req"/>
+          <KeyValue key="167.288" value="BASE_PART"    comment="UMTS Handling priority req"/>
+          <KeyValue key="168.280" value="BASE_PART"    comment="UMTS Traffic class neg"/>
+          <KeyValue key="168.282" value="BASE_PART"    comment="UMTS Max Bit Rate downlink neg"/>
+          <KeyValue key="168.281" value="BASE_PART"    comment="UMTS Max Bit Rate uplink neg"/>
+          <KeyValue key="168.285" value="BASE_PART"    comment="UMTS SDU error radio neg"/>
+          <KeyValue key="168.287" value="BASE_PART"    comment="UMTS Erroneous SDUs neg"/>
+          <KeyValue key="168.289" value="BASE_PART"    comment="UMTS Allocation retention priority neg"/>
+          <KeyValue key="168.283" value="BASE_PART"    comment="UMTS Delivery order neg"/>
+          <KeyValue key="168.291" value="BASE_PART"    comment="UMTS Transfer delay neg"/>
+          <KeyValue key="168.284" value="BASE_PART"    comment="UMTS Max SDU size neg"/>
+          <KeyValue key="168.286" value="BASE_PART"    comment="UMTS Residual BER neg"/>
+          <KeyValue key="168.288" value="BASE_PART"    comment="UMTS Handling priority neg"/>
+          <KeyValue key="86.115" value="BASE_PART"    comment="HSCSD Fixed network user rate"/>
+          <KeyValue key="86.116" value="BASE_PART"    comment="HSCSD Air interface user rate"/>
+          <KeyValue key="86.117" value="BASE_PART"    comment="HSCSD Max number of channels"/>
+          <KeyValue key="86.120" value="BASE_PART"    comment="HSCSD No of used channels"/>
+          <KeyValue key="86.119" value="BASE_PART"    comment="HSCSD Channel coding used"/>
+          <KeyValue key="86.118" value="BASE_PART"    comment="HSCSD Channel coding acceptable"/>
+          <KeyValue key="86.121" value="BASE_PART"    comment="HSCSD Initiating party"/>
+          <KeyValue key="6.5"     value="BASE_PART"    comment="External charge - XFILE_CHARGE"/>
+          <KeyValue key="6.7"     value="BASE_PART"    comment="External charge - CURRENCY"/>
+          <KeyValue key="3.72"    value="BASE_PART"    comment="Service Action Code" />
+          <KeyValue key="3.73"    value="BASE_PART"    comment="Service VAS code" />
+          <KeyValue key="89.147"  value="BASE_PART"    comment="Business scenario Id - BS_ID" />
+          <KeyValue key="89.293"  value="BASE_PART"    comment="BS - Charged party directory number reference (UDR field identifier)"/>
+          <KeyValue key="89.294"  value="BASE_PART"    comment="BS - Other party directory number reference (UDR field identifier)"/>
+          <KeyValue key="35.5"    value="BASE_PART"    comment="Interconnect charge without tax"/>
+          <KeyValue key="35.6"    value="BASE_PART"    comment="Interconnect charge tax"/>
+          <KeyValue key="35.7"    value="BASE_PART"    comment="Interconnect charge currency"/>
+          <KeyValue key="35.8"    value="BASE_PART"    comment="Interconnect charge gross indicator"/>
+          <KeyValue key="117.178" value="BASE_PART"    comment="VPN call type - Feature 53406"/>
+          <KeyValue key="83.9"    value="BASE_PART"    comment="Served PDP address"/>
+          <KeyValue key="26.31"   value="BASE_PART"    comment="Termination Result Indicator"/>
+          <KeyValue key="26.157"  value="BASE_PART"    comment="Prepaid indicator; set externally or by RIH TECHNICAL_INFO.PREPAY_IND"/>
+          <KeyValue key="26.144"  value="BASE_PART"    comment="Indicates whether a call terminates in the own network."/>
+          <KeyValue key="46.512"  value="BASE_PART"    comment="CATALOGUE_ID"/>
+          <KeyValue key="46.513"  value="BASE_PART"    comment="CATALOGUE_VERSION"/>
+          <KeyValue key="46.514"  value="BASE_PART"    comment="CATALOGUE_ELEMENT_ID"/>
+          <KeyValue key="46.517"  value="BASE_PART"    comment="PRICELIST_ID"/>
+          <KeyValue key="280.503"  value="BASE_PART"    comment="BOP_PACKAGE_ID"/>
+          <KeyValue key="280.505"  value="BASE_PART"    comment="BOP_PACKAGE_VERSION_ID"/>
+          <KeyValue key="303.570"  value="BASE_PART"    comment="BUNDLE_PURCHASE: flag determines if current UDR corresponds to a bundle purchase."/>
+          <KeyValue key="304.571"  value="BASE_PART"    comment="BUNDLE_USAGE: Flag determines if current UDR corresponds to a bundle item usage."/>
+          <KeyValue key="303.567"  value="BASE_PART"    comment="BUNDLE_PURCHASE_ID: External identifier of a bundle purchase."/>
+          <KeyValue key="228.452"   value="BASE_PART" comment="CONTENT_CONTRACT_PKEY"/>
+          <KeyValue key="694.1199"  value="BASE_PART"  comment="DATA_TRAFFIC_RESTRICTED"/>
+          <KeyValue key="694.1200"  value="BASE_PART"  comment="NETWORK_SLICE_SERVICE_DIFFERENTIATOR"/>
+          <KeyValue key="694.1201"  value="BASE_PART"  comment="NETWORK_SLICE_SERVICE_TYPE"/>
+          <KeyValue key="46.1197"  value="BASE_PART"  comment="RATING_GROUP"/>
+          <KeyValue key="694.1202"  value="BASE_PART"  comment="RAT_TYPE"/>
+          <KeyValue key="694.1203"  value="BASE_PART"  comment="USER_LOCATION_MCC_MNC"/>
+          <KeyValue key="2.1"  value="BASE_PART"  comment="Start date Timestamp"/>
+          <KeyValue key="2.2"  value="BASE_PART"  comment="Start date Offset"/>
+          <KeyValue key="3.71"  value="BASE_PART"  comment="Service logic code (SVL_CODE)"/>
+          <KeyValue key="92.32"  value="BASE_PART"  comment="Market (SCCODE)"/>
+          <KeyValue key="92.76"  value="BASE_PART"  comment="Contract identifier"/>
+          <KeyValue key="92.77"  value="BASE_PART"  comment="Party type indicator (SUBS_TAG)"/>
+          <KeyValue key="92.131"  value="BASE_PART"  comment="Party type identifying the party"/>
+          <KeyValue key="92.304"  value="BASE_PART"  comment="Family identifier"/>
+          <KeyValue key="92.491"  value="BASE_PART"  comment="Business unit of contract"/>
+          <KeyValue key="415.5"  value="BASE_PART"  comment="Amount"/>
+          <KeyValue key="415.7"  value="BASE_PART"  comment="Currency"/>
+          <KeyValue key="415.8"  value="BASE_PART"  comment="Gross amount indicator"/>
+          <KeyValue key="582.5"  value="BASE_PART"  comment="Amount"/>
+          <KeyValue key="582.7"  value="BASE_PART"  comment="Currency"/>
+
+          <!-- CHARGE PART data -->
+          <KeyValue key="77.103"  value="CHARGE_PART"  comment="Charge part Id"/>
+          <KeyValue key="47.52"   value="CHARGE_PART"  comment="Charge type Intern, Extern, Rerated, Surcharge"/>
+          <KeyValue key="47.137"  value="CHARGE_PART"  comment="Rate type - formerly Air / Land"/>
+          <KeyValue key="47.712"  value="CHARGE_PART"  comment="Pricing alternative id"/>
+          <KeyValue key="47.50"   value="CHARGE_PART"  comment="Rate time TTNAME"/>
+          <KeyValue key="43.3"    value="CHARGE_PART"  comment="Rated Rounded volume"/>
+          <KeyValue key="43.4"    value="CHARGE_PART"  comment="Rated rounded volume UOM"/>
+          <KeyValue key="45.5"    value="CHARGE_PART"  comment="Rated flat amount"/>
+          <KeyValue key="45.6"    value="CHARGE_PART"  comment="Rated flat amount tax"/>
+          <KeyValue key="45.7"    value="CHARGE_PART"  comment="Rated flat amount currency"/>
+          <KeyValue key="42.3"    value="CHARGE_PART"  comment="Rated volume"/>
+          <KeyValue key="42.4"    value="CHARGE_PART"  comment="Rated volume UOM"/>
+          <KeyValue key="281.459"  value="CHARGE_PART"    comment="BOP_ALTERNATIVE_IND"/>
+          <KeyValue key="281.506"  value="CHARGE_PART"    comment="service package entry of BOP package (service package level)"/>
+          <KeyValue key="281.507"  value="CHARGE_PART"    comment="rate plan entry of BOP package (rate plan level)"/>
+          <KeyValue key="282.39"  value="CHARGE_PART"    comment="RPCODE"/>
+          <KeyValue key="282.40"  value="CHARGE_PART"    comment="RP_VERSION"/>
+          <KeyValue key="282.43"  value="CHARGE_PART"    comment="SPCODE"/>
+          <KeyValue key="311.585"  value="CHARGE_PART"    comment="CASH_FLOW_DIRECTION"/>
+          <!-- Shared account data for CHARGE PART -->
+          <KeyValue key="637.36"   value="CHARGE_PART"  comment="Identifier of shared account member or provider contract."/>
+          <KeyValue key="637.9"    value="CHARGE_PART"  comment="Address of shared account member or provider."/>
+          <KeyValue key="637.10"   value="CHARGE_PART"  comment="Numbering plan code of shared account member or provider address."/>
+          <KeyValue key="637.39"   value="CHARGE_PART"  comment="Tmcode of shared account member or provider."/>
+          <KeyValue key="637.40"   value="CHARGE_PART"  comment="Version of shared account member or provider rate plan."/>
+          <KeyValue key="637.43"   value="CHARGE_PART"  comment="Service package code of shared account provider."/>
+          <KeyValue key="637.44"   value="CHARGE_PART"  comment="Service code of shared account provider."/>
+          <KeyValue key="637.973"  value="CHARGE_PART"  comment="Product offering id of shared account provider."/>
+          <KeyValue key="637.974"  value="CHARGE_PART"  comment="Product id of shared account provider."/>
+          <KeyValue key="637.975"  value="CHARGE_PART"  comment="Cfss id of shared account provider."/>
+          <KeyValue key="637.1021" value="CHARGE_PART"  comment="Shared account provider flag."/>
+          <!-- Tariff info details for CHARGE PART -->
+          <KeyValue key="47.43"   value="CHARGE_PART"  comment="Service package code of tariff info detail ."/>
+          <KeyValue key="47.44"   value="CHARGE_PART"  comment="Service code of tariff info detail ."/>
+          <KeyValue key="47.973"  value="CHARGE_PART"  comment="Product offering id of tariff info detail ."/>
+          <KeyValue key="47.974"  value="CHARGE_PART"  comment="Product id  of tariff info detail ."/>
+          <KeyValue key="47.975"  value="CHARGE_PART"  comment="Cfss id  of tariff info detail ."/>
+          <KeyValue key="47.1011" value="CHARGE_PART"  comment="Bundled product offering hierarchy of tariff info detail ."/>
+
+          <!-- FREE UNIT PART data - not currently used since the FU parts are read via udrutil -->
+          </Node>
+
+            <Node name="ChargeTemplateSL">
+          <!-- pattern key = "UDS_MEMBER.UDS_ELEMENT" value=determined by entry in UDS_STRUCTURE.UDS_NODE_CODE
+            1 : RECORD_PART, 2 : BASE_PART 3 : CHARGE_PART 4: FREE_UNIT_PART -->
+
+                 <!-- RECORD PART data -->
+          <KeyValue key="36.59"   value="RECORD_PART"  comment="UDR_FILE_ID"/>
+          <KeyValue key="41.37"   value="RECORD_PART"  comment="Customer Id"/>
+          <KeyValue key="41.36"   value="RECORD_PART"  comment="Contract Id"/>
+          <KeyValue key="36.62"   value="RECORD_PART"  comment="CDR_ID"/>
+          <KeyValue key="36.63"   value="RECORD_PART"  comment="CDR_SUB_ID"/>
+          <KeyValue key="57.1"    value="RECORD_PART"  comment="Cut off date / bill period end date"/>
+          <KeyValue key="65.14"   value="RECORD_PART"  comment="Home Network Code (PLCODE)"/>
+          <KeyValue key="55.1"    value="RECORD_PART"  comment="Entry date timestamp"/>
+          <KeyValue key="118.1"   value="RECORD_PART"  comment="Start time"/>
+
+          <!-- BASE PART data -->
+          <KeyValue key="46.39"   value="BASE_PART"    comment="Tariff model (rateplan) Id (TMCODE)" />
+          <KeyValue key="46.40"   value="BASE_PART"    comment="Tariff model (rateplan) version Id (TMVERSION)" />
+          <KeyValue key="46.43"   value="BASE_PART"    comment="Tariff info: service package code (SPCODE)"/>
+          <KeyValue key="46.44"   value="BASE_PART"    comment="Service code (SNCODE)"/>
+          <KeyValue key="382.167"  value="BASE_PART"    comment="User profile Id"/>
+          <KeyValue key="26.32"   value="BASE_PART"    comment="Market Id (SCCODE)"/>
+          <KeyValue key="26.157"  value="BASE_PART"    comment="Prepaid indicator (PREPAY_IND)"/>
+          <KeyValue key="383.647"  value="BASE_PART"   comment="Charge overwrite indicator (OVERWRITE_IND)" />
+          <KeyValue key="383.648"  value="BASE_PART"   comment="Charge type (SRV_CHARGE_TYPE)" />
+          <KeyValue key="383.649"  value="BASE_PART"   comment="Charge subtype (CHARGE_SUBTYPE)" />
+          <KeyValue key="383.650"  value="BASE_PART"   comment="Quantity used for recurring charge calculation (NUM_ITEMS)" />
+          <KeyValue key="383.651"  value="BASE_PART"   comment="Number of days charge was calculated for (NUM_DAYS)" />
+          <KeyValue key="383.652"  value="BASE_PART"   comment="Prorating indicator (PRORATE_IND)" />
+          <KeyValue key="280.503"  value="BASE_PART"    comment="BOP package Id"/>
+          <KeyValue key="280.505"  value="BASE_PART"    comment="BOP package version Id"/>
+          <KeyValue key="280.653"  value="BASE_PART"    comment="BOP purpose"/>
+          <KeyValue key="385.208"   value="BASE_PART"  comment="Service status"/>
+          <KeyValue key="386.1"     value="BASE_PART"  comment="Charging period start date"/>
+          <KeyValue key="387.1"     value="BASE_PART"  comment="Charging period end date"/>
+
+          <!-- CHARGE PART data -->
+          <KeyValue key="384.5"     value="CHARGE_PART"  comment="Item price (AMOUNT)"/>
+          <KeyValue key="384.7"     value="CHARGE_PART"  comment="Item price currency"/>
+          <KeyValue key="45.5"    value="CHARGE_PART"  comment="Rated flat amount"/>
+          <KeyValue key="45.7"    value="CHARGE_PART"  comment="Rated flat amount currency"/>
+          <KeyValue key="45.8"    value="CHARGE_PART"  comment="Gross amount indicator"/>
+          <KeyValue key="281.459"  value="CHARGE_PART"    comment="BOP alternative indicator"/>
+          <KeyValue key="281.507"  value="CHARGE_PART"    comment="BOP rate plan sequence number"/>
+          <KeyValue key="281.506"  value="CHARGE_PART"    comment="BOP service package sequence number"/>
+          <KeyValue key="281.519"  value="CHARGE_PART"  comment="Contracted alternative indicator"/>
+          <KeyValue key="282.39"  value="CHARGE_PART"    comment="BOP tariff model"/>
+          <KeyValue key="282.40"  value="CHARGE_PART"    comment="BOP tariff model version"/>
+          <KeyValue key="282.43"  value="CHARGE_PART"    comment="BOP service package"/>
+          <KeyValue key="282.44"  value="CHARGE_PART"    comment="BOP service"/>
+          <KeyValue key="47.973"  value="CHARGE_PART"  comment="Product offering id  of tariff info detail ."/>
+          <KeyValue key="47.974"  value="CHARGE_PART"  comment="Product id  of tariff info detail ."/>
+          <KeyValue key="47.987"  value="CHARGE_PART"  comment="Pop id  of tariff info detail ."/>
+          <KeyValue key="47.1011"  value="CHARGE_PART"  comment="Bundled product offering hierarchy of tariff info detail ."/>
+            </Node>
+
+          <KeyValue key="CalledPartyAnonymizationDigits" comment="Default number of digits to be anonymized." value="10" />
+          <KeyValue key="CalledPartyAnonymizationCharacter" comment="Default character used for anonymization masking." value="#"/>
+
+        </Node><!-- CMS Settings -->
+
+    </ComponentRegistry>

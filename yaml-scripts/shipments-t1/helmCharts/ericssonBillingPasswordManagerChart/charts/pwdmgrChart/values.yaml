@@ -1,0 +1,154 @@
+# Default values for pwdmgrChart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Allowed: 0,1
+replicaCount: 1
+
+imageCredentials:
+  pwdmgr:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  pwdmgrjob:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+
+images:
+  pwdmgr:
+    name: "eric-bss-eb-pwdmgr"
+    tag: "22.15.12"
+  pwdmgrjob:
+    name: "eric-bss-eb-pwdmgr"
+    tag: "22.15.12"
+
+restartPolicy: Always
+
+metadataName: eric-bss-eb-pwdmgr
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+terminationGracePeriodSeconds: 60
+
+#A local nodeSelector definition has priority over the global definition.
+nodeSelector: {}
+#Example:
+#nodeSelector:
+#  kubernetes.io/hostname: "<hostname>"
+
+
+# To constrain pods with specific labels. (E.g. Availability zone)
+# affinity: {}
+# Example:
+# affinity:
+#   nodeAffinity:
+#     preferredDuringSchedulingIgnoredDuringExecution:
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1a
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1b
+
+tnsnames:
+  bscsdb: '{{ tpl .Values.global.tnsnames.bscsdb . }}'
+  rtxdb: '{{ tpl .Values.global.tnsnames.rtxdb . }}'
+
+sqlnet:
+  ora: '{{ tpl .Values.global.sqlnet.ora . }}'
+
+#
+########## passwordManager.properties
+#
+# Different URLs are used for secure and non-secure database connections.
+# - databaseUrl must be set for non-secure database connection via TCP.
+# - databaseSecureUrl must be set for secure database connection via TCPS.
+# Database secure connection can be turned on in the global values.yaml file
+# by setting $.Values.global.databaseTls.enable = true.
+# Please also change the databaseSecureUrl according to the customized
+# configuration in tnsnames.ora.
+#
+# Also ldapConfig.ldapUrl has to be configured to access the correct LDAP installation.
+#
+pwdmgrProperties:
+  databaseConfig:
+    databaseConfigurationRange:
+      - { name: "BSCS", id: "{{.Values.global.bscsDb}}", databaseUrl: "jdbc:oracle:thin:@{{.Values.global.databaseServerName}}:{{.Values.global.databaseServerPort}}:{{.Values.global.bscsDb}}", databaseSecureUrl: "jdbc:oracle:thin:@bscsdb" }
+      - { name: "RTX", id: "{{.Values.global.rtxDb}}", databaseUrl: "jdbc:oracle:thin:@{{.Values.global.rtxDatabaseServerName}}:{{.Values.global.rtxDatabaseServerPort}}:{{.Values.global.rtxDb}}", databaseSecureUrl: "jdbc:oracle:thin:@rtxdb" }
+    databasePwdMaxLength: "30"
+    walletLocation: "/oratns/secret"
+  ldapConfig:
+    ldapUrl: "{{.Values.global.forgerock.ldapServer}}"
+    ldapPwdMaxLength: "128"
+    ldapConfigurationRange:
+      - { ldapBase: "dc=billing,dc=com", userBase: "ou=people"}
+      - { ldapBase: "cn=config", userBase: "cn=Root DNs"}
+
+#
+########## Registry_PWDMGR_PasswordManager.xml
+#
+pwdmgrRegistry:
+  explicitPasswordAllowed: "false"
+  clientSessionTimeout: "180"
+  enableLegalNotice: "true"
+  legalNoticeText: ""
+
+#
+########## Pre-install hook job
+#
+# Credentials for administrative accounts have to be defined here.
+# The passwords have to be changed immediately after the job is finished.
+# This must be done manually by system administrator.
+#
+# IMPORTANT NOTICE FOR INSTALLATION AND UPGRADE
+#
+# The Password Manager chart should not be uninstalled and installed again.
+# In case of installation of fixes and new images, "helm upgrade" must be executed.
+# In this case, the pre-install hook job does not run again.
+# If for any special reason it is required to uninstall and install the pwdmgr chart,
+# you need to be aware that the pre-install hook job will reset all passwords and keys automatically,
+# just as it happens during the initial installation. If password and key reset is not required,
+# and you need to keep existing passwords and keys, make sure you set the initialInstallation flag to "false".
+# In this case existing passwords and keys will be kept.
+#
+# For further details please check the CPI documentation.
+#
+pwdmgrPreInstallJob:
+  # true: run job-pwdmgr-pre-install-hook.yaml automatically.
+  # This will 1. copy the pwdmgr key files 2. change all passwords
+  # This job should not be run twice.
+  initialInstallation: true
+  # true: change all passwords (only if initialInstallation: true)
+  # false: do not change passwords (only copy key files)
+  initialSetPasswords: false
+  # Set passwords for domain(s)
+  # - DB       for target system DB (database)
+  # - LDAP     for target system LDAP (LDAP)
+  # - NONEMB   for target system NONEMB (non-embedded LDAP)
+  # - DB_LDAP  for target system DB and LDAP (password and keys will be replaced in both target systems)
+  targetSystemControl: "DB_LDAP"
+
+  dbAdminUser: ""
+  dbAdminPassword: ""
+  ldapAdminUser: ""
+  ldapAdminPassword: ""
+  #nonembedded LDAP uses DB credentials to authenticate
+  nonembeddedLdapApplicationUser: ""
+  nonembeddedDefaultApplicationUserPassword: ""

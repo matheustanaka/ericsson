@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-bp-applicationcontext-cfw-security.xml
+data:
+  applicationContext-cfw-security.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns="http://www.springframework.org/schema/beans"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:context="http://www.springframework.org/schema/context"
+           xmlns:sec="http://www.springframework.org/schema/security"
+           xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+           http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-5.5.xsd
+           http://www.ericsson.com/schema/sfw http://www.ericsson.com/schema/sfw/sfw.xsd"
+           default-autowire="byName">
+
+        <!-- Importing of common functionalities. -->
+        <import resource="classpath*:applicationContext-cmn-soi.xml"/>
+
+        <!-- Spring Security beans definitions. -->
+        <bean id="securityContextPersistenceFilter"
+              class="org.springframework.security.web.context.SecurityContextPersistenceFilter"/>
+
+        <bean id="securityContextHolderAwareRequestFilter"
+              class="org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter"/>
+
+        <sec:authentication-manager id="authenticationManager">
+            <sec:authentication-provider ref="rootAccessorLoginAuthenticationProvider" />
+        </sec:authentication-manager>
+
+        <!-- Authentication provider for root accessor login. -->
+        <bean id="rootAccessorLoginAuthenticationProvider"
+              class="com.lhs.ccb.common.soi.security.authentication.RootAccessorLoginAuthenticationProvider">
+
+            <property name="exchangeFormatFactory" ref="exchangeFormatFactory"/>
+        </bean>
+
+        <!--
+        NOTE: "normal" username/password authentication method is set by default.
+        If SSO with embedded solution (which is OpenAM) required, uncomment "embeddedSSO" related file and comment other ones.
+        If SSO with pre-integrated enterprise solution (which is Active Directory) required,
+        uncomment "spnegoSSO" related file and comment other ones.
+        -->
+        <!--
+        <import resource="classpath*:applicationContext-cfw-security-embeddedSSO.xml" />
+        <import resource="classpath*:applicationContext-cfw-security-spnegoSSO.xml" />
+         -->
+
+        <import resource="classpath*:applicationContext-cfw-security-usernamePassword.xml" />
+
+        <bean id="headerSecurityFilter" class="com.lhs.ccb.common.security.HeaderSecurityFilter"/>
+        <bean id="csrfFilter" class="org.springframework.security.web.csrf.CsrfFilter">
+        <constructor-arg>
+            <bean class="org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository">
+                <property name="headerName" value="X-SECURITY" />
+            </bean>
+        </constructor-arg>
+        </bean>
+
+        <bean id="legalNoticeFilter" class="com.lhs.ccb.cfw.sgu.LegalNoticeFilter">
+            <property name="skipLegalNotice" ref="skipLegalNotice"/>
+        </bean>
+    </beans>

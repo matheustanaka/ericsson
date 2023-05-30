@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-ff-vault-clientcfg.xml
+data:
+  vault-clientcfg.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE vault-client-config SYSTEM "vault-clientcfg.dtd">
+    <vault-client-config version="1">
+        <config-value key="vault_address" value="{{ .Values.global.secretManager.vault.vaultServerAddress }}" />
+        <config-value key="secret_base_path" value="/v1/ebsecret/data" />
+        <config-value key="token_creation_path" value="/v1/auth/kubernetes/login" />
+    </vault-client-config>

@@ -1,0 +1,4 @@
+1. This Helm deployment provide a POD to execute several Ericsson Billing related tools.
+   In addition to this, the tools deployment has to be done by following command:
+
+   helm install --name tools ./toolsChart --set metadataName=eric-bss-eb-tools

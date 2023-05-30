@@ -1,0 +1,116 @@
+# Default values for vmdrepChart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Allowed: 0,1
+replicaCount: 1
+
+imageCredentials:
+  eric-bss-eb-vmdrep:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+
+images:
+  eric-bss-eb-vmdrep:
+    name: "eric-bss-eb-vmdrep"
+    tag: "22.15.12"
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 5Gi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+service:
+  clusterPort: 1119
+
+#A local nodeSelector definition has priority over the global definition above.
+#nodeSelector: {}
+
+# A local affinity definition has priority over the global definition.
+# affinity: {}
+# Example:
+# affinity:
+#   nodeAffinity:
+#     preferredDuringSchedulingIgnoredDuringExecution:
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1a
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1b
+
+vmdrep:
+  ini: |-
+    #
+    # Common Parameters
+    #
+    [COMMON]
+            WORK_DIR=/workdir
+    #-->    work directory for the VMDREP
+            VMD_SERVICE=bnetgame
+    #-->    service of the VMDREP
+            VMD_ID=VF4IX
+    #-->    sender ID of the VMDREP
+            LOCKED_SWITCH_ID=2
+    #-->    for SWITCH UP/DOWN messages triggered by signals
+    #-->    EDIFACT response:
+            UNB=UNB+UNOC:3+VMDREP+BSCS-GMD+%s:%s+%s'
+    #-->    ^^^Interchange header
+            UNH=UNH+%s+MDRES:iX:R4::::'
+    #-->    ^^^Message Header
+            XCR=XCR+SUCCESS+0++%s'
+    #-->    ^^^Return code (mandatory)
+            XOR=
+    #-->    ^^^Originator (optional)
+            XPM1=
+    #-->    ^^^Parameter information (optional) !!! maximum length: 150 digits !!!
+            XPM2=
+    #-->    ^^^Parameter information (optional) !!! maximum length: 150 digits !!!
+            XPM3=
+    #-->    ^^^Parameter information (optional) !!! maximum length: 150 digits !!!
+            XPM4=
+    #-->    ^^^Parameter information (optional) !!! maximum length: 150 digits !!!
+            XPM5=
+    #-->    ^^^Parameter information (optional) !!! maximum length: 150 digits !!!
+            XSV=
+    #-->    ^^^Sevice identification (optional)
+            SXPM1=
+    #-->    ^^^^Service related parameter information (optional)
+            SXPM2=
+    #-->    ^^^^Service related parameter information (optional)
+            SXPM3=
+    #-->    ^^^^Service related parameter information (optional)
+            SXPM4=
+    #-->    ^^^^Service related parameter information (optional)
+            SXPM5=
+    #-->    ^^^^Service related parameter information (optional)
+            UNT=UNT+3+%s'
+    #-->    ^^^Message trailer
+            UNZ=UNZ+1+%s'
+    #-->    ^^^Interchange trailer
+            NUMBER_OF_SUPP_GMD=1
+    #-->    number of supported GMDs.
+    #-->    (max number of supported GMDs = MAX_NUMBER_OF_GMD = 99)
+    #
+    #   Values for GMD 1
+    #
+    [GMD_01]
+            GMD_ID=AUT_GMD
+    #-->    GMD-Id for the GMD 1
+            GMD_SERVICE=iberiagames
+    #-->    servicename for the GMD-RRS
+            GMD_SERVER=eric-bss-eb-gmdrrs
+    #-->    GMD hostname

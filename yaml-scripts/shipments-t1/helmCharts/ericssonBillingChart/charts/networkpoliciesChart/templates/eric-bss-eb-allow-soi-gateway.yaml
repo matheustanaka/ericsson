@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: eric-bss-eb-allow-soi-gateway
+spec:
+  podSelector:
+    matchLabels:
+      eric-bss-eb-network-soi-gateway: 'true'
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - port: 8443
+          protocol: TCP

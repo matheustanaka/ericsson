@@ -1,0 +1,83 @@
+# Default values for dahChart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+imageCredentials:
+  eric-bss-eb-dah:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+
+images:
+  eric-bss-eb-dah:
+    name: "eric-bss-eb-dah"
+    tag: "22.15.12"
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 5Gi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+dahJobs:
+  # CronJob for dah with parameter -a2
+  - name: Default
+    schedule: "0 0 * * *"
+    backoffLimit: 0
+    failedJobsHistoryLimit: 1
+    successfulJobsHistoryLimit: 3
+    # Customizable start parameters for dah
+    startParameters:
+      # 0 = trace off, 1 = trace on
+      traceModeLevel: 0
+      runParameters: "-a9 -d50"
+
+#A local nodeSelector definition has priority over the global definition above.
+#nodeSelector: {}
+
+# A local affinity definition has priority over the global definition.
+# affinity: {}
+# Example:
+# affinity:
+#   nodeAffinity:
+#     preferredDuringSchedulingIgnoredDuringExecution:
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1a
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1b
+
+
+#Existing DAH file deletion and archival mechanism relies on the file name pattern
+#and sub path configured in table ARCHIVE_FILE_CONFIG. Hence, in case new files are
+#supposed to be deleted by DAH, new volumes, in addition to the pre-configured ones
+#/log, /workdir/DOCS, /workdir/BGH/PRINT and /workdir/dih_in, need to be added here
+#to the pod.
+dahVolumes:
+     #volume name used in volumeMounts
+#  - name: "new-volume" # example value
+     #Path inside the container used in volumeMounts
+#    mountPath: "/workdir/newVolume" # example value
+     #Name of the persistant volume claim used for the volume
+#    claimName: "pvc-new-volume" # example value
+
+tnsnames:
+  bscsdb: '{{ tpl .Values.global.tnsnames.bscsdb . }}'
+  rtxdb: '{{ tpl .Values.global.tnsnames.rtxdb . }}'
+
+
+sqlnet:
+  ora: '{{ tpl .Values.global.sqlnet.ora . }}'
+

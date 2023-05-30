@@ -1,0 +1,327 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Values.metadataName }}"
+  labels:
+    app: eric-bss-eb-tools
+    chart: {{ template "eric-bss-eb-tools.chart" . }}
+    {{- include "eric-bss-eb-tools.kubernetesIoInfo" . | nindent 4 }}
+    heritage: {{ .Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-tools.productInfo" . | indent 4 }}
+spec:
+  {{ if gt (int $.Values.replicaCount) 1 }}
+  replicas: 1
+  {{ else }}
+  replicas: {{ $.Values.replicaCount | default 1}}
+  {{ end }}
+  selector:
+    matchLabels:
+      app: eric-bss-eb-tools
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: eric-bss-eb-tools
+        {{- include "eric-bss-eb-tools.kubernetesIoInfo" . | nindent 8 }}
+        eric-bss-eb-network-database-client: 'true'
+        eric-bss-eb-network-data-client: 'true'
+        eric-bss-eb-network-lem-client: 'true'
+        eric-bss-eb-network-vault-client: 'true'
+      annotations:
+      {{- include "eric-bss-eb-tools.productInfo" . | indent 8 }}
+    spec:
+      securityContext:
+        {{- include "eric-bss-eb-tools.checkPodUserLoginData" . | nindent 8 }}
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      initContainers:
+      {{ if index .Values "images" "udrtool-init-customized" "name" }}
+      - name: udrtool-init-customized
+        # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+        {{ $templDict := dict "Values" .Values "containerKey" "udrtool-init-customized" }}
+        image: "{{ template "eric-bss-eb-tools.registryUrl" $templDict }}/{{ template "eric-bss-eb-tools.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+        imagePullPolicy: {{ template "eric-bss-eb-tools.pullPolicy" $templDict }}
+        command: ["/bin/sh", "-c"]
+        args: ["mkdir -p /custom/udrtool/plugins && mkdir -p /custom/udrtool/scripts && if [ -f {{ index .Values "images" $templDict.containerKey "pluginDirectory" }}/* ] ; then cp -r {{ index .Values "images" $templDict.containerKey "pluginDirectory" }}/* /custom/udrtool/plugins/; fi && if [ -f {{ index .Values "images" $templDict.containerKey "scriptDirectory" }}/* ] ; then cp -r {{ index .Values "images" $templDict.containerKey "scriptDirectory" }}/* /custom/udrtool/scripts/; fi"]
+        volumeMounts:
+        - mountPath: /custom
+          name: udrtool-custom-volume
+      {{ end }}
+      - name: init-wfmssupporttool-logging-tools
+        # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+        {{ $templDict := dict "Values" .Values "containerKey" "init-wfmssupporttool-logging-tools" }}
+        image: "{{ template "eric-bss-eb-tools.registryUrl" $templDict }}/{{ template "eric-bss-eb-tools.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+        imagePullPolicy: {{ template "eric-bss-eb-tools.pullPolicy" $templDict }}
+        command: ["/bin/sh"]
+        args: ["-c","sed s/{HOSTNAME}/$HOSTNAME/g /ericssonbilling/log4j2.xml >> /ericssonbilling/resource/wms/support/log4j2.xml && mkdir -p /log/tools -m 750"]
+        volumeMounts:
+        - name: init-wfmssupporttool-log4j2-xml-volume
+          mountPath: /ericssonbilling/resource/wms/support
+        - name: wfmssupporttool-log4j2-xml-volume
+          mountPath: /ericssonbilling
+        - name: logs-volume
+          mountPath: /log
+      terminationGracePeriodSeconds: {{ $.Values.terminationGracePeriodSeconds }}
+      {{- if .Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ .Chart.Name }}-sa
+      {{- end }}
+      containers:
+      - name: eric-bss-eb-tools
+        # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+        {{ $templDict := dict "Values" .Values "containerKey" "eric-bss-eb-tools" }}
+        image: "{{ template "eric-bss-eb-tools.registryUrl" $templDict }}/{{ template "eric-bss-eb-tools.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+        imagePullPolicy: {{ template "eric-bss-eb-tools.pullPolicy" $templDict }}
+        resources:
+          limits:
+            memory: "{{ .Values.resources.limits.memory}}"
+            cpu: "{{ .Values.resources.limits.cpu}}"
+          requests:
+            memory: "{{ .Values.resources.requests.memory}}"
+            cpu: "{{ .Values.resources.requests.cpu}}"
+        env:
+        - name: K8S_ENV
+          value: "true"
+        {{ if .Values.global.dataHighAvailability.enable }}
+        - name: DATA_CONNECT_NAME
+          value: "{{ .Values.global.dataServerName }}"
+        - name: DATA_CONNECT_ADDRESS
+          value: "T:eric-bss-eb-data-service:{{ .Values.global.dataClusterPort }},T:eric-bss-eb-data1-service:{{ .Values.global.dataClusterPort }}"
+        - name: DATA_CONNECT_MODE
+          value: "0"
+        {{ else }}
+        - name: DATA_SERVER_ADDRESS
+          value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }}"
+        {{ end }}
+        {{ if $.Values.global.securityTls.enable }}
+        - name: DATA_SSL_CONNECT
+          value: "1"
+        - name: DATA_CIPHER_LIST
+          value: "{{ $.Values.global.securityTls.cipherList }}"
+        {{ end }}
+        {{ if $.Values.tracingAndLogging }}
+        {{ if $.Values.tracingAndLogging.dtaTracefile }}
+        - name: DTA_TRACEFILE
+          value: "{{ $.Values.tracingAndLogging.dtaTracefile }}"
+        {{ end }}
+        {{ if $.Values.tracingAndLogging.dxlTracefile }}
+        - name: DXL_TRACEFILE
+          value: "{{ $.Values.tracingAndLogging.dxlTracefile }}"
+        {{ end }}
+        {{ if $.Values.tracingAndLogging.udrTracefile }}
+        - name: UDR_TRACEFILE
+          value: "{{ $.Values.tracingAndLogging.udrTracefile }}"
+        {{ end }}
+        {{ end }}
+        - name: DATABASE_SERVER_NAME
+          value: "{{ $.Values.global.databaseServerName }}"
+        - name: DATABASE_SERVER_PORT
+          value: "{{ $.Values.global.databaseServerPort }}"
+        - name: SOISRV_DATABASE_NAME
+          value: "{{ .Values.global.bscsDb }}"
+        - name: SOISRV_DATABASE_PORT
+          value: "{{ int .Values.global.databaseServerPort }}"
+        - name: SOISRV_DATABASE_SERVER
+          value: "{{ .Values.global.databaseServerName }}"
+        {{ if .Values.env.udrtoolDbCredentials }}
+        - name: ORACLE_PROCUSR
+          value: "{{ $.Values.env.udrtoolDbCredentials }}"
+        {{ end }}
+        {{ if $.Values.global.databaseTls.enable }}
+        - name: ORA_SEC_WLT
+          value: "/oratns/secret"
+        - name: TNS_ADMIN
+          value: "/oratns"
+        - name: WALLET_LOCATION
+          value: "/oratns/secret"
+        - name: SOISRV_TNS_ENTRY
+          value: '{{ tpl .Values.tnsnames.bscsdb . | replace "\n" "" | nospace }}'
+        {{ end }}
+        - name: DXL_CONTINUE_AFTER_CORRUPT
+          value: "{{ $.Values.global.tracingAndLogging.dxlContinueAfterCorrupt }}"
+        - name: NLS_LANG
+          value: "{{ $.Values.global.nlsLang }}"
+        - name: TZ
+          value: "{{ .Values.global.timezone }}"
+        {{ if not $.Values.global.secretManager.enable }}
+        - name: NO_SECRET_MANAGER
+          value: "true"
+        {{ end }}
+        {{ if .Values.global.ebTruststore.secretName }}
+        - name: CERTIFICATE_PATH
+          value: "-Djavax.net.ssl.trustStore=/ssl/{{ .Values.global.ebTruststore.trustStoreName }} \
+                  -Djavax.net.ssl.trustStorePassword={{ .Values.global.ebTruststore.trustStorePassword }}"
+        {{ end }}
+        command: ["/bin/bash", "-c"]
+        args: ["while : ; do sleep 10000; done"]
+        volumeMounts:
+        - name: workflows-volume
+          mountPath: /ericssonbilling/resource/wfmssupporttool/workflows
+        - name: ctrl-volume
+          mountPath: /workdir/CTRL
+        - name: logs-volume
+          mountPath: /log
+        - name: pwdmgr-security-volume
+          mountPath: /workdir/PWDMGR_SECURITY
+        {{ if $.Values.global.securityTls.enable }}
+        - name: tls-volume
+          mountPath: "/tls/connect"
+          readOnly: true
+        {{ end }}
+        {{ if $.Values.global.databaseTls.enable }}
+        - name: wallet-volume
+          mountPath: "/oratns/secret"
+        {{ end }}
+        - name: tools-volume
+          mountPath: /workdir/tools
+        {{ if index .Values "images" "udrtool-init-customized" "name" }}
+        - mountPath: /custom
+          name: udrtool-custom-volume
+        {{ end }}
+        - name: xref-volume
+          mountPath: /workdir/XREF
+        - name: tnsnames-ora-volume
+          mountPath: /oratns/tnsnames.ora
+          subPath: tnsnames.ora
+        - name: sqlnet-ora-volume
+          mountPath: /oratns/sqlnet.ora
+          subPath: sqlnet.ora
+        - name: esh-volume
+          mountPath: /workdir/ESH
+        - name: rac-setup-volume
+          mountPath: /ericssonbilling/resource/bat/RAC_Setup.xml
+          subPath: RAC_Setup.xml
+        - name: init-wfmssupporttool-log4j2-xml-volume
+          mountPath: /ericssonbilling/resource/wms/support/log4j2.xml
+          subPath: log4j2.xml
+        - name: wfmssupporttool-database-properties-volume
+          mountPath: /ericssonbilling/resource/database.properties
+          subPath: database.properties
+        - name: wfmssupporttool-hibernate-properties-volume
+          mountPath: /ericssonbilling/resource/wfms/support/hibernate.properties
+          subPath: hibernate.properties
+        - name: wfmssupporttool-jbpm-cfg-xml-volume
+          mountPath: /ericssonbilling/resource/wfms/support/jbpm.cfg.xml
+          subPath: jbpm.cfg.xml
+        - name: wfmssupporttool-wma-volume
+          mountPath: /ericssonbilling/resource/wma.properties
+          subPath: wma.properties
+        {{ if and ($.Values.global.secretManager.enable) ($.Values.global.secretManager.vault.caSecretName) }}
+        - name: secretmanager-tls-volume
+          mountPath: "/tls/secretManager/vault"
+          readOnly: true
+        {{ end }}
+        - name: vault-clientcfg-xml-volume
+          mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.xml
+          subPath: vault-clientcfg.xml
+        - name: vault-clientcfg-dtd-volume
+          mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.dtd
+          subPath: vault-clientcfg.dtd
+        {{ if .Values.global.ebTruststore.secretName }}
+        - name: eb-trust-store-volume
+          mountPath: "/ssl"
+          readOnly: true
+        {{ end }}
+      {{- if .Values.nodeSelector }}
+      nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector: {{ toYaml .Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity: {{ toYaml .Values.affinity | nindent 8 }}
+      {{- else if .Values.global.affinity }}
+      affinity: {{ toYaml .Values.global.affinity | nindent 8 }}
+      {{- end }}
+      restartPolicy: "{{ .Values.restartPolicy }}"
+      # Teste Matheus Tanaka
+      tolerations:
+      - key: "nodepool"
+          operator: "Equal"
+          value: "sfppdev"
+          effect: "NoSchedule"
+      volumes:
+      - name: init-wfmssupporttool-log4j2-xml-volume
+        emptyDir: {}
+      - name: ctrl-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-pids
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-logs
+      - name: pwdmgr-security-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-pwdmgr-security
+      - name: esh-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-tools-pvc-esh
+      - name: rac-setup-volume
+        configMap:
+          name: eric-bss-eb-tools-rac-setup.xml
+      {{ if $.Values.global.securityTls.enable }}
+      - name: tls-volume
+        secret:
+          secretName: "{{ $.Values.global.securityTls.clientSecretName }}"
+          items:
+            - key: {{ $.Values.global.securityTls.trustedCertificateKey }}
+              path: certificate.pem
+      {{ end }}
+      - name: tools-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-tools
+      {{ if index .Values "images" "udrtool-init-customized" "name" }}
+      - name: udrtool-custom-volume
+        emptyDir: {}
+      {{ end }}
+      - name: xref-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-xref
+      - name: tnsnames-ora-volume
+        configMap:
+          name: eric-bss-eb-tools-tnsnames.ora
+      - name: sqlnet-ora-volume
+        configMap:
+          name: eric-bss-eb-tools-sqlnet.ora
+      {{ if $.Values.global.databaseTls.enable }}
+      - name: wallet-volume
+        secret:
+          secretName: "{{ $.Values.global.databaseTls.clientSecretName }}"
+      {{ end }}
+      - name: workflows-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-workflows
+      - name: wfmssupporttool-database-properties-volume
+        configMap:
+          name: eric-bss-eb-tools-database.properties
+      - name: wfmssupporttool-hibernate-properties-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.hibernateProperties | default "eric-bss-eb-tools-hibernate.properties" }}
+      - name: wfmssupporttool-jbpm-cfg-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.jbpmCfgXml | default "eric-bss-eb-tools-jbpm.cfg.xml" }}
+      - name: wfmssupporttool-wma-volume
+        configMap:
+          name: eric-bss-eb-tools-wma.properties
+      - name: wfmssupporttool-log4j2-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.log4j2Xml | default "eric-bss-eb-tools-log4j2.xml" }}
+      - name: vault-clientcfg-xml-volume
+        configMap:
+          name: eric-bss-eb-tools-vault-clientcfg.xml
+      - name: vault-clientcfg-dtd-volume
+        configMap:
+          name: eric-bss-eb-tools-vault-clientcfg.dtd
+      {{ if and ($.Values.global.secretManager.enable) ($.Values.global.secretManager.vault.caSecretName) }}
+      - name: secretmanager-tls-volume
+        secret:
+          secretName: "{{ $.Values.global.secretManager.vault.caSecretName }}"
+          items:
+          - key: {{ $.Values.global.secretManager.vault.caCertificate }}
+            path: ca.pem
+      {{ end }}
+      {{ if .Values.global.ebTruststore.secretName }}
+      - name: eb-trust-store-volume
+        secret:
+          secretName: {{ .Values.global.ebTruststore.secretName }}
+      {{ end }}

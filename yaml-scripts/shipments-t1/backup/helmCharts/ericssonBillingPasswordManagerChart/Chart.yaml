@@ -1,0 +1,21 @@
+apiVersion: v2
+appVersion: "1.0"
+description: The root Helm chart for Password Manager
+name: eric-bss-eb-pwdmgr
+version: 22.15.12+0
+
+dependencies:
+- name: eric-bss-eb-pwdmgr-networkpolicies
+  version: 22.15.12+0
+  repository: file://./charts/networkpoliciesChart
+  condition: eric-bss-eb-pwdmgr-networkpolicies.enabled
+
+- name: eric-bss-eb-pwdmgr-rbac
+  version: 22.15.12+0
+  repository: file://./charts/rbacChart
+  condition: eric-bss-eb-pwdmgr-rbac.enabled
+
+- name: eric-bss-eb-pwdmgr
+  version: 22.15.12+0
+  repository: file://./charts/pwdmgrChart
+  condition: eric-bss-eb-pwdmgr.enabled

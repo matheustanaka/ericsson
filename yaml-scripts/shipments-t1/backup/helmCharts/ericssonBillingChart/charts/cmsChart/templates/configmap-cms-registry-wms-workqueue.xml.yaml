@@ -1,0 +1,153 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-wms-workqueue.xml
+data:
+  Registry_WMS_Workqueue.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+    <ComponentRegistry>
+
+        <Node name="WMS Settings">
+        <Node name="Workqueue Search">
+            <KeyValue key="MaxResultSetSize" type="Integer" value="{{ .Values.debtColl.wmsSettings.WorkqueueSearch.MaxResultSetSize }}"/>
+            <KeyValue key="DefaultResultSetSize" type="Integer" value="{{ .Values.debtColl.wmsSettings.WorkqueueSearch.DefaultResultSetSize }}" />
+            <KeyValue key="DefaultOutput" value="WQ_ID, WQ_ID_PUB, WQ_DES, WQ_MODE, TA_TYPE_ID, TA_TYPE_ID_PUB, TA_TYPE_PRIORITY, AUTHORIZATION_REQ, BU_ID" />
+            <KeyValue key="BaseTable" value="WORKQUEUE_DEFINITION" />
+            <KeyValue key="BaseTableAlias" value="WQ" />
+            <KeyValue key="DefaultNumberOfCharactersBeforeWildcard" type="Integer" value="{{ .Values.debtColl.wmsSettings.WorkqueueSearch.DefaultNumberOfCharactersBeforeWildcard }}" />
+            <KeyValue key="FromClauseOrder" value="TASK_WORKQUEUE_MAP TWM, TASK_DEFINITION TD, USER_WORKQUEUE_MAP UWM, USER_WORKGROUP_MAP UWGM, WORKQUEUE_WORKGROUP_MAP WWM, WORKGROUP_DEFINITION WG" />
+
+        <Node name="Attributes">
+                    <Node name="WQ_ID">
+                        <KeyValue key="SelectClause" value="WQ.WORKQUEUE_ID" />
+                    </Node>
+
+                    <Node name="WQ_ID_PUB">
+                        <KeyValue key="SelectClause" value="WQ.SHORT_DES" />
+                        <KeyValue key="ConditionWhereClause" type="String"    value="WQ.SHORT_DES"/>
+                       <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true" />
+                <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true" />
+                    </Node>
+
+                    <Node name="WQ_DES">
+                        <KeyValue key="SelectClause" value="WQ.DES" />
+                        <KeyValue key="ConditionWhereClause" type="String"    value="WQ.DES"/>
+                   <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true" />
+                <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true" />
+                    </Node>
+
+                    <Node name="WQ_MODE">
+                        <KeyValue key="SelectClause" value="WQ.WORKQUEUE_MODE" />
+                        <KeyValue key="ConditionWhereClause" type="String"    value="WQ.WORKQUEUE_MODE"/>
+                        <!-- PN 00346594 - fritscht - FSP 305071 - Is possible read, modify and delete the error work queues
+                        <Node name="JoinWhereClauses">
+                               <Node name="InputAttributes">
+                                <KeyValue key="WQ.WORKQUEUE_MODE != 'E'" value="" />
+                               </Node>
+                        </Node>
+                         -->
+                       </Node>
+
+                    <Node name="TA_TYPE_ID">
+                        <KeyValue key="SelectClause" value="TWM.TASK_ID" />
+                        <KeyValue key="ConditionWhereClause" value="TWM.TASK_ID" />
+                           <Node name="FromClauses">
+                               <KeyValue key="TASK_WORKQUEUE_MAP TWM" value="" />
+                           </Node>
+                           <Node name="JoinWhereClauses">
+                           <Node name="InputAttributes">
+                            <KeyValue key="WQ.WORKQUEUE_ID = TWM.WORKQUEUE_ID" value="" />
+                        </Node>
+                           </Node>
+                    </Node>
+
+                    <Node name="TA_TYPE_ID_PUB">
+                        <KeyValue key="SelectClause" value="TD.SHORT_DES T" />
+                        <KeyValue key="ConditionWhereClause" value="TD.SHORT_DES" />
+                        <Node name="FromClauses">
+                            <KeyValue key= "TASK_WORKQUEUE_MAP TWM" value=""/>
+                            <KeyValue key= "TASK_DEFINITION TD" value=""/>
+                        </Node>
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="WQ.WORKQUEUE_ID = TWM.WORKQUEUE_ID" value=""/>
+                                <KeyValue key="TWM.TASK_ID = TD.TASK_ID" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+                    <Node name="WG_ID">
+                        <KeyValue key="ConditionWhereClause" value="WWM.WORKGROUP_ID" />
+                           <Node name="FromClauses">
+                               <KeyValue key="WORKQUEUE_WORKGROUP_MAP WWM" value="" />
+                           </Node>
+                           <Node name="JoinWhereClauses">
+                               <Node name="InputAttributes">
+                                <KeyValue key="WQ.WORKQUEUE_ID = WWM.WORKQUEUE_ID" value="" />
+                                </Node>
+                               </Node>
+                    </Node>
+
+                    <Node name="WG_ID_PUB">
+                        <KeyValue key="ConditionWhereClause" value="WG.SHORT_DES" />
+                  <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true" />
+                   <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true" />
+                           <Node name="FromClauses">
+                           <KeyValue key="WORKQUEUE_WORKGROUP_MAP WWM" value="" />
+                           <KeyValue key="WORKGROUP_DEFINITION WG" value="" />
+                           </Node>
+                           <Node name="JoinWhereClauses">
+                           <Node name="InputAttributes">
+                            <KeyValue key="WQ.WORKQUEUE_ID = WWM.WORKQUEUE_ID" value="" />
+                            <KeyValue key="WG.WORKGROUP_ID = WWM.WORKGROUP_ID" value="" />
+                        </Node>
+                        </Node>
+                    </Node>
+
+                    <Node name="TA_TYPE_PRIORITY">
+                        <KeyValue key="SelectClause" value="TD.PRIORITY" />
+                        <Node name="FromClauses">
+                            <KeyValue key= "TASK_WORKQUEUE_MAP TWM" value=""/>
+                            <KeyValue key= "TASK_DEFINITION TD" value=""/>
+                        </Node>
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="WQ.WORKQUEUE_ID = TWM.WORKQUEUE_ID" value=""/>
+                                <KeyValue key="TWM.TASK_ID = TD.TASK_ID" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+                    <Node name="AUTHORIZATION_REQ">
+                        <KeyValue key="SelectClause" value="TD.AUTHORIZATION_REQ" />
+                        <Node name="FromClauses">
+                            <KeyValue key= "TASK_WORKQUEUE_MAP TWM" value=""/>
+                            <KeyValue key= "TASK_DEFINITION TD" value=""/>
+                        </Node>
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="WQ.WORKQUEUE_ID = TWM.WORKQUEUE_ID" value=""/>
+                                <KeyValue key="TWM.TASK_ID = TD.TASK_ID" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+                    <Node name="BU_ID">
+                            <KeyValue key="SelectClause" value="WQ.BUSINESS_UNIT_ID" />
+                               <KeyValue key="ConditionWhereClause" type="String"    value="WQ.BUSINESS_UNIT_ID"/>
+                    </Node>
+
+                    <Node name="USERNAME">
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true" />
+                           <Node name="FromClauses">
+                               <KeyValue key="USER_WORKQUEUE_MAP UWM" value="" />
+                               <KeyValue key="USER_WORKGROUP_MAP UWGM" value="" />
+                               <KeyValue key="WORKQUEUE_WORKGROUP_MAP WWM" value="" />
+                           </Node>
+                    </Node>
+
+        </Node>
+        </Node>
+        </Node>
+    </ComponentRegistry>

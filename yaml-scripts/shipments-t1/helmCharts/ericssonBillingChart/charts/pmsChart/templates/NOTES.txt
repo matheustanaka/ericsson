@@ -1,0 +1,3 @@
+This Product Management Server (PMS) deployment serves as an interface to External Product Catalog.
+It offers commands to read and write product-related information, such as RFS specifications, characteristics, and product offerings.
+All commands of PMS are offered as Web services to allow for easy integration.

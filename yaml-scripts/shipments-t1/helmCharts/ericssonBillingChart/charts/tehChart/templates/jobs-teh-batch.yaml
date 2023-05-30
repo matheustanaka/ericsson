@@ -1,0 +1,19 @@
+# if helm install, and runInitialTehJob.onHelmInstall=true (default),  start the TEH initial job
+# OR
+# if helm upgrade, and runInitialTehJob.onHelmUpgrade=true (default is false!) start the TEH initial job
+{{if or (and (.Release.IsInstall) (eq .Values.runInitialTehJob.onHelmInstall true)) (and (.Release.IsUpgrade) (eq .Values.runInitialTehJob.onHelmUpgrade true))}} 
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: eric-bss-eb-teh-initial-job
+  labels:
+    app: {{ .Chart.Name }}
+    chart: {{ template "eric-bss-eb-teh.chart" . }}
+    {{- include "eric-bss-eb-teh.kubernetesIoInfo" $ | nindent 4 }}
+    heritage: {{ .Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-teh.productInfo" $ | indent 4 }}
+spec:
+  {{ $templateParameter := dict "Values" $.Values "Release" $.Release "startParameters" $.Values.initialPtehStartParameters "Chart" $.Chart }}
+  {{ include "eric-bss-eb-teh.job-template" $templateParameter | indent 2 }}
+{{ end }}

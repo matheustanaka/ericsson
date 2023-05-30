@@ -1,0 +1,62 @@
+# Default values for cahChart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Allowed: 0,1
+replicaCount: 1
+
+imageCredentials:
+  eric-bss-eb-dih:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+
+images:
+  eric-bss-eb-dih:
+    name: "eric-bss-eb-dih"
+    tag: "22.15.12"
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 5Gi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+dihDeployments:
+  - name: "single"
+    startParameters: "-r -s005"
+
+terminationGracePeriodSeconds: 300
+
+#A local nodeSelector definition has priority over the global definition above.
+#nodeSelector: {}
+
+# A local affinity definition has priority over the global definition.
+# affinity: {}
+# Example:
+# affinity:
+#   nodeAffinity:
+#     preferredDuringSchedulingIgnoredDuringExecution:
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1a
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1b
+
+tnsnames:
+  bscsdb: '{{ tpl .Values.global.tnsnames.bscsdb . }}'
+
+sqlnet:
+  ora: '{{ tpl .Values.global.sqlnet.ora . }}'

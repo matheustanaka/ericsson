@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-cdi-elementtoworkflowattributesmapping.xml
+data:
+  Registry_CDI_ElementToWorkflowAttributesMapping.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+    <ComponentRegistry>
+        <Node name="CDI Settings">
+            <Node name="CDI Element Mapping">
+                <Node name="CDI Element 1">
+                    <KeyValue key="ElementPart" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_1.ElementPart }}" comment="" />
+                    <KeyValue key="ElementAttr" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_1.ElementAttr }}" comment="" />
+                    <KeyValue key="WFPart" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_1.WFPart }}" comment="" />
+                    <KeyValue key="WFAttr" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_1.WFAttr }}" comment="" />
+                </Node>
+                <Node name="CDI Element 2">
+                    <KeyValue key="ElementPart" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_2.ElementPart }}" comment="" />
+                    <KeyValue key="ElementAttr" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_2.ElementAttr }}" comment="" />
+                    <KeyValue key="WFPart" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_2.WFPart }}" comment="" />
+                    <KeyValue key="WFAttr" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_2.WFAttr }}" comment="" />
+                </Node>
+                <Node name="CDI Element 3">
+                    <KeyValue key="ElementPart" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_3.ElementPart }}" comment="" />
+                    <KeyValue key="ElementAttr" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_3.ElementAttr }}" comment="" />
+                    <KeyValue key="WFPart" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_3.WFPart }}" comment="" />
+                    <KeyValue key="WFAttr" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_3.WFAttr }}" comment="" />
+                </Node>
+                <Node name="CDI Element 4">
+                    <KeyValue key="ElementPart" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_4.ElementPart }}" comment="" />
+                    <KeyValue key="ElementAttr" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_4.ElementAttr }}" comment="" />
+                    <KeyValue key="WFPart" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_4.WFPart }}" comment="" />
+                    <KeyValue key="WFAttr" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_4.WFAttr }}" comment="" />
+                </Node>
+                <Node name="CDI Element 5">
+                    <KeyValue key="ElementPart" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_5.ElementPart }}" comment="" />
+                    <KeyValue key="ElementAttr" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_5.ElementAttr }}" comment="" />
+                    <KeyValue key="WFPart" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_5.WFPart }}" comment="" />
+                    <KeyValue key="WFAttr" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_5.WFAttr }}" comment="" />
+                </Node>
+                <Node name="CDI Element 6">
+                    <KeyValue key="ElementPart" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_6.ElementPart }}" comment="" />
+                    <KeyValue key="ElementAttr" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_6.ElementAttr }}" comment="" />
+                    <KeyValue key="WFPart" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_6.WFPart }}" comment="" />
+                    <KeyValue key="WFAttr" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_6.WFAttr }}" comment="" />
+                </Node>
+                <Node name="CDI Element 7">
+                    <KeyValue key="ElementPart" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_7.ElementPart }}" comment="" />
+                    <KeyValue key="ElementAttr" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_7.ElementAttr }}" comment="" />
+                    <KeyValue key="WFPart" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_7.WFPart }}" comment="" />
+                    <KeyValue key="WFAttr" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_7.WFAttr }}" comment="" />
+                </Node>
+                <Node name="CDI Element 8">
+                    <KeyValue key="ElementPart" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_8.ElementPart }}" comment="" />
+                    <KeyValue key="ElementAttr" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_8.ElementAttr }}" comment="" />
+                    <KeyValue key="WFPart" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_8.WFPart }}" comment="" />
+                    <KeyValue key="WFAttr" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_8.WFAttr }}" comment="" />
+                </Node>
+                <Node name="CDI Element 9">
+                    <KeyValue key="ElementPart" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_9.ElementPart }}" comment="" />
+                    <KeyValue key="ElementAttr" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_9.ElementAttr }}" comment="" />
+                    <KeyValue key="WFPart" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_9.WFPart }}" comment="" />
+                    <KeyValue key="WFAttr" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_9.WFAttr }}" comment="" />
+                </Node>
+                <Node name="CDI Element 10">
+                    <KeyValue key="ElementPart" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_10.ElementPart }}" comment="" />
+                    <KeyValue key="ElementAttr" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_10.ElementAttr }}" comment="" />
+                    <KeyValue key="WFPart" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_10.WFPart }}" comment="" />
+                    <KeyValue key="WFAttr" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_10.WFAttr }}" comment="" />
+                </Node>
+                <Node name="CDI Element 11">
+                    <KeyValue key="ElementPart" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_11.ElementPart }}" comment="" />
+                    <KeyValue key="ElementAttr" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_11.ElementAttr }}" comment="" />
+                    <KeyValue key="WFPart" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_11.WFPart }}" comment="" />
+                    <KeyValue key="WFAttr" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_11.WFAttr }}" comment="" />
+                </Node>
+                <Node name="CDI Element 12">
+                    <KeyValue key="ElementPart" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_12.ElementPart }}" comment="" />
+                    <KeyValue key="ElementAttr" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_12.ElementAttr }}" comment="" />
+                    <KeyValue key="WFPart" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_12.WFPart }}" comment="" />
+                    <KeyValue key="WFAttr" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_12.WFAttr }}" comment="" />
+                </Node>
+                <Node name="CDI Element 13">
+                    <KeyValue key="ElementPart" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_13.ElementPart }}" comment="" />
+                    <KeyValue key="ElementAttr" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_13.ElementAttr }}" comment="" />
+                    <KeyValue key="WFPart" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_13.WFPart }}" comment="" />
+                    <KeyValue key="WFAttr" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_13.WFAttr }}" comment="" />
+                </Node>
+                <Node name="CDI Element 14">
+                    <KeyValue key="ElementPart" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_14.ElementPart }}" comment="" />
+                    <KeyValue key="ElementAttr" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_14.ElementAttr }}" comment="" />
+                    <KeyValue key="WFPart" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_14.WFPart }}" comment="" />
+                    <KeyValue key="WFAttr" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_14.WFAttr }}" comment="" />
+                </Node>
+                <Node name="CDI Element 15">
+                    <KeyValue key="ElementPart" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_15.ElementPart }}" comment="" />
+                    <KeyValue key="ElementAttr" type="Integer" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_15.ElementAttr }}" comment="" />
+                    <KeyValue key="WFPart" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_15.WFPart }}" comment="" />
+                    <KeyValue key="WFAttr" type="String" value="{{ .Values.debtColl.cdiElementMapping.cdiElement_15.WFAttr }}" comment="" />
+                </Node>
+            </Node>
+        </Node>
+    </ComponentRegistry>

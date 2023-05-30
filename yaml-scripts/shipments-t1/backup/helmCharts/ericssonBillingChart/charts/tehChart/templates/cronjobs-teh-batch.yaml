@@ -1,0 +1,28 @@
+{{- range $index, $tehJob := .Values.tehCronJobs }}
+{{- if $.Capabilities.APIVersions.Has "batch/v1/CronJob" }}
+apiVersion: batch/v1
+{{- else }}
+apiVersion: batch/v1beta1
+{{- end }}
+kind: CronJob
+metadata:
+  name: eric-bss-eb-teh-cron-{{ $index }}.{{ $tehJob.name }}
+  labels:
+    app: eric-bss-eb-teh
+    chart: {{ template "eric-bss-eb-teh.chart" $ }}
+    {{- include "eric-bss-eb-teh.kubernetesIoInfo" $ | nindent 4 }}
+    heritage: {{ $.Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-teh.productInfo" $ | indent 4 }}
+spec:
+  schedule: "{{ $tehJob.schedule }}"
+  failedJobsHistoryLimit: {{ int $.Values.CronJob.failedJobsHistoryLimit }}
+  successfulJobsHistoryLimit: {{ int $.Values.CronJob.successfulJobsHistoryLimit }}
+  suspend: {{ $.Values.global.suspendCronJobs.teh }}
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      {{ $templateParameter := dict "Values" $.Values "Release" $.Release "startParameters" $tehJob.startParameters "Chart" $.Chart }}
+      {{ include "eric-bss-eb-teh.job-template" $templateParameter | indent 6 }}
+---
+{{- end}}

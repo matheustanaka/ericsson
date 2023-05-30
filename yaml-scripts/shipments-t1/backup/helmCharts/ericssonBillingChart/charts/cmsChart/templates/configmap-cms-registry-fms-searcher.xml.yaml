@@ -1,0 +1,1201 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-fms-searcher.xml
+data:
+  Registry_FMS_Searcher.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+    <ComponentRegistry>
+        <Node name="FMS Settings">
+            <Node name="Searchers">
+                <Node name="FINANCIAL_DOCUMENT_SEARCHER">
+                    <KeyValue key="MaxResultSetSize" type="Integer"
+                        value="1000" />
+                    <KeyValue key="DefaultResultSetSize" type="Integer"
+                        value="250" />
+                    <KeyValue key="DefaultNumberOfCharactersBeforeWildcard"
+                        type="Integer" value="0" />
+                    <KeyValue key="BaseTable" value="ORDERHDR_ALL" />
+                    <KeyValue key="BaseTableAlias" value="B" />
+                    <KeyValue key="DefaultOutput"
+                        value="GRANTED_DISCOUNT_AMOUNT_DOC,ENTRY_DATE,CO_ID,BU_ID,REF_DATE,DOCUMENT_ID,COMPLAINT_DATE,OPEN_AMOUNT_DOC,DOC_TYPE,DUE_DATE,COMPLAINT,CS_ID,DISCOUNT_DATE,
+                            TAX_AMOUNT_DOC,TAKEN_DISCOUNT_AMOUNT_DOC,DOCUMENT_AMOUNT_DOC,ASS_DOCUMENT_ID,DOCUMENT_CODE,
+                            BILLING_ACCOUNT_ID,BILLING_ACCOUNT_CODE,DOCUMENT_CURR_ID,RS_ID, CO_ID_PUB,ADR_LNAME,ADR_FNAME,ADR_NAME,CS_ID_PUB,CS_CODE,PROPOSED_PAY_CURR_ID,PROPOSED_PAY_CURR_ID_PUB,
+                            EXT_DOCUMENT_CODE, EXT_REF_DATE, PROPOSED_PAY_METHOD_ID, CONV_DATE, GL_CURRENCY, PAYMENT_MODE_ID, DOCUMENT_PROCESSING_STATUS, PROPOSED_PAY_DATE,
+                            CURR_PAYMENT_INSTR_STATUS,PAYMENT_INSTR_ID,PAYMENT_INSTR_ID_PUB,REF_DOC,REV_DOC,REVERSED,IMAGE_GENERATED, COLL_IND, DOCUMENT_SUB_TYPE_ID, DOCUMENT_SUB_TYPE_ID_PUB" />
+                    <!-- A custom output to be used if LHS_BSCS_PC25141 is enabled -->
+                    <KeyValue key="OutputWithDocumentAmountGL"
+                        value="GRANTED_DISCOUNT_AMOUNT_DOC,ENTRY_DATE,CO_ID,BU_ID,REF_DATE,DOCUMENT_ID,COMPLAINT_DATE,OPEN_AMOUNT_DOC,DOC_TYPE,DUE_DATE,COMPLAINT,CS_ID,DISCOUNT_DATE,
+                            TAX_AMOUNT_DOC,TAKEN_DISCOUNT_AMOUNT_DOC,DOCUMENT_AMOUNT_DOC,ASS_DOCUMENT_ID,DOCUMENT_CODE,
+                            BILLING_ACCOUNT_ID,BILLING_ACCOUNT_CODE,DOCUMENT_CURR_ID,RS_ID, CO_ID_PUB,ADR_LNAME,ADR_FNAME,ADR_NAME,CS_ID_PUB,CS_CODE,PROPOSED_PAY_CURR_ID,PROPOSED_PAY_CURR_ID_PUB,
+                            EXT_DOCUMENT_CODE, EXT_REF_DATE, PROPOSED_PAY_METHOD_ID, CONV_DATE, GL_CURRENCY, PAYMENT_MODE_ID, DOCUMENT_PROCESSING_STATUS, PROPOSED_PAY_DATE,
+                            CURR_PAYMENT_INSTR_STATUS,PAYMENT_INSTR_ID,PAYMENT_INSTR_ID_PUB,REF_DOC,REV_DOC,REVERSED,IMAGE_GENERATED, COLL_IND, DOCUMENT_AMOUNT_GL, DOCUMENT_SUB_TYPE_ID, DOCUMENT_SUB_TYPE_ID_PUB" />
+
+                    <Node name="Attributes">
+
+                        <Node name="EXCLUDE_REVERSE_DN">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue
+                                        key="B.REVERSE_DOC_FLAG = &apos;N&apos;"
+                                        value="" />
+                                    <KeyValue key="B.OHREVXACT IS NULL"
+                                        value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+                        <Node name="REF_DOC">
+                            <KeyValue key="SelectClause"
+                                value="DECODE(B.REF_DOC_FLAG, null, &apos;False&apos;, &apos;X&apos;, &apos;True&apos;)" />
+                        </Node>
+                        <Node name="REV_DOC">
+                            <KeyValue key="SelectClause"
+                                value="DECODE(B.REVERSE_DOC_FLAG, &apos;N&apos;, &apos;False&apos;, &apos;Y&apos;, &apos;True&apos;)" />
+                        </Node>
+                        <Node name="REVERSED">
+                            <KeyValue key="SelectClause"
+                                value="DECODE(B.OHREVXACT, null, &apos;False&apos;, &apos;True&apos;)" />
+                        </Node>
+                        <Node name="EXT_DOC_ID_FOR_REF">
+                            <Node name="FromClauses">
+                                <KeyValue key="EXTERNAL_DOCUMENT_REF_VIEW ED"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.OHXACT=ED.REF_OHXACT"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="ConditionWhereClause"
+                                value="ED.OHXACT" />
+                        </Node>
+                        <Node name="REF_DOC_ID_FOR_EXT">
+                            <Node name="FromClauses">
+                                <KeyValue key="EXTERNAL_DOCUMENT_REF_VIEW ED"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.OHXACT=ED.OHXACT"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="ConditionWhereClause"
+                                value="ED.REF_OHXACT" />
+                        </Node>
+                        <Node name="BILL_SEQNO">
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.OHBILLSEQNO" />
+                        </Node>
+                        <Node name="REF_DATE_FROM">
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.OHREFDATE" />
+                            <KeyValue key="Operator" type="String"
+                                value="&gt;=" comment="null" />
+                        </Node>
+                        <Node name="REF_DATE">
+                            <KeyValue key="SelectClause" value="B.OHREFDATE" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="trunc(B.OHREFDATE)" />
+                        </Node>
+                        <Node name="OPEN_STATUS">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue
+                                        key="B.OHINVAMT_DOC=B.OHOPNAMT_DOC"
+                                        value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+                        <Node name="PARTLY_STATUS">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.OHOPNAMT_DOC&lt;&gt;0"
+                                        value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+                        <Node name="TWO_PHASE_BILLING_LOCK_STATUS">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.LOCKED IS NULL" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+                        <Node name="PARTLY_CLOSED_STATUS">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue
+                                        key="B.OHINVAMT_DOC&lt;&gt;B.OHOPNAMT_DOC"
+                                        value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+                        <Node name="CLOSED_STATUS">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.OHOPNAMT_DOC=0"
+                                        value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+                        <Node name="CREDIT">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.OHINVAMT_DOC&lt;=0"
+                                        value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+                        <Node name="DEBIT">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.OHINVAMT_DOC&gt;=0"
+                                        value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+                        <Node name="CREDIT_STRICT">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.OHINVAMT_DOC&lt;0"
+                                        value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+                        <Node name="DEBIT_STRICT">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.OHINVAMT_DOC&gt;0"
+                                        value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+                        <Node name="EXCLUDE_DOCUMENTS_IN_QUALITY_ASSURANCE">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.LOCKED IS NULL OR B.OHBILLSEQNO IS NULL OR B.LOCKED != B.OHBILLSEQNO" value=""/>
+                                </Node>
+                            </Node>
+                        </Node>
+                        <Node name="DOCUMENT_SUB_TYPE_ID">
+                            <KeyValue key="SelectClause" value="B.OHINVTYPE" />
+                            <KeyValue key="ConditionWhereClause" value="B.OHINVTYPE" />
+                        </Node>
+                        <Node name="DOCUMENT_SUB_TYPE_ID_PUB">
+                            <Node name="FromClauses">
+                                <KeyValue key="FIN_DOCUMENT_SUBTYPE C"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="OutputAttributes">
+                                    <KeyValue key="B.OHINVTYPE=C.INVOICE_TYPE_ID (+)"
+                                        value="" />
+                                </Node>
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.OHINVTYPE=C.INVOICE_TYPE_ID (+)"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="SelectClause" value="C.SHDES" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="C.SHDES" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+                        <Node name="CS_ID">
+                            <KeyValue key="SelectClause" value="B.CUSTOMER_ID" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.CUSTOMER_ID" />
+                        </Node>
+                        <Node name="CS_ID_PUB">
+                            <Node name="FromClauses">
+                                <KeyValue key="CUSTOMER_ALL C"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="OutputAttributes">
+                                    <KeyValue key="B.CUSTOMER_ID=C.CUSTOMER_ID"
+                                        value="" />
+                                </Node>
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.CUSTOMER_ID=C.CUSTOMER_ID"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="SelectClause" value="C.CUSTNUM" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="C.CUSTNUM" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+                        <Node name="CS_CODE">
+                            <Node name="JoinWhereClauses">
+                                <Node name="OutputAttributes">
+                                    <KeyValue key="B.CUSTOMER_ID=C.CUSTOMER_ID"
+                                        value="" />
+                                </Node>
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.CUSTOMER_ID=C.CUSTOMER_ID"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="SelectClause" value="C.CUSTCODE" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="C.CUSTCODE" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+                        <Node name="ROOT_CS_ID">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue
+                                        key="C.CUSTOMER_ID in (select ca2.customer_id  from customer_all ca2 start with ca2.customer_id = #ROOT_CS_ID connect by prior ca2.CUSTOMER_ID = ca2.CUSTOMER_ID_HIGH)"
+                                        value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+                        <Node name="ADR_LNAME">
+                            <Node name="FromClauses">
+                                <KeyValue key="CCONTACT_ALL CC"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="OutputAttributes">
+                                    <KeyValue
+                                        key="B.CUSTOMER_ID=CC.CUSTOMER_ID AND CC.CCBILL=&apos;X&apos;"
+                                        value="" />
+                                </Node>
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.CUSTOMER_ID=CC.CUSTOMER_ID"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="SelectClause" value="CC.CCLNAME" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="CC.CCLNAME" />
+                            <KeyValue key="SupportsCaseInsensitiveSearch"
+                                type="Boolean" value="true" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+                        <Node name="ADR_FNAME">
+                            <Node name="FromClauses">
+                                <KeyValue key="CCONTACT_ALL CC"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="OutputAttributes">
+                                    <KeyValue key="B.CUSTOMER_ID=CC.CUSTOMER_ID"
+                                        value="" />
+                                </Node>
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.CUSTOMER_ID=CC.CUSTOMER_ID"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="SelectClause" value="CC.CCFNAME" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="CC.CCFNAME" />
+                            <KeyValue key="SupportsCaseInsensitiveSearch"
+                                type="Boolean" value="true" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+                        <Node name="ADR_NAME">
+                            <Node name="FromClauses">
+                                <KeyValue key="CCONTACT_ALL CC"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="OutputAttributes">
+                                    <KeyValue key="B.CUSTOMER_ID=CC.CUSTOMER_ID"
+                                        value="" />
+                                </Node>
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.CUSTOMER_ID=CC.CUSTOMER_ID"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="SelectClause" value="CC.CCNAME" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="CC.CCNAME" />
+                            <KeyValue key="SupportsCaseInsensitiveSearch"
+                                type="Boolean" value="true" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+
+                        </Node>
+                        <Node name="ADR_LNAMEMC">
+                            <Node name="FromClauses">
+                                <KeyValue key="CCONTACT_ALL CC"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.CUSTOMER_ID=CC.CUSTOMER_ID"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="ConditionWhereClause"
+                                value="CC.CCLNAMEMC" />
+                            <KeyValue key="SupportsCaseInsensitiveSearch"
+                                type="Boolean" value="true" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+
+                        <Node name="REF_DATE_UNTIL">
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.OHREFDATE" />
+                            <KeyValue key="Operator" type="String"
+                                value="&lt;=" />
+                        </Node>
+                        <Node name="DOC_TYPE">
+                            <KeyValue key="SelectClause" value="B.OHSTATUS" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.OHSTATUS" />
+                            <KeyValue key="Operator" type="String"
+                                value="IN" />
+                        </Node>
+                        <Node name="BILLING_ACCOUNT_ID">
+                            <KeyValue key="SelectClause" value="B.BILLING_ACCOUNT_ID" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.BILLING_ACCOUNT_ID" />
+                        </Node>
+                        <Node name="BILLING_ACCOUNT_CODE">
+                            <Node name="FromClauses">
+                                <KeyValue key="BILLING_ACCOUNT BA" value=""/>
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="OutputAttributes">
+                                    <KeyValue key="B.BILLING_ACCOUNT_ID=BA.BILLING_ACCOUNT_ID(+)" value=""/>
+                                </Node>
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.BILLING_ACCOUNT_ID=BA.BILLING_ACCOUNT_ID(+)" value=""/>
+                                </Node>
+                            </Node>
+                           <KeyValue key="SelectClause" value="BA.BILLING_ACCOUNT_CODE" />
+                            <KeyValue key="ConditionWhereClause" value="BA.BILLING_ACCOUNT_CODE" />
+                            <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        </Node>
+                        <Node name="CO_ID">
+                            <KeyValue key="SelectClause" value="B.CO_ID" />
+                        </Node>
+                        <Node name="CO_ID_PUB">
+                            <Node name="FromClauses">
+                                <KeyValue key="CONTRACT_ALL CO"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="OutputAttributes">
+                                    <KeyValue key="B.CO_ID=CO.CO_ID (+)"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="SelectClause" value="CO.CO_CODE" />
+                        </Node>
+                        <Node name="GRANTED_DISCOUNT_AMOUNT_DOC">
+                            <KeyValue key="SelectClause" value="B.OHDISAMT_DOC" />
+                        </Node>
+                        <Node name="ENTRY_DATE">
+                            <KeyValue key="SelectClause" value="B.OHENTDATE" />
+                        </Node>
+                        <Node name="CO_ID">
+                            <KeyValue key="SelectClause" value="B.CO_ID" />
+                        </Node>
+                        <Node name="BU_ID">
+                            <KeyValue key="SelectClause" value="B.BUSINESS_UNIT_ID" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.BUSINESS_UNIT_ID" />
+                            <KeyValue key="Operator" value="IN" />
+                        </Node>
+                        <Node name="DOCUMENT_ID">
+                            <KeyValue key="SelectClause" value="B.OHXACT" />
+                        </Node>
+                        <Node name="COMPLAINT_DATE">
+                            <KeyValue key="SelectClause" value="B.COMPLAINT_DATE" />
+                        </Node>
+                        <Node name="OPEN_AMOUNT_DOC">
+                            <KeyValue key="SelectClause" value="B.OHOPNAMT_DOC" />
+                        </Node>
+                        <Node name="DUE_DATE">
+                            <KeyValue key="SelectClause" value="B.OHDUEDATE" />
+                        </Node>
+                        <Node name="COMPLAINT">
+                            <KeyValue key="SelectClause" value="B.COMPLAINT" />
+                        </Node>
+                        <Node name="RS_ID">
+                            <KeyValue key="SelectClause" value="B.REASON_ID" />
+                        </Node>
+
+                        <Node name="DISCOUNT_DATE">
+                            <KeyValue key="SelectClause" value="B.OHDISDATE" />
+                        </Node>
+                        <Node name="TAX_AMOUNT_DOC">
+                            <KeyValue key="SelectClause" value="B.OHTAXAMT_DOC" />
+                        </Node>
+                        <Node name="TAKEN_DISCOUNT_AMOUNT_DOC">
+                            <KeyValue key="SelectClause" value="B.OHDISTAKAMT_DOC" />
+                        </Node>
+                        <Node name="DOCUMENT_AMOUNT_DOC">
+                            <KeyValue key="SelectClause" value="B.OHINVAMT_DOC" />
+                        </Node>
+                        <Node name="DOCUMENT_AMOUNT_GL">
+                            <KeyValue key="SelectClause" value="B.OHINVAMT_GL" />
+                        </Node>
+                        <Node name="ASS_DOCUMENT_ID">
+                            <KeyValue key="SelectClause" value="B.OHASSOCXACT" />
+                        </Node>
+                        <Node name="DOCUMENT_CODE">
+                            <KeyValue key="SelectClause" value="B.OHREFNUM" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.OHREFNUM" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+                        <Node name="DOCUMENT_CURR_ID">
+                            <KeyValue key="SelectClause" value="B.DOCUMENT_CURRENCY" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.DOCUMENT_CURRENCY" />
+                        </Node>
+                        <Node name="EXT_DOCUMENT_CODE">
+                            <KeyValue key="SelectClause" value="B.OHEXTREFNUM" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.OHEXTREFNUM" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+                        <Node name="PROPOSED_PAY_DATE">
+                            <KeyValue key="SelectClause" value="B.OHPROPPAYDATE" />
+                        </Node>
+                        <Node name="PROPOSED_PAY_DATE_FROM">
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.OHPROPPAYDATE" />
+                            <KeyValue key="Operator" value="&gt;=" />
+                        </Node>
+                        <Node name="PROPOSED_PAY_DATE_UNTIL">
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.OHPROPPAYDATE" />
+                            <KeyValue key="Operator" type="String"
+                                value="&lt;=" />
+                        </Node>
+                        <Node name="PROPOSED_PAY_METHOD_ID">
+                            <Node name="FromClauses">
+                                <KeyValue key="PAYMENT_CONDITION P"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="OutputAttributes">
+                                    <KeyValue
+                                        key="B.PAYMENT_CONDITION_ID=P.PAYMENT_CONDITION_ID(+)"
+                                        value="" />
+                                </Node>
+                                <Node name="InputAttributes">
+                                    <KeyValue
+                                        key="B.PAYMENT_CONDITION_ID=P.PAYMENT_CONDITION_ID(+)"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="SelectClause" value="P.PAYMENT_TYPE_ID" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="P.PAYMENT_TYPE_ID" />
+                        </Node>
+
+                        <Node name="PROPOSED_PAY_CURR_ID">
+                            <KeyValue key="SelectClause" value="B.OHPROPPAYCURR" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.OHPROPPAYCURR" />
+                        </Node>
+                        <Node name="PROPOSED_PAY_CURR_ID_PUB">
+                            <Node name="FromClauses">
+                                <KeyValue key="FORCURR FC" value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="OutputAttributes">
+                                    <KeyValue key="B.OHPROPPAYCURR=FC.FC_ID(+)"
+                                        value="" />
+                                </Node>
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.OHPROPPAYCURR=FC.FC_ID(+)"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="SelectClause" value="FC.FCCODE" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="FC.FCCODE" />
+                            <KeyValue key="SupportsCaseInsensitiveSearch"
+                                type="Boolean" value="true" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+
+                        <Node name="PAYMENT_INSTR_ID">
+                            <KeyValue key="SelectClause" value="B.PAYMENT_PROPOSAL_ID" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.PAYMENT_PROPOSAL_ID" />
+                        </Node>
+                        <Node name="PAYMENT_INSTR_ID_PUB">
+                            <Node name="FromClauses">
+                                <KeyValue key="PAYMENT_PROPOSAL PP"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="OutputAttributes">
+                                    <KeyValue
+                                        key="B.PAYMENT_PROPOSAL_ID=PP.PAY_PROPOSAL_ID(+)"
+                                        value="" />
+                                </Node>
+                                <Node name="InputAttributes">
+                                    <KeyValue
+                                        key="B.PAYMENT_PROPOSAL_ID=PP.PAY_PROPOSAL_ID(+)"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="SelectClause" value="PP.PAY_PROPOSAL_CODE" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="PP.PAY_PROPOSAL_CODE" />
+                            <KeyValue key="SupportsCaseInsensitiveSearch"
+                                type="Boolean" value="true" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+
+                        <Node name="CURR_PAYMENT_INSTR_STATUS">
+                            <Node name="FromClauses">
+                                <KeyValue key="PAYMENT_PROPOSAL PP"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="OutputAttributes">
+                                    <KeyValue
+                                        key="B.PAYMENT_PROPOSAL_ID=PP.PAY_PROPOSAL_ID(+)"
+                                        value="" />
+                                </Node>
+                                <Node name="InputAttributes">
+                                    <KeyValue
+                                        key="B.PAYMENT_PROPOSAL_ID=PP.PAY_PROPOSAL_ID(+)"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="SelectClause" value="PP.STATUS" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="PP.STATUS" />
+                            <KeyValue key="SupportsCaseInsensitiveSearch"
+                                type="Boolean" value="true" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+                        <Node name="DOCUMENT_AMOUNT_DOC_MIN">
+                            <KeyValue key="ConditionWhereClause"
+                                value="ABS(B.OHINVAMT_DOC)" />
+                            <KeyValue key="Operator" value="&gt;=" />
+                        </Node>
+                        <Node name="DOCUMENT_AMOUNT_DOC_MAX">
+                            <KeyValue key="ConditionWhereClause"
+                                value="ABS(B.OHINVAMT_DOC)" />
+                            <KeyValue key="Operator" value="&lt;=" />
+                        </Node>
+                        <Node name="DUE_DATE_FROM">
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.OHDUEDATE" />
+                            <KeyValue key="Operator" value="&gt;=" />
+                        </Node>
+                        <Node name="DUE_DATE_UNTIL">
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.OHDUEDATE" />
+                            <KeyValue key="Operator" type="String"
+                                value="&lt;=" />
+                        </Node>
+                        <Node name="EXT_REF_DATE">
+                            <KeyValue key="SelectClause" value="B.OHEXTREFDATE" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="trunc(B.OHEXTREFDATE)" />
+                        </Node>
+                        <Node name="CONV_DATE">
+                            <KeyValue key="SelectClause" value="B.CONVDATE_EXCHANGE" />
+                        </Node>
+                        <Node name="GL_CURRENCY">
+                            <KeyValue key="SelectClause" value="B.GL_CURRENCY" />
+                        </Node>
+                        <Node name="PAYMENT_MODE_ID">
+                            <KeyValue key="SelectClause" value="B.PAYMENT_CONDITION_ID" />
+                        </Node>
+                        <Node name="DOCUMENT_PROCESSING_STATUS">
+                            <KeyValue key="SelectClause" value="B.OHDOCSTATUS" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.OHDOCSTATUS IS NULL OR B.OHDOCSTATUS" />
+                            <KeyValue key="Operator" type="String"
+                                value="IN" />
+                        </Node>
+                        <Node name="IMAGE_GENERATED">
+                            <Node name="FromClauses">
+                                <KeyValue key="BGH_BILL_IMAGE_REF IM"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="OutputAttributes">
+                                    <KeyValue
+                                        key="B.OHREFNUM = IM.DOC_REFNUM(+)"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="SelectClause"
+                                value="DECODE(IM.DOC_REFNUM, null, &apos;False&apos;, &apos;True&apos;)" />
+                        </Node>
+                        <Node name="COLL_IND">
+                            <Node name="FromClauses">
+                                <KeyValue key="DCH_COLLECTIBLE_CTRL D"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="OutputAttributes">
+                                    <KeyValue key="D.OHXACT (+) = B.OHXACT"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="SelectClause"
+                                value="DECODE(D.STATUS,&apos;S&apos;,&apos;True&apos;,&apos;C&apos;,&apos;True&apos;,null)" />
+                        </Node>
+
+                    </Node><!-- end of Attributes -->
+                </Node><!-- end of FINANCIAL_DOCUMENT_SEARCHER -->
+
+                <Node name="FINANCIAL_TRANSACTION_SEARCHER">
+                    <KeyValue key="MaxResultSetSize" type="Integer"
+                        value="1000" />
+                    <KeyValue key="DefaultResultSetSize" type="Integer"
+                        value="250" />
+                    <KeyValue key="DefaultNumberOfCharactersBeforeWildcard"
+                        type="Integer" value="1" />
+                    <KeyValue key="DefaultOutput"
+                        value="TRANSACTION_ID,TRANSACTION_REFNUM,AMOUNT_DISCOUNT_PAY,PAYMENT_METHOD_ID,PAYMENT_MODE_ID,TRANSACTION_DOCUMENT_NO,TRANS_CODE_PUB,REF_DATE,AMOUNT_CASH_PAY,CS_ID,CS_ID_PUB,BU_ID,AMOUNT_CURRENT,ENTRY_DATE,DUE_DATE,CURRENCY,GL_ACCOUNT,BILLING_ACCOUNT_ID,PAYMENT_SOURCE_ID,PAYMENT_SOURCE_ID_PUB" />
+                    <!-- A custom output to be used if LHS_BSCS_PC25141 is enabled -->
+                    <KeyValue key="OutputWithAmountCashGL"
+                        value="TRANSACTION_ID,TRANSACTION_REFNUM,AMOUNT_DISCOUNT_PAY,PAYMENT_METHOD_ID,PAYMENT_MODE_ID,TRANSACTION_DOCUMENT_NO,TRANS_CODE_PUB,REF_DATE,AMOUNT_CASH_PAY,CS_ID,CS_ID_PUB,BU_ID,AMOUNT_CURRENT,ENTRY_DATE,DUE_DATE,CURRENCY,GL_ACCOUNT,BILLING_ACCOUNT_ID,AMOUNT_CASH_GL,GL_CURRENCY,PAYMENT_SOURCE_ID,PAYMENT_SOURCE_ID_PUB" />
+                    <KeyValue key="BaseTable" value="CASHRECEIPTS_ALL" />
+                    <KeyValue key="BaseTableAlias" value="B" />
+                    <Node name="Attributes">
+                        <Node name="PAYMENT_CURRENCY_ID">
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.PAYMENT_CURRENCY" />
+                        </Node>
+                        <Node name="MIN_PAYMENT_AMOUNT">
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.CACHKAMT_PAY" />
+                            <KeyValue key="Operator" value="&gt;=" />
+                        </Node>
+                        <Node name="MAX_PAYMENT_AMOUNT">
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.CACHKAMT_PAY" />
+                            <KeyValue key="Operator" value="&lt;=" />
+                        </Node>
+                        <Node name="ENTRY_DATE_UNTIL">
+                            <KeyValue key="ConditionWhereClause"
+                                value="TRUNC(B.CARECDATE)" />
+                            <KeyValue key="Operator" value="&lt;=" />
+                        </Node>
+                        <Node name="REF_DATE_FROM">
+                            <KeyValue key="ConditionWhereClause"
+                                value="TRUNC(B.CACHKDATE)" />
+                            <KeyValue key="Operator" value="&gt;=" />
+                        </Node>
+                        <Node name="ENTRY_DATE_FROM">
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.CARECDATE" />
+                            <KeyValue key="Operator" value="&gt;=" />
+                        </Node>
+                        <Node name="CS_ID">
+                            <KeyValue key="SelectClause" value="B.CUSTOMER_ID" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.CUSTOMER_ID" />
+                        </Node>
+                        <Node name="CS_ID_PUB">
+                            <Node name="FromClauses">
+                                <KeyValue key="CUSTOMER_ALL C"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue
+                                        key="B.CUSTOMER_ID=C.CUSTOMER_ID(+)"
+                                        value="" />
+                                </Node>
+                                <Node name="OutputAttributes">
+                                    <KeyValue
+                                        key="B.CUSTOMER_ID=C.CUSTOMER_ID(+)"
+                                        value="" />
+                                </Node>
+                                <Node name="OutputAttributes">
+                                    <KeyValue key="B.CUSTOMER_ID=C.CUSTOMER_ID(+)" value=""/>
+                                </Node>
+                            </Node>
+                            <KeyValue key="SelectClause" value="C.CUSTNUM" />
+                            <KeyValue key="ConditionWhereClause" value="C.CUSTNUM" />
+                            <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        </Node>
+                        <Node name="OPEN_STATUS">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue
+                                        key="B.CACURAMT_PAY=B.CACHKAMT_PAY AND CACHKAMT_PAY&gt;0"
+                                        value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+                        <Node name="PARTLY_STATUS">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue
+                                        key="NVL(B.CACURAMT_PAY,B.CACHKAMT_PAY)&gt;0"
+                                        value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+                        <Node name="TRANS_CODE_PUB">
+                            <Node name="FromClauses">
+                                <KeyValue key="FIN_USECASE_TRANSACTION_VIEW A"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.CATYPE=A.TRANS_TYPE_ID"
+                                        value="" />
+                                    <KeyValue key="B.CAREASONCODE=A.REASONCODE"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="SelectClause" value="A.TRANSACTION_CODE_PUB" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="A.TRANSACTION_CODE_PUB" />
+                            <KeyValue key="Operator" value="IN" />
+
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                            <KeyValue key="SupportsCaseInsensitiveSearch"
+                                type="Boolean" value="false" />
+                        </Node>
+                        <Node name="REF_DATE_UNTIL">
+                            <KeyValue key="ConditionWhereClause"
+                                value="TRUNC(B.CACHKDATE)" />
+                            <KeyValue key="Operator" value="&lt;=" />
+                        </Node>
+                        <Node name="TRANSACTION_ID">
+                            <KeyValue key="SelectClause" value="B.CAXACT" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.CAXACT" />
+                        </Node>
+                        <Node name="TRANSACTION_REFNUM">
+                            <KeyValue key="SelectClause" value="B.CACHKNUM" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.CACHKNUM" />
+                        </Node>
+                        <Node name="BILLING_ACCOUNT_ID">
+                            <KeyValue key="SelectClause" value="B.BILLING_ACCOUNT_ID" />
+                            <KeyValue key="ConditionWhereClause" value="B.BILLING_ACCOUNT_ID" />
+                        </Node>
+                        <Node name="AMOUNT_DISCOUNT_PAY">
+                            <KeyValue key="SelectClause" value="B.CADISAMT_PAY" />
+                        </Node>
+                        <Node name="GL_ACCOUNT">
+                            <KeyValue key="SelectClause" value="B.CAGLCASH" />
+                        </Node>
+                        <Node name="PAYMENT_METHOD_ID">
+                            <KeyValue key="SelectClause" value="B.CAPAYMENT_MODE" />
+                        </Node>
+                        <Node name="PAYMENT_MODE_ID">
+                            <KeyValue key="SelectClause" value="B.PAYMENT_CONDITION_ID" />
+                        </Node>
+                        <Node name="TRANSACTION_DOCUMENT_NO">
+                            <KeyValue key="SelectClause" value="B.CADOCREFNUM" />
+                        </Node>
+                        <Node name="REF_DATE">
+                        <KeyValue key="SelectClause"
+                                value="B.CACHKDATE" />
+                        </Node>
+                        <Node name="AMOUNT_CASH_PAY">
+                            <KeyValue key="SelectClause" value="B.CACHKAMT_PAY" />
+                        </Node>
+                        <Node name="AMOUNT_CASH_GL">
+                            <KeyValue key="SelectClause" value="B.CACHKAMT_GL" />
+                        </Node>
+                        <Node name="PAYMENT_SOURCE_ID">
+                            <KeyValue key="SelectClause" value="B.PAYMENT_SOURCE_ID" />
+                        </Node>
+                        <Node name="PAYMENT_SOURCE_ID_PUB">
+                            <KeyValue key="SelectClause" value="PA.SHDES" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="PA.SHDES" />
+                        </Node>
+                        <Node name="PAYMENT_SOURCE_ID_PUB">
+                            <Node name="FromClauses">
+                                <KeyValue key="PAYMENT_SOURCE PA"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue
+                                        key="B.PAYMENT_SOURCE_ID=PA.PAYMENT_SOURCE_ID(+)"
+                                        value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+                        <Node name="BU_ID">
+                        <KeyValue key="SelectClause" value="B.BUSINESS_UNIT_ID" />
+                        <KeyValue key="ConditionWhereClause"
+                                value="B.BUSINESS_UNIT_ID" />
+                        <KeyValue key="Operator" value="IN" />
+                        </Node>
+                        <Node name="AMOUNT_CURRENT">
+                            <KeyValue key="SelectClause" value="B.CACURAMT_PAY" />
+                        </Node>
+                        <Node name="ENTRY_DATE">
+                            <KeyValue key="SelectClause" value="B.CARECDATE" />
+                        </Node>
+                        <Node name="DUE_DATE">
+                            <KeyValue key="SelectClause" value="B.CADUEDATE" />
+                        </Node>
+                        <Node name="CURRENCY">
+                            <KeyValue key="SelectClause" value="B.PAYMENT_CURRENCY" />
+                        </Node>
+                        <Node name="GL_CURRENCY">
+                            <KeyValue key="SelectClause" value="B.GL_CURRENCY" />
+                        </Node>
+                        <Node name="OPEN_ITEMS">
+                            <Node name="FromClauses">
+                                <KeyValue key="CASHDETAIL C, ORDERHDR_ALL D"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.CAXACT=C.CADXACT"
+                                        value="" />
+                                    <KeyValue key="C.CADOXACT=D.OHXACT"
+                                        value="" />
+                                    <KeyValue key="D.OHOPNAMT_DOC&lt;&gt;0"
+                                        value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+                        <Node name="TWO_PHASE_BILLING_LOCK_STATUS">
+                            <Node name="FromClauses">
+                                <KeyValue key="CASHDETAIL C, ORDERHDR_ALL D" value=""/>
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.CAXACT=C.CADXACT" value=""/>
+                                    <KeyValue key="C.CADOXACT=D.OHXACT" value=""/>
+                                    <KeyValue key="D.LOCKED IS NULL" value=""/>
+                                </Node>
+                            </Node>
+                        </Node>
+                        <Node name="CORRECTABLE">
+                            <Node name="FromClauses">
+                                <KeyValue key="CASHDETAIL C, ORDERHDR_ALL D" value=""/>
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="B.CAGLEXACT IS NULL" value=""/>
+                                    <KeyValue key="B.CAXACT=C.CADXACT" value=""/>
+                                    <KeyValue key="C.CADOXACT=D.OHXACT" value=""/>
+                                    <KeyValue key="D.OHSTATUS!='CO' OR (D.OHSTATUS='CO' AND D.OHOPNAMT_DOC=D.OHINVAMT_DOC)" value=""/>
+                                </Node>
+                            </Node>
+                        </Node>
+                        <Node name="ORDERBY">
+                            <KeyValue key="SelectClause" value="REFERENCE_DATE DESC" />
+                        </Node>
+                    </Node> <!-- end of Attributes -->
+                </Node><!-- end of FINANCIAL_TRANSACTION_SEARCHER -->
+
+                <Node name="PAYMENT_INSTRUCTION_SEARCHER">
+                    <KeyValue key="MaxResultSetSize" type="Integer"
+                        value="50" />
+                    <KeyValue key="DefaultResultSetSize" type="Integer"
+                        value="20" />
+                    <KeyValue key="DefaultNumberOfCharactersBeforeWildcard"
+                        type="Integer" value="0" />
+                    <KeyValue key="DefaultOutput"
+                        value="PAYMENT_INSTR_ID,PAYMENT_INSTR_ID_PUB,DESCRIPTION,MATURITY_DATE,PAYMENT_INSTR_STATUS,AMOUNT,PAY_METHOD_ID,CURRENCY_ID,BU_ID" />
+                    <KeyValue key="BaseTable" value="PAYMENT_PROPOSAL" />
+                    <KeyValue key="BaseTableAlias" value="B" />
+                    <Node name="Attributes">
+                        <Node name="BU_ID">
+                            <KeyValue key="SelectClause" value="B.BUSINESS_UNIT_ID" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.BUSINESS_UNIT_ID" />
+                        </Node>
+                        <Node name="PAYMENT_INSTR_ID">
+                            <KeyValue key="SelectClause" value="B.PAY_PROPOSAL_ID" />
+                        </Node>
+                        <Node name="PAYMENT_INSTR_ID_PUB">
+                            <KeyValue key="SelectClause" value="B.PAY_PROPOSAL_CODE" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.PAY_PROPOSAL_CODE" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+                        <Node name="DESCRIPTION">
+                            <KeyValue key="SelectClause" value="B.DESCRIPTION" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.DESCRIPTION" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+                        <Node name="MATURITY_DATE">
+                            <KeyValue key="SelectClause" value="B.MATURITY_DATE" />
+                        </Node>
+                        <Node name="MATURITY_DATE_FROM">
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.MATURITY_DATE" />
+                            <KeyValue key="Operator" value="&gt;=" />
+                        </Node>
+                        <Node name="MATURITY_DATE_UNTIL">
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.MATURITY_DATE" />
+                            <KeyValue key="Operator" value="&lt;=" />
+                        </Node>
+                        <Node name="PAYMENT_INSTR_STATUS">
+                            <KeyValue key="SelectClause" value="B.STATUS" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.STATUS" />
+                        </Node>
+                        <Node name="AMOUNT">
+                            <KeyValue key="SelectClause" value="B.TOTAL_AMOUNT" />
+                        </Node>
+                        <Node name="CURRENCY_ID">
+                            <KeyValue key="SelectClause" value="B.CURRENCY_ID" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.CURRENCY_ID" />
+                        </Node>
+                        <Node name="MIN_AMOUNT">
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.TOTAL_AMOUNT" />
+                            <KeyValue key="Operator" value="&gt;=" />
+                        </Node>
+                        <Node name="MAX_AMOUNT">
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.TOTAL_AMOUNT" />
+                            <KeyValue key="Operator" value="&lt;=" />
+                        </Node>
+                        <Node name="PAY_METHOD_ID">
+                            <KeyValue key="SelectClause" value="B.PAYMENT_METHOD" />
+                            <KeyValue key="ConditionWhereClause"
+                                value="B.PAYMENT_METHOD" />
+                        </Node>
+                        <Node name="EXT_DOCUMENT_CODE">
+                            <Node name="FromClauses">
+                                <KeyValue key="ORDERHDR_ALL O"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue
+                                        key="B.PAY_PROPOSAL_ID=O.PAYMENT_PROPOSAL_ID"
+                                        value="" />
+                                    <KeyValue key="O.OHSTATUS=&apos;II&apos;"
+                                        value="" />
+                                    <KeyValue key="O.OHOPNAMT_DOC&lt;0"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="ConditionWhereClause"
+                                value="O.OHEXTREFNUM" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+                        <Node name="CS_ID">
+                            <Node name="FromClauses">
+                                <KeyValue key="CUSTOMER_ALL C"
+                                    value="" />
+                                <KeyValue key="ORDERHDR_ALL O"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="C.CUSTOMER_ID=O.CUSTOMER_ID"
+                                        value="" />
+                                    <KeyValue
+                                        key="O.PAYMENT_PROPOSAL_ID=B.PAY_PROPOSAL_ID"
+                                        value="" />
+                                    <KeyValue key="O.OHSTATUS=&apos;II&apos;"
+                                        value="" />
+                                    <KeyValue key="O.OHOPNAMT_DOC&lt;0"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="ConditionWhereClause"
+                                value="C.CUSTOMER_ID" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+                        <Node name="CS_CODE">
+                            <Node name="FromClauses">
+                                <KeyValue key="CUSTOMER_ALL C"
+                                    value="" />
+                                <KeyValue key="ORDERHDR_ALL O"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="C.CUSTOMER_ID=O.CUSTOMER_ID"
+                                        value="" />
+                                    <KeyValue
+                                        key="O.PAYMENT_PROPOSAL_ID=B.PAY_PROPOSAL_ID"
+                                        value="" />
+                                    <KeyValue key="O.OHSTATUS=&apos;II&apos;"
+                                        value="" />
+                                    <KeyValue key="O.OHOPNAMT_DOC&lt;0"
+                                        value="" />
+                                    <KeyValue key="O.OHOPNAMT_DOC&lt;0"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="ConditionWhereClause"
+                                value="C.CUSTCODE" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+                        <Node name="CS_ID_PUB">
+                            <Node name="FromClauses">
+                                <KeyValue key="CUSTOMER_ALL C"
+                                    value="" />
+                                <KeyValue key="ORDERHDR_ALL O"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="C.CUSTOMER_ID=O.CUSTOMER_ID"
+                                        value="" />
+                                    <KeyValue
+                                        key="O.PAYMENT_PROPOSAL_ID=B.PAY_PROPOSAL_ID"
+                                        value="" />
+                                    <KeyValue key="O.OHSTATUS=&apos;II&apos;"
+                                        value="" />
+                                    <KeyValue key="O.OHOPNAMT_DOC&lt;0"
+                                        value="" />
+                                    <KeyValue key="O.OHOPNAMT_DOC&lt;0"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="ConditionWhereClause"
+                                value="C.CUSTNUM" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+                        <Node name="ADR_LNAME">
+                            <Node name="FromClauses">
+                                <KeyValue key="CCONTACT_ALL CC"
+                                    value="" />
+                                <KeyValue key="ORDERHDR_ALL O"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="CC.CUSTOMER_ID=O.CUSTOMER_ID"
+                                        value="" />
+                                    <KeyValue
+                                        key="O.PAYMENT_PROPOSAL_ID=B.PAY_PROPOSAL_ID"
+                                        value="" />
+                                    <KeyValue key="O.OHSTATUS=&apos;II&apos;"
+                                        value="" />
+                                    <KeyValue key="O.OHOPNAMT_DOC&lt;0"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="ConditionWhereClause"
+                                value="CC.CCLNAME" />
+                            <KeyValue key="SupportsCaseInsensitiveSearch"
+                                type="Boolean" value="true" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+                        <Node name="ADR_FNAME">
+                            <Node name="FromClauses">
+                                <KeyValue key="CCONTACT_ALL CC"
+                                    value="" />
+                                <KeyValue key="ORDERHDR_ALL O"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="CC.CUSTOMER_ID=O.CUSTOMER_ID"
+                                        value="" />
+                                    <KeyValue
+                                        key="O.PAYMENT_PROPOSAL_ID=B.PAY_PROPOSAL_ID"
+                                        value="" />
+                                    <KeyValue key="O.OHSTATUS=&apos;II&apos;"
+                                        value="" />
+                                    <KeyValue key="O.OHOPNAMT_DOC&lt;0"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="ConditionWhereClause"
+                                value="CC.CCFNAME" />
+                            <KeyValue key="SupportsCaseInsensitiveSearch"
+                                type="Boolean" value="true" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+                        <Node name="ADR_NAME">
+                            <Node name="FromClauses">
+                                <KeyValue key="CCONTACT_ALL CC"
+                                    value="" />
+                                <KeyValue key="ORDERHDR_ALL O"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="CC.CUSTOMER_ID=O.CUSTOMER_ID"
+                                        value="" />
+                                    <KeyValue
+                                        key="O.PAYMENT_PROPOSAL_ID=B.PAY_PROPOSAL_ID"
+                                        value="" />
+                                    <KeyValue key="O.OHSTATUS=&apos;II&apos;"
+                                        value="" />
+                                    <KeyValue key="O.OHOPNAMT_DOC&lt;0"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="ConditionWhereClause"
+                                value="CC.CCNAME" />
+                            <KeyValue key="SupportsCaseInsensitiveSearch"
+                                type="Boolean" value="true" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+                        <Node name="ADR_LNAMEMC">
+                            <Node name="FromClauses">
+                                <KeyValue key="CCONTACT_ALL CC"
+                                    value="" />
+                                <KeyValue key="ORDERHDR_ALL O"
+                                    value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="CC.CUSTOMER_ID=O.CUSTOMER_ID"
+                                        value="" />
+                                    <KeyValue
+                                        key="O.PAYMENT_PROPOSAL_ID=B.PAY_PROPOSAL_ID"
+                                        value="" />
+                                    <KeyValue key="O.OHSTATUS=&apos;II&apos;"
+                                        value="" />
+                                    <KeyValue key="O.OHOPNAMT_DOC&lt;0"
+                                        value="" />
+                                </Node>
+                            </Node>
+                            <KeyValue key="ConditionWhereClause"
+                                value="CC.CCLNAMEMC" />
+                            <KeyValue key="SupportsCaseInsensitiveSearch"
+                                type="Boolean" value="true" />
+                            <KeyValue key="SupportsWildcardSearch"
+                                type="Boolean" value="true" />
+                        </Node>
+                    </Node><!-- end of Attributes -->
+                </Node><!-- end of PAYMENT_INSTRUCTION_SEARCHER -->
+            </Node> <!-- end Searchers -->
+
+        </Node><!-- End of FMS Settings -->
+    </ComponentRegistry>

@@ -1,0 +1,65 @@
+# if helm install, and runInitialTehJob.onHelmInstall=true (default),  start the TEH initial job
+# OR
+# if helm upgrade, and runInitialTehJob.onHelmUpgrade=true (default is false!) start the TEH initial job
+{{if or (and (.Release.IsInstall) (eq .Values.runInitialTehJob.onHelmInstall true)) (and (.Release.IsUpgrade) (eq .Values.runInitialTehJob.onHelmUpgrade true))}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: eric-bss-eb-teh-pre-install-hook
+  labels:
+    app: eric-bss-eb-teh
+    chart: {{ template "eric-bss-eb-teh.chart" . }}
+    {{- include "eric-bss-eb-teh.kubernetesIoInfo" $ | nindent 4 }}
+    heritage: {{ .Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-teh.productInfo" $ | indent 4 }}
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}"
+      labels:
+        app: eric-bss-eb-teh
+        chart: {{ template "eric-bss-eb-teh.chart" . }}
+        {{- include "eric-bss-eb-teh.kubernetesIoInfo" $ | nindent 8 }}
+        heritage: {{ .Release.Service }}
+      annotations:
+      {{- include "eric-bss-eb-teh.productInfo" $ | indent 8 }}
+    spec:
+      securityContext:
+        {{- include "eric-bss-eb-teh.checkPodUserLoginData" $ | nindent 8 }}
+      {{- if .Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ .Chart.Name }}-sa
+      {{- end }}
+      restartPolicy: Never
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      containers:
+        - name: pre-install-job
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "pre-install-job" }}
+          image: "{{ template "eric-bss-eb-teh.registryUrl" $templDict }}/{{ template "eric-bss-eb-teh.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-teh.pullPolicy" $templDict }}
+          command: ["/bin/sh", "-c", "rm -rf /workdir/XREF/*"]
+          volumeMounts:
+          - name: xref-volume
+            mountPath: /workdir/XREF
+      {{- if $.Values.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.nodeSelector | nindent 8 }}
+      {{- else if $.Values.global.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if $.Values.affinity }}
+      affinity: {{ toYaml $.Values.affinity | nindent 8 }}
+      {{- else if $.Values.global.affinity }}
+      affinity: {{ toYaml $.Values.global.affinity | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: xref-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-xref
+{{ end }}

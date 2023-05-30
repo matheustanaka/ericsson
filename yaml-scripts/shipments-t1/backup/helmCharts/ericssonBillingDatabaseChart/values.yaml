@@ -1,0 +1,338 @@
+# Default values for dmfChart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  imageCredentials:
+    # Conditional, if path names are used in the image registry: Defines the repository path for images pulled from the image registry for every container.
+    # Can also be set per container for the subcharts. Must be set in combination with the URL to locate the images in the image registry.
+    # repoPath: proj-eric-bss-eb-released  # example value
+    repoPath:
+    # Optional: Defines the pull policy used when images are pulled on helm install/upgrade.
+    # Setting it to "Always" may impact operational performance on helm install/upgrade.
+    # pullPolicy: IfNotPresent      # Default value
+    pullPolicy: IfNotPresent
+    registry:
+      # Mandatory: Defines the URL to the image registry for every container.
+      # Can also be set per container for the subcharts.
+      # url: localhost:32000  # example value
+      url:
+    # Optional: Defines the image pull secret used when images are pulled on helm install/upgrade.
+    # The secret is used to authenticate against the Docker registry.
+    pullSecret:
+
+  # To constrain the pods to particular nodes.
+  # Example:
+  #  nodeSelector:
+  #    kubernetes.io/hostname: "<hostname>"
+  nodeSelector: {}
+
+  # To constrain pods with specific labels. (E.g. Availability zone)
+  affinity: {}
+  # Example:
+  # affinity:
+  #   nodeAffinity:
+  #     preferredDuringSchedulingIgnoredDuringExecution:
+  #     - weight: 50
+  #       preference:
+  #         matchExpressions:
+  #         - key: topology.kubernetes.io/zone
+  #           operator: In
+  #           values:
+  #           - us-east-1a
+  #     - weight: 50
+  #       preference:
+  #         matchExpressions:
+  #         - key: topology.kubernetes.io/zone
+  #           operator: In
+  #           values:
+  #           - us-east-1b
+
+  # The mode in which the system is deployed.
+  # Possible values: eb, ebdmp (default)
+  useDeploymentMode: "ebdmp"
+
+  # Mandatory: The UID to run the entrypoint of the container processes of the pods.
+  #            If not set, this value defaults in Kubernetes to the user specified in the image metadata.
+  #            Therefore the parameter is mandatory so that all of EB uses the same UID.
+  # runAsUser: 1001  # example value as integer
+  runAsUser: null
+  # Mandatory: The GID to run the entrypoint of the container process. Uses runtime default if unset.
+  #            May also be set in SecurityContext. If set in both SecurityContext and PodSecurityContext,
+  #            the value specified in SecurityContext takes precedence for that container.
+  # runAsGroup: 1002  # example value as integer
+  runAsGroup: null
+  # Mandatory: A special supplemental group that applies to all containers in a pod.
+  # fsGroup: 1003  # example value as integer
+  fsGroup: null
+
+  ### Global configuration related to Database connection: ###
+  # Global configuration related to Oracle secure connection using TLS.
+  # These independent settings have to be changed consistently:
+  # 1) Set switch databaseTls to true
+  # 2) Specify cipherSuites for according to the Oracle version, otherwise the default is used.
+  #    - Please see the Oracle database security guide for recommended cipher suites
+  # 3) Use TCPS instead of TCP
+  # 4) Specify secure DB connect parameters
+  databaseTls:
+    # Switch to enable databaseTls (secure communication between database client and database server).
+    # enable: true  # example value
+    enable: true
+    # Conditional, if databaseTls.enable=true: Name of the encryption key file
+    # trustedCertificateKey: "cwallet.sso"  # example value
+    trustedCertificateKey: "cwallet.sso"
+    # Conditional, if databaseTls.enable=true: Name of the secret file of the database client.
+    # clientSecretName: "eric-bss-eb-wallet-secret"  # example value
+    clientSecretName: "eric-bss-eb-wallet-secret"
+    clientAdminSecretName: "eric-bss-eb-wallet-admin-secret"
+    # Conditional, if databaseTls.enable=true: The cipherSuites to be used.
+    # cipherSuites: "(TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA)"  # example value
+    cipherSuites: "(TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA)"
+    # Conditional, if databaseTls.enable=true: The protocol to be used. The protocol can be TCPS for secure connection, or TCP for insecure connection.
+    # protocol: "TCPS"  # example value
+    protocol: "TCPS"
+    #Conditional, if databaseTls.enable=true: Specify the distinguished name (DN) of the bscs database server.
+    # sslServerCertDNbscsDb: "C=US,ST=Washington,L=Seattle,O=Amazon.com,OU=RDS,CN=u2dev01U.ckvgupmjow0d.us-east-1.rds.amazonaws.com"  # example value for AWS where u2dev01U.ckvgupmjow0d.us-east-1.rds.amazonaws.com is the endpoint of the RDS database
+    sslServerCertDNbscsDb: ""
+    #Conditional, if databaseTls.enable=true: Specify the distinguished name (DN) of the rtx database server.
+    # sslServerCertDNrtxDb: "C=US,ST=Washington,L=Seattle,O=Amazon.com,OU=RDS,CN=u2dev01U.ckvgupmjow0d.us-east-1.rds.amazonaws.com"  # example value for AWS where u2dev01U.ckvgupmjow0d.us-east-1.rds.amazonaws.com is the endpoint of the RDS database
+    sslServerCertDNrtxDb: ""
+
+  # Specify secure database connection parameters:
+  # When using the Oracle TLS secure connection, the secure database configuration can be identified by sending:
+  # tnsping < secureDatabaseConnectString  >.
+  # (The secureDatabaseConnectString is the Name of the database connection defined in tnsnames.ora.)
+  # This shows the DBName, host and port that needs to be entered in the lines below.
+  # Note that secure and insecure database connections use different ports for the same database.
+
+  ### Connection parameters for main database. ###
+  # Mandatory: Name of the main database.
+  # bscsDb: "bscsdb"  # example value
+  bscsDb: ""
+  # Mandatory: Domain name (FQDN) or IP address of the main database server.
+  # databaseServerName: "myDatabaseServer.myDomain.com"  # example value
+  # databaseServerName: "10.120.135.122"  # example value
+  databaseServerName: ""
+  # Mandatory: Port on the main database server.
+  # databaseServerPort: "1921"  # example value
+  databaseServerPort: ""
+  # Optional: Additional ports on the main database server for additional listeners (e.g. for RAC).
+  #  - port: "1921"  # example value
+  #  - port: "1922"  # example value
+  databaseServerAdditionalPorts:
+  #  - port: ""
+  # Optional: Default tablespace name
+  # dbDataTablespace: "DATA" # example value
+  dbDataTablespace: "DATA"
+  # Optional: Temporary tablespace name
+  # dbTempTablespace: "TEMP" # example value
+  dbTempTablespace: "TEMP"
+
+  # Mandatory: Define when a separate RTXDB is used. [true, false]
+  separateRTXDB: false
+
+  ### Conditional: Connection parameters for UDR database. ###
+  # Same conditionality and parameter description as for main database.
+  # WARNING: IF separateRTXDB is set to true, please set the following values
+  rtxDb: ""
+  rtxDatabaseServerName: ""
+  rtxDatabaseServerPort: ""
+  rtxDbAdditionalPorts:
+
+  # Mandatory: Database master/bootstraping user name for dmf chart
+  # dbSystemUserName: "SYSTEM"  # example value
+  dbSystemUserName: ""
+
+  # Optional: Switch to turn on the "Automatically creation of Ericsson Billing database bootstraping users"
+  #           when creating the DMF repository using helm install (option runDmfCreateScript=true ).
+  #           When not set, the bootstraping users must be created manually as described in the CPI
+  #           by executing script MIGC_create_ebSystemUser_1_sys.sql
+  #           and the listed parameter below are not required.
+  #
+  #           The bootstraping users are
+  #           - the dbSystemUser defined in dbSystemUserName and identified by dbSystemPassword or dbSystemCertificateDN
+  #           - the Password-Manager-User defined in dbAdminUser and identified by dbAdminPassword .
+  #
+  # Possible value: rds - create System-User with privileges specific for the Amazon RDS database
+  # Possible value: ora - create System-User with privileges specific for the Oracle database.
+  #
+  # Following conditional parameter are required for this functionality:
+  #           - dbMasterUserName
+  #           - dbMasterPassword
+  #           - dbMasterDatabaseBscsDb
+  #           - dbMasterDatabaseRtxDb
+  #           - dbSystemPassword or dbSystemCertificateDN
+  #           - dbAdminUser
+  #           - dbAdminPassword
+  # After the bootstraping users are created all these parameters can be omitted.
+  createDbSystemUser: ""
+
+  # Conditional: When createDbSystemUser is defined. Password of the dbSystemUser, required by the "Automatically creation of Ericsson Billing database bootstraping users"
+  # This parameter is only used when the DMF repository is initially installed (and option runDmfCreateScript is set to true)
+  # and can be removed when this task is completed.
+  # When the dbSystemUser is identified by CertificateDN instead of a password,
+  # use parameter dbSystemCertificateDN instead.
+  # Attention: By using database passwords in a configuration file like this, the application is used in an insecure mode!
+  #            Database passwords in configuration files can be avoided by executing some SQL scripts like MIGC_create_ebSystemUser_1_sys.sql manually and
+  #            by using Oracle Wallets for the authentication of database users.
+  #            Please refer to the documentation for details.
+  dbSystemPassword: ""
+
+  # Conditional: When createDbSystemUser is defined. CertificateDN of the dbSystemUser, required by the "Automatically creation of Ericsson Billing database bootstraping users"
+  # This parameter is only used when the DMF repository is initially installed (and option runDmfCreateScript is set to true)
+  # and can be removed when this task is completed.
+  # When the dbSystemUser is identified by password, do not set this parameter.
+  dbSystemCertificateDN: ""
+
+  # Conditional: When createDbSystemUser is defined. Name of the dbMaster-User, required by the "Automatically creation of Ericsson Billing database bootstraping users"
+  # The DBA like user must have sufficient privileges to create the EB dbSystemUser and grant the needed privileges to this user.
+  # In Amazon RDS this can be the original master/admin user that comes with RDS when the database instance is created.
+  # In common Oracle databases this can be the original SYS user that comes with Oracle database.
+  # This user is only used when the DMF repository is initially installed (and option runDmfCreateScript is set to true)
+  # and can be removed when this task is completed.
+  dbMasterUserName: ""
+
+  # Conditional: When createDbSystemUser is defined. Password of the dbMaster-User, required by the "Automatically creation of Ericsson Billing database bootstraping users"
+  # This password is only used when the DMF repository is initially installed (and option runDmfCreateScript is set to true)
+  # and can be removed when this task is completed.
+  # Attention: By using database passwords in a configuration file like this, the application is used in an insecure mode!
+  #            Database passwords in configuration files can be avoided by executing some SQL scripts like MIGC_create_ebSystemUser_1_sys.sql manually and
+  #            by using Oracle Wallets for the authentication of database users.
+  #            Please refer to the documentation for details.
+  dbMasterPassword: ""
+
+  # Conditional: When createDbSystemUser is defined. Connect string to the BSCSDB of the dbMaster-User, required by the "Automatically creation of Ericsson Billing database bootstraping users"
+  # This parameter is only used when the DMF repository is initially installed (and option runDmfCreateScript is set to true)
+  # and can be removed when this task is completed.
+  dbMasterDatabaseBscsDb: ""
+
+  # Conditional: When createDbSystemUser is defined. Connect string to the RTXDB of the dbMaster-User, required by the "Automatically creation of Ericsson Billing database bootstraping users"
+  # This parameter is only used when the DMF repository is initially installed (and option runDmfCreateScript is set to true)
+  # and can be removed when this task is completed.
+  dbMasterDatabaseRtxDb: ""
+
+  # Conditional: When createDbSystemUser is defined. Password-Manager-Database-User, required by the "Automatically creation of Ericsson Billing database bootstraping users"
+  # User that administers the Ericsson Billing application machine user. Calls the PWDMGR application.
+  # This parameter is only used when the DMF repository is initially installed (and option runDmfCreateScript is set to true)
+  # and can be removed when this task is completed.
+  dbAdminUser: ""
+
+  # Conditional: When createDbSystemUser is defined. Password-Manager-Database-Password, required by the "Automatically creation of Ericsson Billing database bootstraping users"
+  # Password of the user that administers the Ericsson Billing application machine user. Calls the PWDMGR application.
+  # This parameter is only used when the DMF repository is initially installed (and option runDmfCreateScript is set to true)
+  # and can be removed when this task is completed.
+  # Attention: By using database passwords in a configuration file like this, the application is used in an insecure mode!
+  #            Database passwords in configuration files can be avoided by executing some SQL scripts like MIGC_create_ebSystemUser_1_sys.sql manually and
+  #            by using Oracle Wallets for the authentication of database users.
+  #            Please refer to the documentation for details.
+  dbAdminPassword: ""
+
+  ### TNSNAMES parameters for BSCS and UDR databases. ###
+  # Mandatory: Configuration of tnsnames.ora for BSCS and RTX databases
+  tnsnames:
+    bscsdb: |-
+      (DESCRIPTION=
+        (SDU=8192)
+        (ADDRESS_LIST=
+          (ADDRESS= (PROTOCOL={{ .Values.global.databaseTls.protocol }})
+                    (Host={{ .Values.global.databaseServerName }})
+                    (Port={{ .Values.global.databaseServerPort }})
+          )
+        )
+        (CONNECT_DATA= (SERVICE_NAME={{ .Values.global.bscsDb }}))
+        (SECURITY= (SSL_SERVER_CERT_DN="{{.Values.global.databaseTls.sslServerCertDNbscsDb}}")(MY_WALLET_DIRECTORY=/oratns/secret)(SSL_SERVER_DN_MATCH=yes))
+      )
+    bscsdb_admin: |-
+      (DESCRIPTION=
+        (SDU=8192)
+        (ADDRESS_LIST=
+          (ADDRESS= (PROTOCOL={{ .Values.global.databaseTls.protocol }})
+                    (Host={{ .Values.global.databaseServerName }})
+                    (Port={{ .Values.global.databaseServerPort }})
+          )
+        )
+        (CONNECT_DATA= (SERVICE_NAME={{ .Values.global.bscsDb }}))
+        (SECURITY= (SSL_SERVER_CERT_DN="{{.Values.global.databaseTls.sslServerCertDNbscsDb}}")(MY_WALLET_DIRECTORY=/oratns/secret/admin)(SSL_SERVER_DN_MATCH=yes))
+      )
+    rtxdb: |-
+      (DESCRIPTION=
+        (SDU=8192)
+        (ADDRESS_LIST=
+          (ADDRESS= (PROTOCOL={{ .Values.global.databaseTls.protocol }})
+                    (Host={{ .Values.global.rtxDatabaseServerName }})
+                    (Port={{ .Values.global.rtxDatabaseServerPort }})
+          )
+        )
+        (CONNECT_DATA= (SERVICE_NAME={{ .Values.global.rtxDb }}))
+        (SECURITY= (SSL_SERVER_CERT_DN="{{.Values.global.databaseTls.sslServerCertDNrtxDb}}")(MY_WALLET_DIRECTORY=/oratns/secret)(SSL_SERVER_DN_MATCH=yes))
+      )
+    rtxdb_admin: |-
+      (DESCRIPTION=
+        (SDU=8192)
+        (ADDRESS_LIST=
+          (ADDRESS= (PROTOCOL={{ .Values.global.databaseTls.protocol }})
+                    (Host={{ .Values.global.rtxDatabaseServerName }})
+                    (Port={{ .Values.global.rtxDatabaseServerPort }})
+          )
+        )
+        (CONNECT_DATA= (SERVICE_NAME={{ .Values.global.rtxDb }}))
+        (SECURITY= (SSL_SERVER_CERT_DN="{{.Values.global.databaseTls.sslServerCertDNrtxDb}}")(MY_WALLET_DIRECTORY=/oratns/secret/admin)(SSL_SERVER_DN_MATCH=yes))
+      )
+
+  ### SQLNET parameters for BSCS and UDR databases. ###
+  # Mandatory: Configuration of minimum sqlnet.ora
+  sqlnet:
+    ora: |-
+      NAMES.DIRECTORY_PATH=(tnsnames,ezconnect)
+      SQLNET.ALLOWED_LOGON_VERSION_SERVER=11
+      # secure connection part
+      SQLNET.AUTHENTICATION_SERVICES={{.Values.global.databaseTls.protocol}}
+      SSL_CIPHER_SUITES={{.Values.global.databaseTls.cipherSuites}}
+      WALLET_LOCATION=(SOURCE=(METHOD=FILE)(METHOD_DATA=(DIRECTORY=/oratns/secret/admin)))
+      # Possible values for SSL_VERSION: undetermined, 1.0, 1.1, 1.2. Version "3.0" does not work and must not be used.
+      SSL_VERSION=1.2
+      # Autologin via Passwords or Certificate DN and Secure External Password Store
+      SSL_CLIENT_AUTHENTICATION = ON
+      # Autologin via Passwords and Secure External Password Store
+      SQLNET.WALLET_OVERRIDE = TRUE
+      # Autologin via Certificate DN and Secure External Password Store
+      # SQLNET.WALLET_OVERRIDE = FALSE
+      # Security, verify DN in the security clauses in tnsnames.ora
+      SSL_SERVER_DN_MATCH=TRUE
+      # Security, in case main database users are identified via SSL and Certificate_DN
+      # That would require that the wallet in /oratns/secret/admin was created with the Certificate-DN of the SystemUser user
+      SQLNET.AUTHENTICATION_SERVICES= (TCPS)
+
+  # Mandatory: Local time zone used for time conversions.
+  # timezone: "CET"  # example value
+  timezone: "UTC"
+
+  # Mandatory: NLS language used for the conversion to and from the database character set.
+  # nlsLang: "_.WE8ISO8859P15"  # example value
+  nlsLang: "_.WE8ISO8859P15"
+
+  # RBAC
+  # Global configuration related to role-based access control (RBAC):
+  rbac:
+    # Create service accounts [true,false]
+    sa_roles_create: true  # example value
+
+  # DMF
+  # Global configuration related to DMF:
+  # The create script (preinstall hook) fails if the DMF schema is already installed.
+  # Set to 'false' to skip the execution of the create script.
+  runDmfCreateScript: false
+  runDmfInstallScript: false
+  # Standard EB database scripts are copied to {eric-bss-eb-pvc-dbscripts}/{shipment-version}/database
+  # *on every installation*. Do not edit these files, they may be overwritten. If you need to edit DB scripts,
+  # make a copy of the entire /database directory to {eric-bss-eb-pvc-dbscripts}/{YOUR-version}/database
+  # and change this value to {YOUR-version}
+  # With parameter runCopyDBScripts the copying of standard EB database scripts to {eric-bss-eb-pvc-dbscripts}/{shipment-version}/database
+  # can be turned off, default is on.
+  runCopyDBScripts: true
+
+# ADP rule GL-D1121-033: All charts must be enabled by default.
+# If a chart shall not be installed, the user can override these settings in a my_values.yaml file.
+eric-bss-eb-dmf-networkpolicies: {enabled: true}
+eric-bss-eb-dmf-rbac: {enabled: true}
+eric-bss-eb-dmf: {enabled: true}

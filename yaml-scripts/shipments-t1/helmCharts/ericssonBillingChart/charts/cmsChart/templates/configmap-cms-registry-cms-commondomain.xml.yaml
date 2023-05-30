@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-cms-commondomain.xml
+data:
+  Registry_CMS_CommonDomain.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+
+    <ComponentRegistry>
+
+        <Node name="CMS Settings">
+                <Node name="ListDB">
+            <!-- begin 00336631 TIN-->
+                    <KeyValue key="MaxResultSetSize" type="Integer" value="1000" comment="the maximum possible number of result elements"/>
+                </Node>
+                <KeyValue key="ExtendedContributionListParameterHandling" type="Boolean" value="false" comment="Switch on or off extended contribution list parameter handling. If false, PARAMETER.READ will deliver the contribution list parameter values (old logic).If true (new logic) an empty list will be returned by PARAMETER.READ for contribution list parameters with purpose (C). Contributed contracts might be retrieved via CONTRACTS.SEARCH passing family id and additional search criteria."/>
+                <KeyValue key="FREE_STATUS_ROWNUM" value="500" comment="Setting the result count of SERVICE_PARAMETER_RESOURCES.READ output when PRM_STATUS is set as F (Free)"/>
+                <KeyValue key="DefaultCustomerPromotionsSearchCount" type="Integer" value="50" comment="The default search count value for the CUSTOMER_PROMOTIONS.SEARCH"/>
+
+        </Node><!-- CMS Settings -->
+
+    </ComponentRegistry>

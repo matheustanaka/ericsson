@@ -1,0 +1,26 @@
+# Default values for workflowsChart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+imageCredentials:
+  workflows-job:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+
+images:
+  workflows-job:
+    name: "eric-bss-eb-workflows"
+    tag: "22.15.12"
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+workflowFiles:
+  backupNoticeMessageEnable: false

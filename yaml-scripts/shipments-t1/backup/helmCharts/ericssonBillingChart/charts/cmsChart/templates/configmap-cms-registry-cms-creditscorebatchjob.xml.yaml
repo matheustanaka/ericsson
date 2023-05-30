@@ -1,0 +1,503 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-cms-creditscorebatchjob.xml
+data:
+  Registry_CMS_CreditScoreBatchJob.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+
+    <ComponentRegistry>
+
+        <Node name="CMS Settings">
+
+            <!-- ============================================================================================== -->
+            <!--                    SEARCH_FOR_CREDITSCORE_BATCH_JOB_SAMPLES                                     -->
+            <!-- ============================================================================================== -->
+
+            <Node name="SEARCH_FOR_CREDITSCORE_BATCH_JOB_SAMPLES">
+                    <KeyValue key="MaxResultSetSize" type="Integer" value="500"/>
+                    <KeyValue key="DefaultResultSetSize" type="Integer" value="20"/>
+                    <KeyValue key="DefaultNumberOfCharactersBeforeWildcard" type="Integer" value="0"/>
+                    <KeyValue key="DefaultOutput" value="CUSTOMER_ID,CUSTNUM,CUSTCODE,CCFNAME,CCLNAME,CCSTREET,CCSTREETNO,CCCITY,CSTYPE,BUSINESS_UNIT_ID,BUSINESS_UNIT_SHDES"/>
+                    <KeyValue key="BaseTable" value="CUSTOMER_ALL"/>
+                    <KeyValue key="BaseTableAlias" value="C"/>
+
+                       <Node name="DefaultClauses">
+                           <Node name="FromClauses">
+                               <KeyValue key="CUSTOMER_ALL C" value=""/>
+                               <KeyValue key="BILLCYCLE_ACTUAL_VIEW B" value=""/>
+                            <KeyValue key="CCONTACT_ALL CC" value=""/>
+                            <KeyValue key="BUSINESS_UNIT BU" value=""/>
+
+                           </Node>
+                         <Node name="WhereClauses">
+
+                             <KeyValue key="C.CUSTOMER_ID = B.CUSTOMER_ID" value="" />
+                             <KeyValue key="C.CUSTOMER_ID = CC.CUSTOMER_ID AND CC.CCBILL = 'X'" value="" />
+
+                             <KeyValue key="C.BUSINESS_UNIT_ID = BU.BUSINESS_UNIT_ID" value="" />
+
+                             <!-- Only Flat subscribers or large account member will be returned. -->
+                             <KeyValue key="C.CSLEVEL = 0 OR (C.CSLEVEL &gt;= 1 AND C.CSCREDIT_SUPPORTED = 'Y')" value="" />
+
+                             <!-- Customer must not be a dealer -->
+                             <KeyValue key="C.CUSTOMER_ID IN (SELECT CR.CUSTOMER_ID FROM CUSTOMER_ROLE CR, PARTY_ROLE PR WHERE CR.PARTY_ROLE_ID = PR.PARTY_ROLE_ID AND PR.SHNAME &lt;&gt; 'Dealer' AND PR.SHNAME &lt;&gt; 'ServiceProvider')" value="" />
+
+                        </Node>
+                    </Node>
+
+                    <Node name="Attributes">
+
+                        <Node name="CUSTOMER_ID">
+                            <KeyValue key="SelectClause" value="C.CUSTOMER_ID"/>
+                        </Node>
+
+                        <Node name="CUSTNUM">
+                            <KeyValue key="SelectClause" value="C.CUSTNUM"/>
+                        </Node>
+
+                        <Node name="CUSTCODE">
+                            <KeyValue key="SelectClause" value="C.CUSTCODE"/>
+                        </Node>
+
+                        <Node name="CCFNAME">
+                            <KeyValue key="SelectClause" value="CC.CCFNAME"/>
+                        </Node>
+
+                        <Node name="CCLNAME">
+                            <KeyValue key="SelectClause" value="CC.CCLNAME"/>
+                        </Node>
+
+                        <Node name="CCSTREET">
+                            <KeyValue key="SelectClause" value="CC.CCSTREET"/>
+                        </Node>
+
+                        <Node name="CCSTREETNO">
+                            <KeyValue key="SelectClause" value="CC.CCSTREETNO"/>
+                        </Node>
+
+                        <Node name="CCCITY">
+                            <KeyValue key="SelectClause" value="CC.CCCITY"/>
+                        </Node>
+
+                        <Node name="CSTYPE">
+                            <KeyValue key="SelectClause" value="C.CSTYPE"/>
+                        </Node>
+
+                        <Node name="BUSINESS_UNIT_SHDES">
+                            <KeyValue key="SelectClause" value="BU.DESCRIPTION"/>
+                        </Node>
+
+                        <Node name="BUSINESS_UNIT_ID">
+                            <KeyValue key="SelectClause" value="BU.BUSINESS_UNIT_ID"/>
+                            <KeyValue key="ConditionWhereClause" value="C.BUSINESS_UNIT_ID"/>
+                        </Node>
+
+                        <Node name="CS_STATUS">
+                            <KeyValue key="ConditionWhereClause" value="C.CSTYPE"/>
+                        </Node>
+
+                        <Node name="BILL_CYCLE">
+                            <KeyValue key="SelectClause" value="B.BILLCYCLE"/>
+                            <KeyValue key="ConditionWhereClause" value="B.BILLCYCLE"/>
+                        </Node>
+
+                        <!-- Search for customers that have contract with given criteria: Rate plan or Market or Service -->
+                        <Node name="RPCODE">
+                            <KeyValue key="ConditionWhereClause" value="#RPCODE IN  (SELECT CO.TMCODE FROM CONTRACT_ALL CO WHERE CO.CUSTOMER_ID = C.CUSTOMER_ID )"/>
+                            <KeyValue key="Operator" value="NOP" />
+                        </Node>
+
+                        <Node name="SCCODE">
+                            <KeyValue key="ConditionWhereClause" value="#SCCODE IN  (SELECT CO2.SCCODE FROM CONTRACT_ALL CO2 WHERE CO2.CUSTOMER_ID = C.CUSTOMER_ID )"/>
+                            <KeyValue key="Operator" value="NOP" />
+                        </Node>
+
+                        <Node name="SNCODE">
+                            <KeyValue key="ConditionWhereClause" value="#SNCODE IN  (SELECT CS.SNCODE FROM CONTRACT_ALL CO3, CONTRACT_SERVICE CS WHERE CO3.CUSTOMER_ID = C.CUSTOMER_ID AND CO3.CO_ID = CS.CO_ID )"/>
+                            <KeyValue key="Operator" value="NOP" />
+                        </Node>
+                        <!-- End of contract settings -->
+
+                        <Node name="PRG_CODE">
+                            <KeyValue key="ConditionWhereClause" value="C.PRGCODE"/>
+                        </Node>
+
+                        <Node name="HAS_SCORE">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="C.CSCREDIT_DATE IS NULL AND C.CSCREDIT_SCORE IS NULL" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+
+                        <Node name="LAST_SCORE_DATE_TO">
+                            <KeyValue key="ConditionWhereClause" value="C.CSCREDIT_DATE"/>
+                            <KeyValue key="Operator" value="&lt;="/>
+                        </Node>
+
+                        <Node name="FLAT_CUSTOMERS_ONLY">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="C.CSLEVEL = 0" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+
+                        <Node name="LA_MEMBERS_ONLY">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="C.CSLEVEL &gt; 0 AND C.CSCREDIT_SUPPORTED = 'Y'" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+
+                        <!-- Exclude large account root members -->
+                        <Node name="EXCLUDE_LA_ROOT_MEMBERS">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="C.CSLEVEL = 0 OR (C.CSLEVEL &gt; 1 AND C.CSCREDIT_SUPPORTED = 'Y')" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+
+                        <!-- Include large account payment responsible -->
+                        <Node name="INCLUDE_LA_PAYMENT_RESPONSIBLES_ONLY">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="(C.CSLEVEL = 0 OR C.CSLEVEL = 1) OR (C.CSLEVEL &gt; 1 AND C.PAYMNTRESP = 'X' AND C.CSCREDIT_SUPPORTED = 'Y')" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+
+                        <!-- Exclude large account payment responsible -->
+                        <Node name="EXCLUDE_LA_PAYMENT_RESPONSIBLES">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="(C.CSLEVEL = 0 OR C.CSLEVEL = 1) OR (C.CSLEVEL &gt; 1 AND  C.PAYMNTRESP &lt;&gt; 'X' AND C.CSCREDIT_SUPPORTED = 'Y')" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+
+                        <Node name="SCORE_STRING_VALUES_IN">
+                            <KeyValue key="ConditionWhereClause" value="C.CSCREDIT_SCORE"/>
+                            <KeyValue key="Operator" value="IN"/>
+                        </Node>
+
+                        <Node name="SCORE_NUM_VALUES_FROM">
+                            <KeyValue key="ConditionWhereClause" value="TO_NUMBER(C.CSCREDIT_SCORE) &gt;= #SCORE_NUM_VALUES_FROM"/>
+                            <KeyValue key="Operator" value="NOP" />
+                        </Node>
+
+                        <Node name="SCORE_NUM_VALUES_TO">
+                            <KeyValue key="ConditionWhereClause" value="TO_NUMBER(C.CSCREDIT_SCORE) &lt;= #SCORE_NUM_VALUES_TO"/>
+                            <KeyValue key="Operator" value="NOP" />
+                        </Node>
+
+                    </Node><!-- Attributes -->
+
+            </Node>
+
+            <!-- ============================================================================================== -->
+            <!--                    SEARCH_FOR_CREDITSCORE_BATCH_JOB_ITEMS                                       -->
+            <!-- ============================================================================================== -->
+
+            <Node name="SEARCH_FOR_CREDITSCORE_BATCH_JOB_ITEMS">
+
+                    <!-- The search size was set with integer maximum range, so it its guaranteed that all job items will be returned -->
+                    <KeyValue key="MaxResultSetSize" type="Integer" value="2147483647"/>
+                    <KeyValue key="DefaultResultSetSize" type="Integer" value="2147483646"/>
+
+                    <KeyValue key="DefaultNumberOfCharactersBeforeWildcard" type="Integer" value="0"/>
+                    <KeyValue key="DefaultOutput" value="CUSTOMER_ID,CUSTNUM"/>
+                    <KeyValue key="BaseTable" value="CUSTOMER_ALL"/>
+                    <KeyValue key="BaseTableAlias" value="C"/>
+
+                       <Node name="DefaultClauses">
+                           <Node name="FromClauses">
+                               <KeyValue key="CUSTOMER_ALL C" value=""/>
+                               <KeyValue key="BILLCYCLE_ACTUAL_VIEW B" value=""/>
+                           </Node>
+                         <Node name="WhereClauses">
+
+                             <KeyValue key="C.CUSTOMER_ID = B.CUSTOMER_ID" value="" />
+
+                             <!-- Only Flat subscribers or large account member will be returned. -->
+                             <KeyValue key="C.CSLEVEL = 0 OR (C.CSLEVEL &gt;= 1 AND C.CSCREDIT_SUPPORTED = 'Y')" value="" />
+
+                             <!-- Customer must not be a dealer -->
+                             <KeyValue key="C.CUSTOMER_ID IN (SELECT CR.CUSTOMER_ID FROM CUSTOMER_ROLE CR, PARTY_ROLE PR WHERE CR.PARTY_ROLE_ID = PR.PARTY_ROLE_ID AND PR.SHNAME &lt;&gt; 'Dealer' AND PR.SHNAME &lt;&gt; 'ServiceProvider')" value="" />
+
+                        </Node>
+                    </Node>
+
+                    <Node name="Attributes">
+
+                        <Node name="CUSTOMER_ID">
+                            <KeyValue key="SelectClause" value="C.CUSTOMER_ID"/>
+                        </Node>
+
+                        <Node name="CUSTNUM">
+                            <KeyValue key="SelectClause" value="C.CUSTNUM"/>
+                        </Node>
+
+                        <Node name="BUSINESS_UNIT_ID">
+                            <KeyValue key="ConditionWhereClause" value="C.BUSINESS_UNIT_ID"/>
+                        </Node>
+
+                        <Node name="CS_STATUS">
+                            <KeyValue key="ConditionWhereClause" value="C.CSTYPE"/>
+                        </Node>
+
+                        <Node name="BILL_CYCLE">
+                            <KeyValue key="SelectClause" value="B.BILLCYCLE"/>
+                            <KeyValue key="ConditionWhereClause" value="B.BILLCYCLE"/>
+                        </Node>
+
+                        <!-- Search for customers that have contract with given criteria: Rate plan or Market or Service -->
+                        <Node name="RPCODE">
+                            <KeyValue key="ConditionWhereClause" value="#RPCODE IN  (SELECT CO.TMCODE FROM CONTRACT_ALL CO WHERE CO.CUSTOMER_ID = C.CUSTOMER_ID )"/>
+                            <KeyValue key="Operator" value="NOP" />
+                        </Node>
+
+                        <Node name="SCCODE">
+                            <KeyValue key="ConditionWhereClause" value="#SCCODE IN  (SELECT CO2.SCCODE FROM CONTRACT_ALL CO2 WHERE CO2.CUSTOMER_ID = C.CUSTOMER_ID )"/>
+                            <KeyValue key="Operator" value="NOP" />
+                        </Node>
+
+                        <Node name="SNCODE">
+                            <KeyValue key="ConditionWhereClause" value="#SNCODE IN  (SELECT CS.SNCODE FROM CONTRACT_ALL CO3, CONTRACT_SERVICE CS WHERE CO3.CUSTOMER_ID = C.CUSTOMER_ID AND CO3.CO_ID = CS.CO_ID )"/>
+                            <KeyValue key="Operator" value="NOP" />
+                        </Node>
+                        <!-- End of contract settings -->
+
+                        <Node name="PRG_CODE">
+                            <KeyValue key="ConditionWhereClause" value="C.PRGCODE"/>
+                        </Node>
+
+                        <Node name="HAS_SCORE">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="C.CSCREDIT_DATE IS NULL AND C.CSCREDIT_SCORE IS NULL" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+
+                        <Node name="LAST_SCORE_DATE_TO">
+                            <KeyValue key="ConditionWhereClause" value="C.CSCREDIT_DATE"/>
+                            <KeyValue key="Operator" value="&lt;="/>
+                        </Node>
+
+                        <Node name="FLAT_CUSTOMERS_ONLY">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="C.CSLEVEL = 0" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+
+                        <Node name="LA_MEMBERS_ONLY">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="C.CSLEVEL &gt; 0 AND C.CSCREDIT_SUPPORTED = 'Y'" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+
+                        <!-- Exclude large account root members -->
+                        <Node name="EXCLUDE_LA_ROOT_MEMBERS">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="C.CSLEVEL = 0 OR (C.CSLEVEL &gt; 1 AND C.CSCREDIT_SUPPORTED = 'Y')" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+
+                        <!-- Include large account payment responsible -->
+                        <Node name="INCLUDE_LA_PAYMENT_RESPONSIBLES_ONLY">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="(C.CSLEVEL = 0 OR C.CSLEVEL = 1) OR (C.CSLEVEL &gt; 1 AND C.PAYMNTRESP = 'X' AND C.CSCREDIT_SUPPORTED = 'Y')" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+
+                        <!-- Exclude large account payment responsible -->
+                        <Node name="EXCLUDE_LA_PAYMENT_RESPONSIBLES">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="(C.CSLEVEL = 0 OR C.CSLEVEL = 1) OR (C.CSLEVEL &gt; 1 AND  C.PAYMNTRESP &lt;&gt; 'X' AND C.CSCREDIT_SUPPORTED = 'Y')" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+
+                        <Node name="SCORE_STRING_VALUES_IN">
+                            <KeyValue key="ConditionWhereClause" value="C.CSCREDIT_SCORE"/>
+                            <KeyValue key="Operator" value="IN"/>
+                        </Node>
+
+                        <Node name="SCORE_NUM_VALUES_FROM">
+                            <KeyValue key="ConditionWhereClause" value="TO_NUMBER(C.CSCREDIT_SCORE) &gt;= #SCORE_NUM_VALUES_FROM"/>
+                            <KeyValue key="Operator" value="NOP" />
+                        </Node>
+
+                        <Node name="SCORE_NUM_VALUES_TO">
+                            <KeyValue key="ConditionWhereClause" value="TO_NUMBER(C.CSCREDIT_SCORE) &lt;= #SCORE_NUM_VALUES_TO"/>
+                            <KeyValue key="Operator" value="NOP" />
+                        </Node>
+
+                    </Node><!-- Attributes -->
+
+            </Node>
+
+            <!-- ============================================================================================== -->
+            <!--                    COUNT_CREDITSCORE_BATCH_JOB_ITEMS                                           -->
+            <!-- ============================================================================================== -->
+
+            <Node name="COUNT_CREDITSCORE_BATCH_JOB_ITEMS">
+                    <KeyValue key="MaxResultSetSize" type="Integer" value="1"/>
+                    <KeyValue key="DefaultResultSetSize" type="Integer" value="1"/>
+                    <KeyValue key="DefaultNumberOfCharactersBeforeWildcard" type="Integer" value="0"/>
+                    <KeyValue key="DefaultOutput" value="IMPACTED_ITEMS"/>
+                    <KeyValue key="BaseTable" value="CUSTOMER_ALL"/>
+                    <KeyValue key="BaseTableAlias" value="C"/>
+
+                       <Node name="DefaultClauses">
+                           <Node name="FromClauses">
+                               <KeyValue key="CUSTOMER_ALL C" value=""/>
+                               <KeyValue key="BILLCYCLE_ACTUAL_VIEW B" value=""/>
+                           </Node>
+                         <Node name="WhereClauses">
+
+                             <KeyValue key="C.CUSTOMER_ID = B.CUSTOMER_ID" value="" />
+
+                             <!-- Only Flat subscribers or large account member will be returned. -->
+                             <KeyValue key="C.CSLEVEL = 0 OR (C.CSLEVEL &gt;= 1 AND C.CSCREDIT_SUPPORTED = 'Y')" value="" />
+
+                             <!-- Customer must not be a dealer -->
+                             <KeyValue key="C.CUSTOMER_ID IN (SELECT CR.CUSTOMER_ID FROM CUSTOMER_ROLE CR, PARTY_ROLE PR WHERE CR.PARTY_ROLE_ID = PR.PARTY_ROLE_ID AND PR.SHNAME &lt;&gt; 'Dealer' AND PR.SHNAME &lt;&gt; 'ServiceProvider')" value="" />
+
+                        </Node>
+                    </Node>
+
+                    <Node name="Attributes">
+
+                        <Node name="IMPACTED_ITEMS">
+                            <KeyValue key="SelectClause" value="COUNT(1)"/>
+                        </Node>
+
+                        <Node name="BUSINESS_UNIT_ID">
+                            <KeyValue key="ConditionWhereClause" value="C.BUSINESS_UNIT_ID"/>
+                        </Node>
+
+                        <Node name="CS_STATUS">
+                            <KeyValue key="ConditionWhereClause" value="C.CSTYPE"/>
+                        </Node>
+
+                        <Node name="BILL_CYCLE">
+                            <KeyValue key="SelectClause" value="B.BILLCYCLE"/>
+                            <KeyValue key="ConditionWhereClause" value="B.BILLCYCLE"/>
+                        </Node>
+
+                        <!-- Search for customers that have contract with given criteria: Rate plan or Market or Service -->
+                        <Node name="RPCODE">
+                            <KeyValue key="ConditionWhereClause" value="#RPCODE IN  (SELECT CO.TMCODE FROM CONTRACT_ALL CO WHERE CO.CUSTOMER_ID = C.CUSTOMER_ID )"/>
+                            <KeyValue key="Operator" value="NOP" />
+                        </Node>
+
+                        <Node name="SCCODE">
+                            <KeyValue key="ConditionWhereClause" value="#SCCODE IN  (SELECT CO2.SCCODE FROM CONTRACT_ALL CO2 WHERE CO2.CUSTOMER_ID = C.CUSTOMER_ID )"/>
+                            <KeyValue key="Operator" value="NOP" />
+                        </Node>
+
+                        <Node name="SNCODE">
+                            <KeyValue key="ConditionWhereClause" value="#SNCODE IN  (SELECT CS.SNCODE FROM CONTRACT_ALL CO3, CONTRACT_SERVICE CS WHERE CO3.CUSTOMER_ID = C.CUSTOMER_ID AND CO3.CO_ID = CS.CO_ID )"/>
+                            <KeyValue key="Operator" value="NOP" />
+                        </Node>
+                        <!-- End of contract settings -->
+
+                        <Node name="PRG_CODE">
+                            <KeyValue key="ConditionWhereClause" value="C.PRGCODE"/>
+                        </Node>
+
+                        <Node name="HAS_SCORE">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="C.CSCREDIT_DATE IS NULL AND C.CSCREDIT_SCORE IS NULL" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+
+                        <Node name="LAST_SCORE_DATE_TO">
+                            <KeyValue key="ConditionWhereClause" value="C.CSCREDIT_DATE"/>
+                            <KeyValue key="Operator" value="&lt;="/>
+                        </Node>
+
+                        <Node name="FLAT_CUSTOMERS_ONLY">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="C.CSLEVEL = 0" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+
+                        <Node name="LA_MEMBERS_ONLY">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="C.CSLEVEL &gt; 0 AND C.CSCREDIT_SUPPORTED = 'Y'" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+
+                        <!-- Exclude large account root members -->
+                        <Node name="EXCLUDE_LA_ROOT_MEMBERS">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="C.CSLEVEL = 0 OR (C.CSLEVEL &gt; 1 AND C.CSCREDIT_SUPPORTED = 'Y')" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+
+                        <!-- Include large account payment responsible -->
+                        <Node name="INCLUDE_LA_PAYMENT_RESPONSIBLES_ONLY">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="(C.CSLEVEL = 0 OR C.CSLEVEL = 1) OR (C.CSLEVEL &gt; 1 AND C.PAYMNTRESP = 'X' AND C.CSCREDIT_SUPPORTED = 'Y')" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+
+                        <!-- Exclude large account payment responsible -->
+                        <Node name="EXCLUDE_LA_PAYMENT_RESPONSIBLES">
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="(C.CSLEVEL = 0 OR C.CSLEVEL = 1) OR (C.CSLEVEL &gt; 1 AND  C.PAYMNTRESP &lt;&gt; 'X' AND C.CSCREDIT_SUPPORTED = 'Y')" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+
+                        <Node name="SCORE_STRING_VALUES_IN">
+                            <KeyValue key="ConditionWhereClause" value="C.CSCREDIT_SCORE"/>
+                            <KeyValue key="Operator" value="IN"/>
+                        </Node>
+
+                        <Node name="SCORE_NUM_VALUES_FROM">
+                            <KeyValue key="ConditionWhereClause" value="TO_NUMBER(C.CSCREDIT_SCORE) &gt;= #SCORE_NUM_VALUES_FROM"/>
+                            <KeyValue key="Operator" value="NOP" />
+                        </Node>
+
+                        <Node name="SCORE_NUM_VALUES_TO">
+                            <KeyValue key="ConditionWhereClause" value="TO_NUMBER(C.CSCREDIT_SCORE) &lt;= #SCORE_NUM_VALUES_TO"/>
+                            <KeyValue key="Operator" value="NOP" />
+                        </Node>
+
+                    </Node><!-- Attributes -->
+
+            </Node>
+
+
+
+        </Node>
+    </ComponentRegistry>
+

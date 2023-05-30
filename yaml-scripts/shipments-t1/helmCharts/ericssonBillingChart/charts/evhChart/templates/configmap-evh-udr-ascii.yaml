@@ -1,0 +1,2114 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-evh-udr-ascii.ini
+data:
+  udr_ascii.ini: |
+    , ; % # !
+    T 1
+    P 1
+    1    99  64     // BASIC_CALL_TYPE_INFO          - CALL_TYPE
+    2    7   5      // XFILE_DISCOUNT                - AMOUNT
+    3    7   437    //                               - CURRENCY_PKEY
+    4    7   8      //                               - GROSS_IND
+    5    10  9      // S_P_NUMBER                    - ADDRESS
+    6    10  487    //                               - NUMBERING_PLAN_PKEY
+    7    10  11     //                               - TYPE_OF_NUMBER
+    8    10  436    //                               - NETWORK_PKEY
+    9    10  167    //                               - USER_PROFILE_ID
+    10   11  9      // S_P_PORT                      - ADDRESS
+    11   11  487    //                               - NUMBERING_PLAN_PKEY
+    12   11  167    //                               - USER_PROFILE_ID
+    13   12  18     // S_P_EQUIPMENT                 - NUMBER
+    14   12  19     //                               - CLASS_MARK
+    15   15  9      // NET_ELEMENT                   - ADDRESS
+    16   15  487    //                               - NUMBERING_PLAN_PKEY
+    17   15  436    //                               - NETWORK_PKEY
+    18   15  167    //                               - USER_PROFILE_ID
+    19   16  87     // NET_ELEMENT_ENTITY            - NET_ELEMENT_ENTITY
+    20   17  9      // O_P_NUMBER                    - ADDRESS
+    21   17  487    //                               - NUMBERING_PLAN_PKEY
+    22   17  11     //                               - TYPE_OF_NUMBER
+    23   17  292    //                               - APN_SPLIT_SUPPORTED_IND
+    24   17  13     //                               - CLIR
+    25   17  167    //                               - USER_PROFILE_ID
+    26   107 163    // OPTIMAL_ROUTING               - OPTIMAL_ROUTING_IND
+    27   18  9      // T_P_NUMBER                    - ADDRESS
+    28   18  487    //                               - NUMBERING_PLAN_PKEY
+    29   18  11     //                               - TYPE_OF_NUMBER
+    30   22  24     // SCU_INFO                      - PRIORITY_CODE
+    31   22  25     //                               - CHARGING_POINT
+    32   24  1      // SCU_OTHER_TIMESTAMP           - TIMESTAMP
+    33   24  2      //                               - TIME_OFFSET
+    34   25  9      // CAMEL_MSC_ADDRESS             - ADDRESS
+    35   25  487    //                               - NUMBERING_PLAN_PKEY
+    36   25  11     //                               - TYPE_OF_NUMBER
+    37   36  60     // RECORD_IDENTIFICATION         - CALL_ID
+    38   36  59     //                               - UDR_FILE_ID
+    39   36  62     //                               - CDR_ID
+    40   39  79     // CAMEL_DETAIL                  - CAMEL_REFERENCE_NUMBER
+    41   39  80     //                               - CAMEL_SERVICE_KEY
+    42   39  81     //                               - CAMEL_SERVICE_LEVEL
+    43   39  107    //                               - CAMEL_CALL_HANDLING_IND
+    44   39  108    //                               - CAMEL_CF_INDICATOR
+    45   39  562    //                               - CAMEL_MODIFICATION_LIST
+    46   78  111    // SIM_TOOLKIT                   - SIM_TOOLKIT_IND
+    47   95  9      // O_P_NORMED_NUMBER             - ADDRESS
+    48   95  487    //                               - NUMBERING_PLAN_PKEY
+    49   220 791    // CONTROL_DATA                  - RECORD_AGE
+    50   118 1      // INITIAL_START_TIME            - TIMESTAMP
+    51   118 2      //                               - TIME_OFFSET
+    52   65  436    // HOME_NETWORK                  - NETWORK_PKEY
+    53   65  83     //                               - COUNTRY_CODE
+    P 2
+    'Sec'    19
+    'Byte'   44
+    'Msg'    46
+    'Byte'   72
+    'Byte'   74
+    'Ev'     84
+    1    1   64     // CALL_TYPE_INFO                - CALL_TYPE
+    2    1   70     //                               - XFILE_IND
+    3    1   110    //                               - XFILE_CALL_TYPE
+    4    1   162    //                               - NETWORK_INIT_CONTEXT_IND
+    5    20  78     // CAUSE_FOR_FORWARD             - CAUSE_FOR_FORWARD
+    6    2   1      // START_TIME                    - TIMESTAMP
+    7    2   2      //                               - TIME_OFFSET
+    8    3   72     // SERVICE                       - ACTION_CODE
+    9    3   73     //                               - VAS_CODE
+    10   3   74     //                               - SPEECH_VERSION_USED
+    11   3   75     //                               - SPEECH_VERSION_REQUESTED
+    12   3   543    //                               - GUARANTEED_BIT_RATE
+    13   3   544    //                               - MAX_BIT_RATE
+    14   3   545    //                               - HSCSD_IND
+    15   3   546    //                               - IMS_SIGNALLING_CONTEXT
+    16   3   542    //                               - USER_PROTOCOL_INDICATOR
+    17   46  440    // TARIFF_INFO                   - SN_PKEY
+    18   5   3      // DURATION                      - VOLUME
+    // Constant 'Sec' for DURATION - UOM_PKEY
+    20   6   5      // XFILE_CHARGE                  - AMOUNT
+    21   6   8      //                               - GROSS_IND
+    22   6   6      //                               - TAX
+    23   6   437    //                               - CURRENCY_PKEY
+    24   13  9      // S_P_LOCATION                  - ADDRESS
+    25   13  487    //                               - NUMBERING_PLAN_PKEY
+    26   19  9      // ROUTING_NUMBER                - ADDRESS
+    27   19  487    //                               - NUMBERING_PLAN_PKEY
+    28   19  11     //                               - TYPE_OF_NUMBER
+    29   19  167    //                               - USER_PROFILE_ID
+    30   21  20     // CUG_INFO                      - CUG_INTERLOCK_CODE
+    31   21  21     //                               - CUG_INDEX
+    32   21  22     //                               - CUG_TYPE
+    33   26  26     // TECHNICAL_INFO                - REVERSE_CHARGING_IND
+    34   26  31     //                               - TERMINATION_IND
+    35   26  144    //                               - HOME_TERMINATED_IND
+    36   26  435    //                               - SC_PKEY
+    37   26  29     //                               - PARTIAL_REC_TYPE
+    38   34  90     // REMARK                        - REMARK
+    39   35  5      // XFILE_IC_CHARGE               - AMOUNT
+    40   35  6      //                               - TAX
+    41   35  437    //                               - CURRENCY_PKEY
+    42   35  8      //                               - GROSS_IND
+    43   37  3      // DATA_VOLUME                   - VOLUME
+    // Constant 'Byte' for DATA_VOLUME - UOM_PKEY
+    45   38  3      // MESSAGES                      - VOLUME
+    // Constant 'Msg' for MESSAGES - UOM_PKEY
+    47   79  9      // CAMEL_DESTINATION             - ADDRESS
+    48   79  487    //                               - NUMBERING_PLAN_PKEY
+    49   79  11     //                               - TYPE_OF_NUMBER
+    50   79  292    //                               - APN_SPLIT_SUPPORTED_IND
+    51   79  167    //                               - USER_PROFILE_ID
+    52   80  9      // CAMEL_SERVER_ADDRESS          - ADDRESS
+    53   80  487    //                               - NUMBERING_PLAN_PKEY
+    54   80  11     //                               - TYPE_OF_NUMBER
+    55   80  167    //                               - USER_PROFILE_ID
+    71   84  3      // UPLINK_VOLUME                 - VOLUME
+    // Constant 'Byte' for UPLINK_VOLUME - UOM_PKEY
+    73   85  3      // DOWNLINK_VOLUME               - VOLUME
+    // Constant 'Byte' for DOWNLINK_VOLUME - UOM_PKEY
+    75   86  115    // HSCSD_INFO                    - FNUR
+    76   86  116    //                               - AIUR
+    77   86  117    //                               - CHANNELS_MAX
+    78   86  118    //                               - CODING_ACC
+    79   86  119    //                               - CODING_USED
+    80   86  120    //                               - CHANNELS_USED
+    81   86  121    //                               - INIT_PARTY
+    83   98  3      // EVENT                         - VOLUME
+    // Constant 'Ev' for EVENT - UOM_PKEY
+    85   113 5      // XFILE_BASE_CHARGE             - AMOUNT
+    86   113 6      //                               - TAX
+    87   113 437    //                               - CURRENCY_PKEY
+    88   113 8      //                               - GROSS_IND
+    89   114 9      // RECIPIENT_NETWORK             - ADDRESS
+    90   114 487    //                               - NUMBERING_PLAN_PKEY
+    91   117 178    // VPN_INFO                      - VPN_CALL_TYPE
+    140  27  33     // LDC_INFO                      - CALL_MODE_FLAG
+    141  27  452    //                               - CONTRACT_PKEY
+    142  27  796    //                               - HOME_NET_IND
+    143  97  9      // NORMED_ROUTED_NUMBER          - ADDRESS
+    144  97  487    //                               - NUMBERING_PLAN_PKEY
+    145  116 9      // VPN_NUMBER                    - ADDRESS
+    146  116 487    //                               - NUMBERING_PLAN_PKEY
+    153  492 452    // LEC_INFO                      - CONTRACT_PKEY
+    154  492 796    //                               - HOME_NET_IND
+
+    T 2
+    P 1
+    1    99  64     // BASIC_CALL_TYPE_INFO          - CALL_TYPE
+    2    7   5      // XFILE_DISCOUNT                - AMOUNT
+    3    7   437    //                               - CURRENCY_PKEY
+    4    7   8      //                               - GROSS_IND
+    5    10  9      // S_P_NUMBER                    - ADDRESS
+    6    10  487    //                               - NUMBERING_PLAN_PKEY
+    7    10  11     //                               - TYPE_OF_NUMBER
+    8    10  436    //                               - NETWORK_PKEY
+    9    10  167    //                               - USER_PROFILE_ID
+    10   11  9      // S_P_PORT                      - ADDRESS
+    11   11  487    //                               - NUMBERING_PLAN_PKEY
+    12   11  167    //                               - USER_PROFILE_ID
+    13   12  18     // S_P_EQUIPMENT                 - NUMBER
+    14   12  19     //                               - CLASS_MARK
+    15   15  9      // NET_ELEMENT                   - ADDRESS
+    16   15  487    //                               - NUMBERING_PLAN_PKEY
+    17   15  436    //                               - NETWORK_PKEY
+    18   15  167    //                               - USER_PROFILE_ID
+    19   16  87     // NET_ELEMENT_ENTITY            - NET_ELEMENT_ENTITY
+    20   17  9      // O_P_NUMBER                    - ADDRESS
+    21   17  487    //                               - NUMBERING_PLAN_PKEY
+    22   17  11     //                               - TYPE_OF_NUMBER
+    23   17  292    //                               - APN_SPLIT_SUPPORTED_IND
+    24   17  13     //                               - CLIR
+    25   17  167    //                               - USER_PROFILE_ID
+    26   107 163    // OPTIMAL_ROUTING               - OPTIMAL_ROUTING_IND
+    27   18  9      // T_P_NUMBER                    - ADDRESS
+    28   18  487    //                               - NUMBERING_PLAN_PKEY
+    29   18  11     //                               - TYPE_OF_NUMBER
+    30   22  24     // SCU_INFO                      - PRIORITY_CODE
+    31   22  25     //                               - CHARGING_POINT
+    32   24  1      // SCU_OTHER_TIMESTAMP           - TIMESTAMP
+    33   24  2      //                               - TIME_OFFSET
+    34   25  9      // CAMEL_MSC_ADDRESS             - ADDRESS
+    35   25  487    //                               - NUMBERING_PLAN_PKEY
+    36   25  11     //                               - TYPE_OF_NUMBER
+    37   36  60     // RECORD_IDENTIFICATION         - CALL_ID
+    38   36  59     //                               - UDR_FILE_ID
+    39   36  62     //                               - CDR_ID
+    40   39  79     // CAMEL_DETAIL                  - CAMEL_REFERENCE_NUMBER
+    41   39  80     //                               - CAMEL_SERVICE_KEY
+    42   39  81     //                               - CAMEL_SERVICE_LEVEL
+    43   39  107    //                               - CAMEL_CALL_HANDLING_IND
+    44   39  108    //                               - CAMEL_CF_INDICATOR
+    45   39  562    //                               - CAMEL_MODIFICATION_LIST
+    46   78  111    // SIM_TOOLKIT                   - SIM_TOOLKIT_IND
+    47   95  9      // O_P_NORMED_NUMBER             - ADDRESS
+    48   95  487    //                               - NUMBERING_PLAN_PKEY
+    49   220 791    // CONTROL_DATA                  - RECORD_AGE
+    50   118 1      // INITIAL_START_TIME            - TIMESTAMP
+    51   118 2      //                               - TIME_OFFSET
+    52   65  436    // HOME_NETWORK                  - NETWORK_PKEY
+    53   65  83     //                               - COUNTRY_CODE
+    P 2
+    'Sec'    19
+    'Byte'   44
+    'Msg'    46
+    'Byte'   72
+    'Byte'   74
+    'Ev'     84
+    1    1   64     // CALL_TYPE_INFO                - CALL_TYPE
+    2    1   70     //                               - XFILE_IND
+    3    1   110    //                               - XFILE_CALL_TYPE
+    4    1   162    //                               - NETWORK_INIT_CONTEXT_IND
+    5    20  78     // CAUSE_FOR_FORWARD             - CAUSE_FOR_FORWARD
+    6    2   1      // START_TIME                    - TIMESTAMP
+    7    2   2      //                               - TIME_OFFSET
+    8    3   72     // SERVICE                       - ACTION_CODE
+    9    3   73     //                               - VAS_CODE
+    10   3   74     //                               - SPEECH_VERSION_USED
+    11   3   75     //                               - SPEECH_VERSION_REQUESTED
+    12   3   543    //                               - GUARANTEED_BIT_RATE
+    13   3   544    //                               - MAX_BIT_RATE
+    14   3   545    //                               - HSCSD_IND
+    15   3   546    //                               - IMS_SIGNALLING_CONTEXT
+    16   3   542    //                               - USER_PROTOCOL_INDICATOR
+    17   46  440    // TARIFF_INFO                   - SN_PKEY
+    18   5   3      // DURATION                      - VOLUME
+    // Constant 'Sec' for DURATION - UOM_PKEY
+    20   6   5      // XFILE_CHARGE                  - AMOUNT
+    21   6   8      //                               - GROSS_IND
+    22   6   6      //                               - TAX
+    23   6   437    //                               - CURRENCY_PKEY
+    24   13  9      // S_P_LOCATION                  - ADDRESS
+    25   13  487    //                               - NUMBERING_PLAN_PKEY
+    26   19  9      // ROUTING_NUMBER                - ADDRESS
+    27   19  487    //                               - NUMBERING_PLAN_PKEY
+    28   19  11     //                               - TYPE_OF_NUMBER
+    29   19  167    //                               - USER_PROFILE_ID
+    30   21  20     // CUG_INFO                      - CUG_INTERLOCK_CODE
+    31   21  21     //                               - CUG_INDEX
+    32   21  22     //                               - CUG_TYPE
+    33   26  26     // TECHNICAL_INFO                - REVERSE_CHARGING_IND
+    34   26  31     //                               - TERMINATION_IND
+    35   26  144    //                               - HOME_TERMINATED_IND
+    36   26  435    //                               - SC_PKEY
+    37   26  29     //                               - PARTIAL_REC_TYPE
+    38   34  90     // REMARK                        - REMARK
+    39   35  5      // XFILE_IC_CHARGE               - AMOUNT
+    40   35  6      //                               - TAX
+    41   35  437    //                               - CURRENCY_PKEY
+    42   35  8      //                               - GROSS_IND
+    43   37  3      // DATA_VOLUME                   - VOLUME
+    // Constant 'Byte' for DATA_VOLUME - UOM_PKEY
+    45   38  3      // MESSAGES                      - VOLUME
+    // Constant 'Msg' for MESSAGES - UOM_PKEY
+    47   79  9      // CAMEL_DESTINATION             - ADDRESS
+    48   79  487    //                               - NUMBERING_PLAN_PKEY
+    49   79  11     //                               - TYPE_OF_NUMBER
+    50   79  292    //                               - APN_SPLIT_SUPPORTED_IND
+    51   79  167    //                               - USER_PROFILE_ID
+    52   80  9      // CAMEL_SERVER_ADDRESS          - ADDRESS
+    53   80  487    //                               - NUMBERING_PLAN_PKEY
+    54   80  11     //                               - TYPE_OF_NUMBER
+    55   80  167    //                               - USER_PROFILE_ID
+    71   84  3      // UPLINK_VOLUME                 - VOLUME
+    // Constant 'Byte' for UPLINK_VOLUME - UOM_PKEY
+    73   85  3      // DOWNLINK_VOLUME               - VOLUME
+    // Constant 'Byte' for DOWNLINK_VOLUME - UOM_PKEY
+    75   86  115    // HSCSD_INFO                    - FNUR
+    76   86  116    //                               - AIUR
+    77   86  117    //                               - CHANNELS_MAX
+    78   86  118    //                               - CODING_ACC
+    79   86  119    //                               - CODING_USED
+    80   86  120    //                               - CHANNELS_USED
+    81   86  121    //                               - INIT_PARTY
+    83   98  3      // EVENT                         - VOLUME
+    // Constant 'Ev' for EVENT - UOM_PKEY
+    85   113 5      // XFILE_BASE_CHARGE             - AMOUNT
+    86   113 6      //                               - TAX
+    87   113 437    //                               - CURRENCY_PKEY
+    88   113 8      //                               - GROSS_IND
+    89   114 9      // RECIPIENT_NETWORK             - ADDRESS
+    90   114 487    //                               - NUMBERING_PLAN_PKEY
+    91   117 178    // VPN_INFO                      - VPN_CALL_TYPE
+    140  27  33     // LDC_INFO                      - CALL_MODE_FLAG
+    141  27  452    //                               - CONTRACT_PKEY
+    142  27  796    //                               - HOME_NET_IND
+    143  97  9      // NORMED_ROUTED_NUMBER          - ADDRESS
+    144  97  487    //                               - NUMBERING_PLAN_PKEY
+    145  116 9      // VPN_NUMBER                    - ADDRESS
+    146  116 487    //                               - NUMBERING_PLAN_PKEY
+    153  492 452    // LEC_INFO                      - CONTRACT_PKEY
+    154  492 796    //                               - HOME_NET_IND
+
+    T 3
+    P 1
+    1    99  64     // BASIC_CALL_TYPE_INFO          - CALL_TYPE
+    2    7   5      // XFILE_DISCOUNT                - AMOUNT
+    3    7   437    //                               - CURRENCY_PKEY
+    4    7   8      //                               - GROSS_IND
+    5    10  9      // S_P_NUMBER                    - ADDRESS
+    6    10  487    //                               - NUMBERING_PLAN_PKEY
+    7    10  11     //                               - TYPE_OF_NUMBER
+    8    10  436    //                               - NETWORK_PKEY
+    9    10  167    //                               - USER_PROFILE_ID
+    10   11  9      // S_P_PORT                      - ADDRESS
+    11   11  487    //                               - NUMBERING_PLAN_PKEY
+    12   11  167    //                               - USER_PROFILE_ID
+    13   12  18     // S_P_EQUIPMENT                 - NUMBER
+    14   12  19     //                               - CLASS_MARK
+    15   15  9      // NET_ELEMENT                   - ADDRESS
+    16   15  487    //                               - NUMBERING_PLAN_PKEY
+    17   15  436    //                               - NETWORK_PKEY
+    18   15  167    //                               - USER_PROFILE_ID
+    19   16  87     // NET_ELEMENT_ENTITY            - NET_ELEMENT_ENTITY
+    20   17  9      // O_P_NUMBER                    - ADDRESS
+    21   17  487    //                               - NUMBERING_PLAN_PKEY
+    22   17  11     //                               - TYPE_OF_NUMBER
+    23   17  292    //                               - APN_SPLIT_SUPPORTED_IND
+    24   17  13     //                               - CLIR
+    25   17  167    //                               - USER_PROFILE_ID
+    26   107 163    // OPTIMAL_ROUTING               - OPTIMAL_ROUTING_IND
+    27   18  9      // T_P_NUMBER                    - ADDRESS
+    28   18  487    //                               - NUMBERING_PLAN_PKEY
+    29   18  11     //                               - TYPE_OF_NUMBER
+    30   22  24     // SCU_INFO                      - PRIORITY_CODE
+    31   22  25     //                               - CHARGING_POINT
+    32   24  1      // SCU_OTHER_TIMESTAMP           - TIMESTAMP
+    33   24  2      //                               - TIME_OFFSET
+    34   25  9      // CAMEL_MSC_ADDRESS             - ADDRESS
+    35   25  487    //                               - NUMBERING_PLAN_PKEY
+    36   25  11     //                               - TYPE_OF_NUMBER
+    37   36  60     // RECORD_IDENTIFICATION         - CALL_ID
+    38   36  59     //                               - UDR_FILE_ID
+    39   36  62     //                               - CDR_ID
+    40   39  79     // CAMEL_DETAIL                  - CAMEL_REFERENCE_NUMBER
+    41   39  80     //                               - CAMEL_SERVICE_KEY
+    42   39  81     //                               - CAMEL_SERVICE_LEVEL
+    43   39  107    //                               - CAMEL_CALL_HANDLING_IND
+    44   39  108    //                               - CAMEL_CF_INDICATOR
+    45   39  562    //                               - CAMEL_MODIFICATION_LIST
+    46   78  111    // SIM_TOOLKIT                   - SIM_TOOLKIT_IND
+    47   95  9      // O_P_NORMED_NUMBER             - ADDRESS
+    48   95  487    //                               - NUMBERING_PLAN_PKEY
+    49   220 791    // CONTROL_DATA                  - RECORD_AGE
+    50   118 1      // INITIAL_START_TIME            - TIMESTAMP
+    51   118 2      //                               - TIME_OFFSET
+    52   65  436    // HOME_NETWORK                  - NETWORK_PKEY
+    53   65  83     //                               - COUNTRY_CODE
+    P 2
+    'Sec'    19
+    'Byte'   44
+    'Msg'    46
+    'Byte'   72
+    'Byte'   74
+    'Ev'     84
+    1    1   64     // CALL_TYPE_INFO                - CALL_TYPE
+    2    1   70     //                               - XFILE_IND
+    3    1   110    //                               - XFILE_CALL_TYPE
+    4    1   162    //                               - NETWORK_INIT_CONTEXT_IND
+    5    20  78     // CAUSE_FOR_FORWARD             - CAUSE_FOR_FORWARD
+    6    2   1      // START_TIME                    - TIMESTAMP
+    7    2   2      //                               - TIME_OFFSET
+    8    3   72     // SERVICE                       - ACTION_CODE
+    9    3   73     //                               - VAS_CODE
+    10   3   74     //                               - SPEECH_VERSION_USED
+    11   3   75     //                               - SPEECH_VERSION_REQUESTED
+    12   3   543    //                               - GUARANTEED_BIT_RATE
+    13   3   544    //                               - MAX_BIT_RATE
+    14   3   545    //                               - HSCSD_IND
+    15   3   546    //                               - IMS_SIGNALLING_CONTEXT
+    16   3   542    //                               - USER_PROTOCOL_INDICATOR
+    17   46  440    // TARIFF_INFO                   - SN_PKEY
+    18   5   3      // DURATION                      - VOLUME
+    // Constant 'Sec' for DURATION - UOM_PKEY
+    20   6   5      // XFILE_CHARGE                  - AMOUNT
+    21   6   8      //                               - GROSS_IND
+    22   6   6      //                               - TAX
+    23   6   437    //                               - CURRENCY_PKEY
+    24   13  9      // S_P_LOCATION                  - ADDRESS
+    25   13  487    //                               - NUMBERING_PLAN_PKEY
+    26   19  9      // ROUTING_NUMBER                - ADDRESS
+    27   19  487    //                               - NUMBERING_PLAN_PKEY
+    28   19  11     //                               - TYPE_OF_NUMBER
+    29   19  167    //                               - USER_PROFILE_ID
+    30   21  20     // CUG_INFO                      - CUG_INTERLOCK_CODE
+    31   21  21     //                               - CUG_INDEX
+    32   21  22     //                               - CUG_TYPE
+    33   26  26     // TECHNICAL_INFO                - REVERSE_CHARGING_IND
+    34   26  31     //                               - TERMINATION_IND
+    35   26  144    //                               - HOME_TERMINATED_IND
+    36   26  435    //                               - SC_PKEY
+    37   26  29     //                               - PARTIAL_REC_TYPE
+    38   34  90     // REMARK                        - REMARK
+    39   35  5      // XFILE_IC_CHARGE               - AMOUNT
+    40   35  6      //                               - TAX
+    41   35  437    //                               - CURRENCY_PKEY
+    42   35  8      //                               - GROSS_IND
+    43   37  3      // DATA_VOLUME                   - VOLUME
+    // Constant 'Byte' for DATA_VOLUME - UOM_PKEY
+    45   38  3      // MESSAGES                      - VOLUME
+    // Constant 'Msg' for MESSAGES - UOM_PKEY
+    47   79  9      // CAMEL_DESTINATION             - ADDRESS
+    48   79  487    //                               - NUMBERING_PLAN_PKEY
+    49   79  11     //                               - TYPE_OF_NUMBER
+    50   79  292    //                               - APN_SPLIT_SUPPORTED_IND
+    51   79  167    //                               - USER_PROFILE_ID
+    52   80  9      // CAMEL_SERVER_ADDRESS          - ADDRESS
+    53   80  487    //                               - NUMBERING_PLAN_PKEY
+    54   80  11     //                               - TYPE_OF_NUMBER
+    55   80  167    //                               - USER_PROFILE_ID
+    71   84  3      // UPLINK_VOLUME                 - VOLUME
+    // Constant 'Byte' for UPLINK_VOLUME - UOM_PKEY
+    73   85  3      // DOWNLINK_VOLUME               - VOLUME
+    // Constant 'Byte' for DOWNLINK_VOLUME - UOM_PKEY
+    75   86  115    // HSCSD_INFO                    - FNUR
+    76   86  116    //                               - AIUR
+    77   86  117    //                               - CHANNELS_MAX
+    78   86  118    //                               - CODING_ACC
+    79   86  119    //                               - CODING_USED
+    80   86  120    //                               - CHANNELS_USED
+    81   86  121    //                               - INIT_PARTY
+    83   98  3      // EVENT                         - VOLUME
+    // Constant 'Ev' for EVENT - UOM_PKEY
+    85   113 5      // XFILE_BASE_CHARGE             - AMOUNT
+    86   113 6      //                               - TAX
+    87   113 437    //                               - CURRENCY_PKEY
+    88   113 8      //                               - GROSS_IND
+    89   114 9      // RECIPIENT_NETWORK             - ADDRESS
+    90   114 487    //                               - NUMBERING_PLAN_PKEY
+    91   117 178    // VPN_INFO                      - VPN_CALL_TYPE
+    140  27  33     // LDC_INFO                      - CALL_MODE_FLAG
+    141  27  452    //                               - CONTRACT_PKEY
+    142  27  796    //                               - HOME_NET_IND
+    143  97  9      // NORMED_ROUTED_NUMBER          - ADDRESS
+    144  97  487    //                               - NUMBERING_PLAN_PKEY
+    145  116 9      // VPN_NUMBER                    - ADDRESS
+    146  116 487    //                               - NUMBERING_PLAN_PKEY
+    153  492 452    // LEC_INFO                      - CONTRACT_PKEY
+    154  492 796    //                               - HOME_NET_IND
+
+    T 4
+    P 1
+    1    99  64     // BASIC_CALL_TYPE_INFO          - CALL_TYPE
+    2    7   5      // XFILE_DISCOUNT                - AMOUNT
+    3    7   437    //                               - CURRENCY_PKEY
+    4    7   8      //                               - GROSS_IND
+    5    10  9      // S_P_NUMBER                    - ADDRESS
+    6    10  487    //                               - NUMBERING_PLAN_PKEY
+    7    10  11     //                               - TYPE_OF_NUMBER
+    8    10  436    //                               - NETWORK_PKEY
+    9    10  167    //                               - USER_PROFILE_ID
+    10   11  9      // S_P_PORT                      - ADDRESS
+    11   11  487    //                               - NUMBERING_PLAN_PKEY
+    12   11  167    //                               - USER_PROFILE_ID
+    13   12  18     // S_P_EQUIPMENT                 - NUMBER
+    14   12  19     //                               - CLASS_MARK
+    15   15  9      // NET_ELEMENT                   - ADDRESS
+    16   15  487    //                               - NUMBERING_PLAN_PKEY
+    17   15  436    //                               - NETWORK_PKEY
+    18   15  167    //                               - USER_PROFILE_ID
+    19   16  87     // NET_ELEMENT_ENTITY            - NET_ELEMENT_ENTITY
+    20   17  9      // O_P_NUMBER                    - ADDRESS
+    21   17  487    //                               - NUMBERING_PLAN_PKEY
+    22   17  11     //                               - TYPE_OF_NUMBER
+    23   17  292    //                               - APN_SPLIT_SUPPORTED_IND
+    24   17  13     //                               - CLIR
+    25   17  167    //                               - USER_PROFILE_ID
+    26   107 163    // OPTIMAL_ROUTING               - OPTIMAL_ROUTING_IND
+    27   18  9      // T_P_NUMBER                    - ADDRESS
+    28   18  487    //                               - NUMBERING_PLAN_PKEY
+    29   18  11     //                               - TYPE_OF_NUMBER
+    30   22  24     // SCU_INFO                      - PRIORITY_CODE
+    31   22  25     //                               - CHARGING_POINT
+    32   24  1      // SCU_OTHER_TIMESTAMP           - TIMESTAMP
+    33   24  2      //                               - TIME_OFFSET
+    34   25  9      // CAMEL_MSC_ADDRESS             - ADDRESS
+    35   25  487    //                               - NUMBERING_PLAN_PKEY
+    36   25  11     //                               - TYPE_OF_NUMBER
+    37   36  60     // RECORD_IDENTIFICATION         - CALL_ID
+    38   36  59     //                               - UDR_FILE_ID
+    39   36  62     //                               - CDR_ID
+    40   39  79     // CAMEL_DETAIL                  - CAMEL_REFERENCE_NUMBER
+    41   39  80     //                               - CAMEL_SERVICE_KEY
+    42   39  81     //                               - CAMEL_SERVICE_LEVEL
+    43   39  107    //                               - CAMEL_CALL_HANDLING_IND
+    44   39  108    //                               - CAMEL_CF_INDICATOR
+    45   39  562    //                               - CAMEL_MODIFICATION_LIST
+    46   78  111    // SIM_TOOLKIT                   - SIM_TOOLKIT_IND
+    47   95  9      // O_P_NORMED_NUMBER             - ADDRESS
+    48   95  487    //                               - NUMBERING_PLAN_PKEY
+    49   220 791    // CONTROL_DATA                  - RECORD_AGE
+    50   118 1      // INITIAL_START_TIME            - TIMESTAMP
+    51   118 2      //                               - TIME_OFFSET
+    52   65  436    // HOME_NETWORK                  - NETWORK_PKEY
+    53   65  83     //                               - COUNTRY_CODE
+    P 2
+    'Sec'    19
+    'Byte'   44
+    'Msg'    46
+    'Byte'   72
+    'Byte'   74
+    'Ev'     84
+    1    1   64     // CALL_TYPE_INFO                - CALL_TYPE
+    2    1   70     //                               - XFILE_IND
+    3    1   110    //                               - XFILE_CALL_TYPE
+    4    1   162    //                               - NETWORK_INIT_CONTEXT_IND
+    5    20  78     // CAUSE_FOR_FORWARD             - CAUSE_FOR_FORWARD
+    6    2   1      // START_TIME                    - TIMESTAMP
+    7    2   2      //                               - TIME_OFFSET
+    8    3   72     // SERVICE                       - ACTION_CODE
+    9    3   73     //                               - VAS_CODE
+    10   3   74     //                               - SPEECH_VERSION_USED
+    11   3   75     //                               - SPEECH_VERSION_REQUESTED
+    12   3   543    //                               - GUARANTEED_BIT_RATE
+    13   3   544    //                               - MAX_BIT_RATE
+    14   3   545    //                               - HSCSD_IND
+    15   3   546    //                               - IMS_SIGNALLING_CONTEXT
+    16   3   542    //                               - USER_PROTOCOL_INDICATOR
+    17   46  440    // TARIFF_INFO                   - SN_PKEY
+    18   5   3      // DURATION                      - VOLUME
+    // Constant 'Sec' for DURATION - UOM_PKEY
+    20   6   5      // XFILE_CHARGE                  - AMOUNT
+    21   6   8      //                               - GROSS_IND
+    22   6   6      //                               - TAX
+    23   6   437    //                               - CURRENCY_PKEY
+    24   13  9      // S_P_LOCATION                  - ADDRESS
+    25   13  487    //                               - NUMBERING_PLAN_PKEY
+    26   19  9      // ROUTING_NUMBER                - ADDRESS
+    27   19  487    //                               - NUMBERING_PLAN_PKEY
+    28   19  11     //                               - TYPE_OF_NUMBER
+    29   19  167    //                               - USER_PROFILE_ID
+    30   21  20     // CUG_INFO                      - CUG_INTERLOCK_CODE
+    31   21  21     //                               - CUG_INDEX
+    32   21  22     //                               - CUG_TYPE
+    33   26  26     // TECHNICAL_INFO                - REVERSE_CHARGING_IND
+    34   26  31     //                               - TERMINATION_IND
+    35   26  144    //                               - HOME_TERMINATED_IND
+    36   26  435    //                               - SC_PKEY
+    37   26  29     //                               - PARTIAL_REC_TYPE
+    38   34  90     // REMARK                        - REMARK
+    39   35  5      // XFILE_IC_CHARGE               - AMOUNT
+    40   35  6      //                               - TAX
+    41   35  437    //                               - CURRENCY_PKEY
+    42   35  8      //                               - GROSS_IND
+    43   37  3      // DATA_VOLUME                   - VOLUME
+    // Constant 'Byte' for DATA_VOLUME - UOM_PKEY
+    45   38  3      // MESSAGES                      - VOLUME
+    // Constant 'Msg' for MESSAGES - UOM_PKEY
+    47   79  9      // CAMEL_DESTINATION             - ADDRESS
+    48   79  487    //                               - NUMBERING_PLAN_PKEY
+    49   79  11     //                               - TYPE_OF_NUMBER
+    50   79  292    //                               - APN_SPLIT_SUPPORTED_IND
+    51   79  167    //                               - USER_PROFILE_ID
+    52   80  9      // CAMEL_SERVER_ADDRESS          - ADDRESS
+    53   80  487    //                               - NUMBERING_PLAN_PKEY
+    54   80  11     //                               - TYPE_OF_NUMBER
+    55   80  167    //                               - USER_PROFILE_ID
+    71   84  3      // UPLINK_VOLUME                 - VOLUME
+    // Constant 'Byte' for UPLINK_VOLUME - UOM_PKEY
+    73   85  3      // DOWNLINK_VOLUME               - VOLUME
+    // Constant 'Byte' for DOWNLINK_VOLUME - UOM_PKEY
+    75   86  115    // HSCSD_INFO                    - FNUR
+    76   86  116    //                               - AIUR
+    77   86  117    //                               - CHANNELS_MAX
+    78   86  118    //                               - CODING_ACC
+    79   86  119    //                               - CODING_USED
+    80   86  120    //                               - CHANNELS_USED
+    81   86  121    //                               - INIT_PARTY
+    83   98  3      // EVENT                         - VOLUME
+    // Constant 'Ev' for EVENT - UOM_PKEY
+    85   113 5      // XFILE_BASE_CHARGE             - AMOUNT
+    86   113 6      //                               - TAX
+    87   113 437    //                               - CURRENCY_PKEY
+    88   113 8      //                               - GROSS_IND
+    89   114 9      // RECIPIENT_NETWORK             - ADDRESS
+    90   114 487    //                               - NUMBERING_PLAN_PKEY
+    91   117 178    // VPN_INFO                      - VPN_CALL_TYPE
+    140  27  33     // LDC_INFO                      - CALL_MODE_FLAG
+    141  27  452    //                               - CONTRACT_PKEY
+    142  27  796    //                               - HOME_NET_IND
+    143  97  9      // NORMED_ROUTED_NUMBER          - ADDRESS
+    144  97  487    //                               - NUMBERING_PLAN_PKEY
+    145  116 9      // VPN_NUMBER                    - ADDRESS
+    146  116 487    //                               - NUMBERING_PLAN_PKEY
+    153  492 452    // LEC_INFO                      - CONTRACT_PKEY
+    154  492 796    //                               - HOME_NET_IND
+
+    T 5
+    P 1
+    1    99  64     // BASIC_CALL_TYPE_INFO          - CALL_TYPE
+    2    7   5      // XFILE_DISCOUNT                - AMOUNT
+    3    7   437    //                               - CURRENCY_PKEY
+    4    7   8      //                               - GROSS_IND
+    5    10  9      // S_P_NUMBER                    - ADDRESS
+    6    10  487    //                               - NUMBERING_PLAN_PKEY
+    7    10  11     //                               - TYPE_OF_NUMBER
+    8    10  436    //                               - NETWORK_PKEY
+    9    10  167    //                               - USER_PROFILE_ID
+    10   11  9      // S_P_PORT                      - ADDRESS
+    11   11  487    //                               - NUMBERING_PLAN_PKEY
+    12   11  167    //                               - USER_PROFILE_ID
+    13   12  18     // S_P_EQUIPMENT                 - NUMBER
+    14   12  19     //                               - CLASS_MARK
+    15   15  9      // NET_ELEMENT                   - ADDRESS
+    16   15  487    //                               - NUMBERING_PLAN_PKEY
+    17   15  436    //                               - NETWORK_PKEY
+    18   15  167    //                               - USER_PROFILE_ID
+    19   16  87     // NET_ELEMENT_ENTITY            - NET_ELEMENT_ENTITY
+    20   17  9      // O_P_NUMBER                    - ADDRESS
+    21   17  487    //                               - NUMBERING_PLAN_PKEY
+    22   17  11     //                               - TYPE_OF_NUMBER
+    23   17  292    //                               - APN_SPLIT_SUPPORTED_IND
+    24   17  13     //                               - CLIR
+    25   17  167    //                               - USER_PROFILE_ID
+    26   107 163    // OPTIMAL_ROUTING               - OPTIMAL_ROUTING_IND
+    27   18  9      // T_P_NUMBER                    - ADDRESS
+    28   18  487    //                               - NUMBERING_PLAN_PKEY
+    29   18  11     //                               - TYPE_OF_NUMBER
+    30   22  24     // SCU_INFO                      - PRIORITY_CODE
+    31   22  25     //                               - CHARGING_POINT
+    32   24  1      // SCU_OTHER_TIMESTAMP           - TIMESTAMP
+    33   24  2      //                               - TIME_OFFSET
+    34   25  9      // CAMEL_MSC_ADDRESS             - ADDRESS
+    35   25  487    //                               - NUMBERING_PLAN_PKEY
+    36   25  11     //                               - TYPE_OF_NUMBER
+    37   36  60     // RECORD_IDENTIFICATION         - CALL_ID
+    38   36  59     //                               - UDR_FILE_ID
+    39   36  62     //                               - CDR_ID
+    40   39  79     // CAMEL_DETAIL                  - CAMEL_REFERENCE_NUMBER
+    41   39  80     //                               - CAMEL_SERVICE_KEY
+    42   39  81     //                               - CAMEL_SERVICE_LEVEL
+    43   39  107    //                               - CAMEL_CALL_HANDLING_IND
+    44   39  108    //                               - CAMEL_CF_INDICATOR
+    45   39  562    //                               - CAMEL_MODIFICATION_LIST
+    46   78  111    // SIM_TOOLKIT                   - SIM_TOOLKIT_IND
+    47   95  9      // O_P_NORMED_NUMBER             - ADDRESS
+    48   95  487    //                               - NUMBERING_PLAN_PKEY
+    49   220 791    // CONTROL_DATA                  - RECORD_AGE
+    50   118 1      // INITIAL_START_TIME            - TIMESTAMP
+    51   118 2      //                               - TIME_OFFSET
+    52   65  436    // HOME_NETWORK                  - NETWORK_PKEY
+    53   65  83     //                               - COUNTRY_CODE
+    P 2
+    'Sec'    19
+    'Byte'   44
+    'Msg'    46
+    'Byte'   72
+    'Byte'   74
+    'Ev'     84
+    1    1   64     // CALL_TYPE_INFO                - CALL_TYPE
+    2    1   70     //                               - XFILE_IND
+    3    1   110    //                               - XFILE_CALL_TYPE
+    4    1   162    //                               - NETWORK_INIT_CONTEXT_IND
+    5    20  78     // CAUSE_FOR_FORWARD             - CAUSE_FOR_FORWARD
+    6    2   1      // START_TIME                    - TIMESTAMP
+    7    2   2      //                               - TIME_OFFSET
+    8    3   72     // SERVICE                       - ACTION_CODE
+    9    3   73     //                               - VAS_CODE
+    10   3   74     //                               - SPEECH_VERSION_USED
+    11   3   75     //                               - SPEECH_VERSION_REQUESTED
+    12   3   543    //                               - GUARANTEED_BIT_RATE
+    13   3   544    //                               - MAX_BIT_RATE
+    14   3   545    //                               - HSCSD_IND
+    15   3   546    //                               - IMS_SIGNALLING_CONTEXT
+    16   3   542    //                               - USER_PROTOCOL_INDICATOR
+    17   46  440    // TARIFF_INFO                   - SN_PKEY
+    18   5   3      // DURATION                      - VOLUME
+    // Constant 'Sec' for DURATION - UOM_PKEY
+    20   6   5      // XFILE_CHARGE                  - AMOUNT
+    21   6   8      //                               - GROSS_IND
+    22   6   6      //                               - TAX
+    23   6   437    //                               - CURRENCY_PKEY
+    24   13  9      // S_P_LOCATION                  - ADDRESS
+    25   13  487    //                               - NUMBERING_PLAN_PKEY
+    26   19  9      // ROUTING_NUMBER                - ADDRESS
+    27   19  487    //                               - NUMBERING_PLAN_PKEY
+    28   19  11     //                               - TYPE_OF_NUMBER
+    29   19  167    //                               - USER_PROFILE_ID
+    30   21  20     // CUG_INFO                      - CUG_INTERLOCK_CODE
+    31   21  21     //                               - CUG_INDEX
+    32   21  22     //                               - CUG_TYPE
+    33   26  26     // TECHNICAL_INFO                - REVERSE_CHARGING_IND
+    34   26  31     //                               - TERMINATION_IND
+    35   26  144    //                               - HOME_TERMINATED_IND
+    36   26  435    //                               - SC_PKEY
+    37   26  29     //                               - PARTIAL_REC_TYPE
+    38   34  90     // REMARK                        - REMARK
+    39   35  5      // XFILE_IC_CHARGE               - AMOUNT
+    40   35  6      //                               - TAX
+    41   35  437    //                               - CURRENCY_PKEY
+    42   35  8      //                               - GROSS_IND
+    43   37  3      // DATA_VOLUME                   - VOLUME
+    // Constant 'Byte' for DATA_VOLUME - UOM_PKEY
+    45   38  3      // MESSAGES                      - VOLUME
+    // Constant 'Msg' for MESSAGES - UOM_PKEY
+    47   79  9      // CAMEL_DESTINATION             - ADDRESS
+    48   79  487    //                               - NUMBERING_PLAN_PKEY
+    49   79  11     //                               - TYPE_OF_NUMBER
+    50   79  292    //                               - APN_SPLIT_SUPPORTED_IND
+    51   79  167    //                               - USER_PROFILE_ID
+    52   80  9      // CAMEL_SERVER_ADDRESS          - ADDRESS
+    53   80  487    //                               - NUMBERING_PLAN_PKEY
+    54   80  11     //                               - TYPE_OF_NUMBER
+    55   80  167    //                               - USER_PROFILE_ID
+    71   84  3      // UPLINK_VOLUME                 - VOLUME
+    // Constant 'Byte' for UPLINK_VOLUME - UOM_PKEY
+    73   85  3      // DOWNLINK_VOLUME               - VOLUME
+    // Constant 'Byte' for DOWNLINK_VOLUME - UOM_PKEY
+    75   86  115    // HSCSD_INFO                    - FNUR
+    76   86  116    //                               - AIUR
+    77   86  117    //                               - CHANNELS_MAX
+    78   86  118    //                               - CODING_ACC
+    79   86  119    //                               - CODING_USED
+    80   86  120    //                               - CHANNELS_USED
+    81   86  121    //                               - INIT_PARTY
+    83   98  3      // EVENT                         - VOLUME
+    // Constant 'Ev' for EVENT - UOM_PKEY
+    85   113 5      // XFILE_BASE_CHARGE             - AMOUNT
+    86   113 6      //                               - TAX
+    87   113 437    //                               - CURRENCY_PKEY
+    88   113 8      //                               - GROSS_IND
+    89   114 9      // RECIPIENT_NETWORK             - ADDRESS
+    90   114 487    //                               - NUMBERING_PLAN_PKEY
+    91   117 178    // VPN_INFO                      - VPN_CALL_TYPE
+    140  27  33     // LDC_INFO                      - CALL_MODE_FLAG
+    141  27  452    //                               - CONTRACT_PKEY
+    142  27  796    //                               - HOME_NET_IND
+    143  97  9      // NORMED_ROUTED_NUMBER          - ADDRESS
+    144  97  487    //                               - NUMBERING_PLAN_PKEY
+    145  116 9      // VPN_NUMBER                    - ADDRESS
+    146  116 487    //                               - NUMBERING_PLAN_PKEY
+    153  492 452    // LEC_INFO                      - CONTRACT_PKEY
+    154  492 796    //                               - HOME_NET_IND
+
+    T 6
+    P 1
+    1    99  64     // BASIC_CALL_TYPE_INFO          - CALL_TYPE
+    2    7   5      // XFILE_DISCOUNT                - AMOUNT
+    3    7   437    //                               - CURRENCY_PKEY
+    4    7   8      //                               - GROSS_IND
+    5    10  9      // S_P_NUMBER                    - ADDRESS
+    6    10  487    //                               - NUMBERING_PLAN_PKEY
+    7    10  11     //                               - TYPE_OF_NUMBER
+    8    10  436    //                               - NETWORK_PKEY
+    9    10  167    //                               - USER_PROFILE_ID
+    10   11  9      // S_P_PORT                      - ADDRESS
+    11   11  487    //                               - NUMBERING_PLAN_PKEY
+    12   11  167    //                               - USER_PROFILE_ID
+    13   12  18     // S_P_EQUIPMENT                 - NUMBER
+    14   12  19     //                               - CLASS_MARK
+    15   15  9      // NET_ELEMENT                   - ADDRESS
+    16   15  487    //                               - NUMBERING_PLAN_PKEY
+    17   15  436    //                               - NETWORK_PKEY
+    18   15  167    //                               - USER_PROFILE_ID
+    19   16  87     // NET_ELEMENT_ENTITY            - NET_ELEMENT_ENTITY
+    20   17  9      // O_P_NUMBER                    - ADDRESS
+    21   17  487    //                               - NUMBERING_PLAN_PKEY
+    22   17  11     //                               - TYPE_OF_NUMBER
+    23   17  292    //                               - APN_SPLIT_SUPPORTED_IND
+    24   17  13     //                               - CLIR
+    25   17  167    //                               - USER_PROFILE_ID
+    26   107 163    // OPTIMAL_ROUTING               - OPTIMAL_ROUTING_IND
+    27   18  9      // T_P_NUMBER                    - ADDRESS
+    28   18  487    //                               - NUMBERING_PLAN_PKEY
+    29   18  11     //                               - TYPE_OF_NUMBER
+    30   22  24     // SCU_INFO                      - PRIORITY_CODE
+    31   22  25     //                               - CHARGING_POINT
+    32   24  1      // SCU_OTHER_TIMESTAMP           - TIMESTAMP
+    33   24  2      //                               - TIME_OFFSET
+    34   25  9      // CAMEL_MSC_ADDRESS             - ADDRESS
+    35   25  487    //                               - NUMBERING_PLAN_PKEY
+    36   25  11     //                               - TYPE_OF_NUMBER
+    37   36  60     // RECORD_IDENTIFICATION         - CALL_ID
+    38   36  59     //                               - UDR_FILE_ID
+    39   36  62     //                               - CDR_ID
+    40   39  79     // CAMEL_DETAIL                  - CAMEL_REFERENCE_NUMBER
+    41   39  80     //                               - CAMEL_SERVICE_KEY
+    42   39  81     //                               - CAMEL_SERVICE_LEVEL
+    43   39  107    //                               - CAMEL_CALL_HANDLING_IND
+    44   39  108    //                               - CAMEL_CF_INDICATOR
+    45   39  562    //                               - CAMEL_MODIFICATION_LIST
+    46   78  111    // SIM_TOOLKIT                   - SIM_TOOLKIT_IND
+    47   95  9      // O_P_NORMED_NUMBER             - ADDRESS
+    48   95  487    //                               - NUMBERING_PLAN_PKEY
+    49   220 791    // CONTROL_DATA                  - RECORD_AGE
+    50   118 1      // INITIAL_START_TIME            - TIMESTAMP
+    51   118 2      //                               - TIME_OFFSET
+    52   65  436    // HOME_NETWORK                  - NETWORK_PKEY
+    53   65  83     //                               - COUNTRY_CODE
+    P 2
+    'Sec'    19
+    'Byte'   44
+    'Msg'    46
+    'Byte'   72
+    'Byte'   74
+    'Ev'     84
+    1    1   64     // CALL_TYPE_INFO                - CALL_TYPE
+    2    1   70     //                               - XFILE_IND
+    3    1   110    //                               - XFILE_CALL_TYPE
+    4    1   162    //                               - NETWORK_INIT_CONTEXT_IND
+    5    20  78     // CAUSE_FOR_FORWARD             - CAUSE_FOR_FORWARD
+    6    2   1      // START_TIME                    - TIMESTAMP
+    7    2   2      //                               - TIME_OFFSET
+    8    3   72     // SERVICE                       - ACTION_CODE
+    9    3   73     //                               - VAS_CODE
+    10   3   74     //                               - SPEECH_VERSION_USED
+    11   3   75     //                               - SPEECH_VERSION_REQUESTED
+    12   3   543    //                               - GUARANTEED_BIT_RATE
+    13   3   544    //                               - MAX_BIT_RATE
+    14   3   545    //                               - HSCSD_IND
+    15   3   546    //                               - IMS_SIGNALLING_CONTEXT
+    16   3   542    //                               - USER_PROTOCOL_INDICATOR
+    17   46  440    // TARIFF_INFO                   - SN_PKEY
+    18   5   3      // DURATION                      - VOLUME
+    // Constant 'Sec' for DURATION - UOM_PKEY
+    20   6   5      // XFILE_CHARGE                  - AMOUNT
+    21   6   8      //                               - GROSS_IND
+    22   6   6      //                               - TAX
+    23   6   437    //                               - CURRENCY_PKEY
+    24   13  9      // S_P_LOCATION                  - ADDRESS
+    25   13  487    //                               - NUMBERING_PLAN_PKEY
+    26   19  9      // ROUTING_NUMBER                - ADDRESS
+    27   19  487    //                               - NUMBERING_PLAN_PKEY
+    28   19  11     //                               - TYPE_OF_NUMBER
+    29   19  167    //                               - USER_PROFILE_ID
+    30   21  20     // CUG_INFO                      - CUG_INTERLOCK_CODE
+    31   21  21     //                               - CUG_INDEX
+    32   21  22     //                               - CUG_TYPE
+    33   26  26     // TECHNICAL_INFO                - REVERSE_CHARGING_IND
+    34   26  31     //                               - TERMINATION_IND
+    35   26  144    //                               - HOME_TERMINATED_IND
+    36   26  435    //                               - SC_PKEY
+    37   26  29     //                               - PARTIAL_REC_TYPE
+    38   34  90     // REMARK                        - REMARK
+    39   35  5      // XFILE_IC_CHARGE               - AMOUNT
+    40   35  6      //                               - TAX
+    41   35  437    //                               - CURRENCY_PKEY
+    42   35  8      //                               - GROSS_IND
+    43   37  3      // DATA_VOLUME                   - VOLUME
+    // Constant 'Byte' for DATA_VOLUME - UOM_PKEY
+    45   38  3      // MESSAGES                      - VOLUME
+    // Constant 'Msg' for MESSAGES - UOM_PKEY
+    47   79  9      // CAMEL_DESTINATION             - ADDRESS
+    48   79  487    //                               - NUMBERING_PLAN_PKEY
+    49   79  11     //                               - TYPE_OF_NUMBER
+    50   79  292    //                               - APN_SPLIT_SUPPORTED_IND
+    51   79  167    //                               - USER_PROFILE_ID
+    52   80  9      // CAMEL_SERVER_ADDRESS          - ADDRESS
+    53   80  487    //                               - NUMBERING_PLAN_PKEY
+    54   80  11     //                               - TYPE_OF_NUMBER
+    55   80  167    //                               - USER_PROFILE_ID
+    56   81  112    // QOS_REQUESTED                 - DELAY
+    57   81  113    //                               - PEAK_THROUGHPUT
+    58   81  114    //                               - MEAN_THROUGHPUT
+    59   81  126    //                               - PRECEDENCE
+    60   81  127    //                               - RELIABILITY
+    61   82  112    // QOS_NEGOTIATED                - DELAY
+    62   82  113    //                               - PEAK_THROUGHPUT
+    63   82  114    //                               - MEAN_THROUGHPUT
+    64   82  126    //                               - PRECEDENCE
+    65   82  127    //                               - RELIABILITY
+    66   83  9      // SERVED_PDP_ADDRESS            - ADDRESS
+    67   83  123    //                               - DYNAMIC_ADDRESS
+    68   83  487    //                               - NUMBERING_PLAN_PKEY
+    69   83  11     //                               - TYPE_OF_NUMBER
+    70   83  167    //                               - USER_PROFILE_ID
+    71   84  3      // UPLINK_VOLUME                 - VOLUME
+    // Constant 'Byte' for UPLINK_VOLUME - UOM_PKEY
+    73   85  3      // DOWNLINK_VOLUME               - VOLUME
+    // Constant 'Byte' for DOWNLINK_VOLUME - UOM_PKEY
+    75   86  115    // HSCSD_INFO                    - FNUR
+    76   86  116    //                               - AIUR
+    77   86  117    //                               - CHANNELS_MAX
+    78   86  118    //                               - CODING_ACC
+    79   86  119    //                               - CODING_USED
+    80   86  120    //                               - CHANNELS_USED
+    81   86  121    //                               - INIT_PARTY
+    82   87  124    // SGSN_ADDRESSES                - SGSN_ADDRESSES
+    83   98  3      // EVENT                         - VOLUME
+    // Constant 'Ev' for EVENT - UOM_PKEY
+    85   113 5      // XFILE_BASE_CHARGE             - AMOUNT
+    86   113 6      //                               - TAX
+    87   113 437    //                               - CURRENCY_PKEY
+    88   113 8      //                               - GROSS_IND
+    89   114 9      // RECIPIENT_NETWORK             - ADDRESS
+    90   114 487    //                               - NUMBERING_PLAN_PKEY
+    91   117 178    // VPN_INFO                      - VPN_CALL_TYPE
+    92   167 280    // UMTS_QOS_REQUESTED            - TRAFFIC_CLASS
+    93   167 281    //                               - MAX_BIT_RATE_UPLINK
+    94   167 282    //                               - MAX_BIT_RATE_DOWNLINK
+    95   167 431    //                               - GUARANTEED_BITRATE_DOWNLINK
+    96   167 430    //                               - GUARANTEED_BITRATE_UPLINK
+    97   167 283    //                               - DELIVERY_ORDER
+    98   167 284    //                               - MAX_SDU_SIZE
+    99   167 285    //                               - SDU_ERROR_RATIO
+    100  167 286    //                               - RESIDUAL_BER
+    101  167 287    //                               - ERRONEOUS_SDUS
+    102  167 288    //                               - HANDLING_PRIORITY
+    103  167 289    //                               - ALLOCATION_RETENTION_PRIORITY
+    104  167 291    //                               - TRANSFER_DELAY
+    105  168 280    // UMTS_QOS_NEGOTIATED           - TRAFFIC_CLASS
+    106  168 281    //                               - MAX_BIT_RATE_UPLINK
+    107  168 282    //                               - MAX_BIT_RATE_DOWNLINK
+    108  168 431    //                               - GUARANTEED_BITRATE_DOWNLINK
+    109  168 430    //                               - GUARANTEED_BITRATE_UPLINK
+    110  168 283    //                               - DELIVERY_ORDER
+    111  168 284    //                               - MAX_SDU_SIZE
+    112  168 285    //                               - SDU_ERROR_RATIO
+    113  168 286    //                               - RESIDUAL_BER
+    114  168 287    //                               - ERRONEOUS_SDUS
+    115  168 288    //                               - HANDLING_PRIORITY
+    116  168 289    //                               - ALLOCATION_RETENTION_PRIORITY
+    117  168 291    //                               - TRANSFER_DELAY
+    140  27  33     // LDC_INFO                      - CALL_MODE_FLAG
+    141  27  452    //                               - CONTRACT_PKEY
+    142  27  796    //                               - HOME_NET_IND
+    143  97  9      // NORMED_ROUTED_NUMBER          - ADDRESS
+    144  97  487    //                               - NUMBERING_PLAN_PKEY
+    145  116 9      // VPN_NUMBER                    - ADDRESS
+    146  116 487    //                               - NUMBERING_PLAN_PKEY
+    153  492 452    // LEC_INFO                      - CONTRACT_PKEY
+    154  492 796    //                               - HOME_NET_IND
+
+    T 8
+    P 1
+    1    99  64     // BASIC_CALL_TYPE_INFO          - CALL_TYPE
+    2    7   5      // XFILE_DISCOUNT                - AMOUNT
+    3    7   437    //                               - CURRENCY_PKEY
+    4    7   8      //                               - GROSS_IND
+    5    10  9      // S_P_NUMBER                    - ADDRESS
+    6    10  487    //                               - NUMBERING_PLAN_PKEY
+    7    10  11     //                               - TYPE_OF_NUMBER
+    8    10  436    //                               - NETWORK_PKEY
+    9    10  167    //                               - USER_PROFILE_ID
+    10   11  9      // S_P_PORT                      - ADDRESS
+    11   11  487    //                               - NUMBERING_PLAN_PKEY
+    12   11  167    //                               - USER_PROFILE_ID
+    13   12  18     // S_P_EQUIPMENT                 - NUMBER
+    14   12  19     //                               - CLASS_MARK
+    15   15  9      // NET_ELEMENT                   - ADDRESS
+    16   15  487    //                               - NUMBERING_PLAN_PKEY
+    17   15  436    //                               - NETWORK_PKEY
+    18   15  167    //                               - USER_PROFILE_ID
+    19   16  87     // NET_ELEMENT_ENTITY            - NET_ELEMENT_ENTITY
+    20   17  9      // O_P_NUMBER                    - ADDRESS
+    21   17  487    //                               - NUMBERING_PLAN_PKEY
+    22   17  11     //                               - TYPE_OF_NUMBER
+    23   17  292    //                               - APN_SPLIT_SUPPORTED_IND
+    24   17  13     //                               - CLIR
+    25   17  167    //                               - USER_PROFILE_ID
+    26   107 163    // OPTIMAL_ROUTING               - OPTIMAL_ROUTING_IND
+    27   18  9      // T_P_NUMBER                    - ADDRESS
+    28   18  487    //                               - NUMBERING_PLAN_PKEY
+    29   18  11     //                               - TYPE_OF_NUMBER
+    30   22  24     // SCU_INFO                      - PRIORITY_CODE
+    31   22  25     //                               - CHARGING_POINT
+    32   24  1      // SCU_OTHER_TIMESTAMP           - TIMESTAMP
+    33   24  2      //                               - TIME_OFFSET
+    34   25  9      // CAMEL_MSC_ADDRESS             - ADDRESS
+    35   25  487    //                               - NUMBERING_PLAN_PKEY
+    36   25  11     //                               - TYPE_OF_NUMBER
+    37   36  60     // RECORD_IDENTIFICATION         - CALL_ID
+    38   36  59     //                               - UDR_FILE_ID
+    39   36  62     //                               - CDR_ID
+    40   39  79     // CAMEL_DETAIL                  - CAMEL_REFERENCE_NUMBER
+    41   39  80     //                               - CAMEL_SERVICE_KEY
+    42   39  81     //                               - CAMEL_SERVICE_LEVEL
+    43   39  107    //                               - CAMEL_CALL_HANDLING_IND
+    44   39  108    //                               - CAMEL_CF_INDICATOR
+    45   39  562    //                               - CAMEL_MODIFICATION_LIST
+    46   78  111    // SIM_TOOLKIT                   - SIM_TOOLKIT_IND
+    47   95  9      // O_P_NORMED_NUMBER             - ADDRESS
+    48   95  487    //                               - NUMBERING_PLAN_PKEY
+    49   220 791    // CONTROL_DATA                  - RECORD_AGE
+    50   118 1      // INITIAL_START_TIME            - TIMESTAMP
+    51   118 2      //                               - TIME_OFFSET
+    52   65  436    // HOME_NETWORK                  - NETWORK_PKEY
+    53   65  83     //                               - COUNTRY_CODE
+    P 2
+    'Sec'    19
+    'Byte'   44
+    'Msg'    46
+    'Byte'   72
+    'Byte'   74
+    'Ev'     84
+    1    1   64     // CALL_TYPE_INFO                - CALL_TYPE
+    2    1   70     //                               - XFILE_IND
+    3    1   110    //                               - XFILE_CALL_TYPE
+    4    1   162    //                               - NETWORK_INIT_CONTEXT_IND
+    5    20  78     // CAUSE_FOR_FORWARD             - CAUSE_FOR_FORWARD
+    6    2   1      // START_TIME                    - TIMESTAMP
+    7    2   2      //                               - TIME_OFFSET
+    8    3   72     // SERVICE                       - ACTION_CODE
+    9    3   73     //                               - VAS_CODE
+    10   3   74     //                               - SPEECH_VERSION_USED
+    11   3   75     //                               - SPEECH_VERSION_REQUESTED
+    12   3   543    //                               - GUARANTEED_BIT_RATE
+    13   3   544    //                               - MAX_BIT_RATE
+    14   3   545    //                               - HSCSD_IND
+    15   3   546    //                               - IMS_SIGNALLING_CONTEXT
+    16   3   542    //                               - USER_PROTOCOL_INDICATOR
+    17   46  440    // TARIFF_INFO                   - SN_PKEY
+    18   5   3      // DURATION                      - VOLUME
+    // Constant 'Sec' for DURATION - UOM_PKEY
+    20   6   5      // XFILE_CHARGE                  - AMOUNT
+    21   6   8      //                               - GROSS_IND
+    22   6   6      //                               - TAX
+    23   6   437    //                               - CURRENCY_PKEY
+    24   13  9      // S_P_LOCATION                  - ADDRESS
+    25   13  487    //                               - NUMBERING_PLAN_PKEY
+    26   19  9      // ROUTING_NUMBER                - ADDRESS
+    27   19  487    //                               - NUMBERING_PLAN_PKEY
+    28   19  11     //                               - TYPE_OF_NUMBER
+    29   19  167    //                               - USER_PROFILE_ID
+    30   21  20     // CUG_INFO                      - CUG_INTERLOCK_CODE
+    31   21  21     //                               - CUG_INDEX
+    32   21  22     //                               - CUG_TYPE
+    33   26  26     // TECHNICAL_INFO                - REVERSE_CHARGING_IND
+    34   26  31     //                               - TERMINATION_IND
+    35   26  144    //                               - HOME_TERMINATED_IND
+    36   26  435    //                               - SC_PKEY
+    37   26  29     //                               - PARTIAL_REC_TYPE
+    38   34  90     // REMARK                        - REMARK
+    39   35  5      // XFILE_IC_CHARGE               - AMOUNT
+    40   35  6      //                               - TAX
+    41   35  437    //                               - CURRENCY_PKEY
+    42   35  8      //                               - GROSS_IND
+    43   37  3      // DATA_VOLUME                   - VOLUME
+    // Constant 'Byte' for DATA_VOLUME - UOM_PKEY
+    45   38  3      // MESSAGES                      - VOLUME
+    // Constant 'Msg' for MESSAGES - UOM_PKEY
+    47   79  9      // CAMEL_DESTINATION             - ADDRESS
+    48   79  487    //                               - NUMBERING_PLAN_PKEY
+    49   79  11     //                               - TYPE_OF_NUMBER
+    50   79  292    //                               - APN_SPLIT_SUPPORTED_IND
+    51   79  167    //                               - USER_PROFILE_ID
+    52   80  9      // CAMEL_SERVER_ADDRESS          - ADDRESS
+    53   80  487    //                               - NUMBERING_PLAN_PKEY
+    54   80  11     //                               - TYPE_OF_NUMBER
+    55   80  167    //                               - USER_PROFILE_ID
+    71   84  3      // UPLINK_VOLUME                 - VOLUME
+    // Constant 'Byte' for UPLINK_VOLUME - UOM_PKEY
+    73   85  3      // DOWNLINK_VOLUME               - VOLUME
+    // Constant 'Byte' for DOWNLINK_VOLUME - UOM_PKEY
+    75   86  115    // HSCSD_INFO                    - FNUR
+    76   86  116    //                               - AIUR
+    77   86  117    //                               - CHANNELS_MAX
+    78   86  118    //                               - CODING_ACC
+    79   86  119    //                               - CODING_USED
+    80   86  120    //                               - CHANNELS_USED
+    81   86  121    //                               - INIT_PARTY
+    83   98  3      // EVENT                         - VOLUME
+    // Constant 'Ev' for EVENT - UOM_PKEY
+    85   113 5      // XFILE_BASE_CHARGE             - AMOUNT
+    86   113 6      //                               - TAX
+    87   113 437    //                               - CURRENCY_PKEY
+    88   113 8      //                               - GROSS_IND
+    89   114 9      // RECIPIENT_NETWORK             - ADDRESS
+    90   114 487    //                               - NUMBERING_PLAN_PKEY
+    91   117 178    // VPN_INFO                      - VPN_CALL_TYPE
+    140  27  33     // LDC_INFO                      - CALL_MODE_FLAG
+    141  27  452    //                               - CONTRACT_PKEY
+    142  27  796    //                               - HOME_NET_IND
+    143  97  9      // NORMED_ROUTED_NUMBER          - ADDRESS
+    144  97  487    //                               - NUMBERING_PLAN_PKEY
+    145  116 9      // VPN_NUMBER                    - ADDRESS
+    146  116 487    //                               - NUMBERING_PLAN_PKEY
+    153  492 452    // LEC_INFO                      - CONTRACT_PKEY
+    154  492 796    //                               - HOME_NET_IND
+
+    T 11
+    P 1
+    1    99  64     // BASIC_CALL_TYPE_INFO          - CALL_TYPE
+    2    7   5      // XFILE_DISCOUNT                - AMOUNT
+    3    7   437    //                               - CURRENCY_PKEY
+    4    7   8      //                               - GROSS_IND
+    5    10  9      // S_P_NUMBER                    - ADDRESS
+    6    10  487    //                               - NUMBERING_PLAN_PKEY
+    7    10  11     //                               - TYPE_OF_NUMBER
+    8    10  436    //                               - NETWORK_PKEY
+    9    10  167    //                               - USER_PROFILE_ID
+    10   11  9      // S_P_PORT                      - ADDRESS
+    11   11  487    //                               - NUMBERING_PLAN_PKEY
+    12   11  167    //                               - USER_PROFILE_ID
+    13   12  18     // S_P_EQUIPMENT                 - NUMBER
+    14   12  19     //                               - CLASS_MARK
+    15   15  9      // NET_ELEMENT                   - ADDRESS
+    16   15  487    //                               - NUMBERING_PLAN_PKEY
+    17   15  436    //                               - NETWORK_PKEY
+    18   15  167    //                               - USER_PROFILE_ID
+    19   16  87     // NET_ELEMENT_ENTITY            - NET_ELEMENT_ENTITY
+    20   17  9      // O_P_NUMBER                    - ADDRESS
+    21   17  487    //                               - NUMBERING_PLAN_PKEY
+    22   17  11     //                               - TYPE_OF_NUMBER
+    23   17  292    //                               - APN_SPLIT_SUPPORTED_IND
+    24   17  13     //                               - CLIR
+    25   17  167    //                               - USER_PROFILE_ID
+    26   107 163    // OPTIMAL_ROUTING               - OPTIMAL_ROUTING_IND
+    27   18  9      // T_P_NUMBER                    - ADDRESS
+    28   18  487    //                               - NUMBERING_PLAN_PKEY
+    29   18  11     //                               - TYPE_OF_NUMBER
+    30   22  24     // SCU_INFO                      - PRIORITY_CODE
+    31   22  25     //                               - CHARGING_POINT
+    32   24  1      // SCU_OTHER_TIMESTAMP           - TIMESTAMP
+    33   24  2      //                               - TIME_OFFSET
+    34   25  9      // CAMEL_MSC_ADDRESS             - ADDRESS
+    35   25  487    //                               - NUMBERING_PLAN_PKEY
+    36   25  11     //                               - TYPE_OF_NUMBER
+    37   36  60     // RECORD_IDENTIFICATION         - CALL_ID
+    38   36  59     //                               - UDR_FILE_ID
+    39   36  62     //                               - CDR_ID
+    40   39  79     // CAMEL_DETAIL                  - CAMEL_REFERENCE_NUMBER
+    41   39  80     //                               - CAMEL_SERVICE_KEY
+    42   39  81     //                               - CAMEL_SERVICE_LEVEL
+    43   39  107    //                               - CAMEL_CALL_HANDLING_IND
+    44   39  108    //                               - CAMEL_CF_INDICATOR
+    45   39  562    //                               - CAMEL_MODIFICATION_LIST
+    46   78  111    // SIM_TOOLKIT                   - SIM_TOOLKIT_IND
+    47   95  9      // O_P_NORMED_NUMBER             - ADDRESS
+    48   95  487    //                               - NUMBERING_PLAN_PKEY
+    49   220 791    // CONTROL_DATA                  - RECORD_AGE
+    50   118 1      // INITIAL_START_TIME            - TIMESTAMP
+    51   118 2      //                               - TIME_OFFSET
+    52   65  436    // HOME_NETWORK                  - NETWORK_PKEY
+    53   65  83     //                               - COUNTRY_CODE
+    P 2
+
+    'Sec'    19
+    'Byte'   44
+    'Msg'    46
+    'Byte'   72
+    'Byte'   74
+    'Ev'     84
+    1    1   64     // CALL_TYPE_INFO                - CALL_TYPE
+    2    1   70     //                               - XFILE_IND
+    3    1   110    //                               - XFILE_CALL_TYPE
+    4    1   162    //                               - NETWORK_INIT_CONTEXT_IND
+    5    20  78     // CAUSE_FOR_FORWARD             - CAUSE_FOR_FORWARD
+    6    2   1      // START_TIME                    - TIMESTAMP
+    7    2   2      //                               - TIME_OFFSET
+    8    3   72     // SERVICE                       - ACTION_CODE
+    9    3   73     //                               - VAS_CODE
+    10   3   74     //                               - SPEECH_VERSION_USED
+    11   3   75     //                               - SPEECH_VERSION_REQUESTED
+    12   3   543    //                               - GUARANTEED_BIT_RATE
+    13   3   544    //                               - MAX_BIT_RATE
+    14   3   545    //                               - HSCSD_IND
+    15   3   546    //                               - IMS_SIGNALLING_CONTEXT
+    16   3   542    //                               - USER_PROTOCOL_INDICATOR
+    17   46  440    // TARIFF_INFO                   - SN_PKEY
+    18   5   3      // DURATION                      - VOLUME
+    // Constant 'Sec' for DURATION - UOM_PKEY
+    20   6   5      // XFILE_CHARGE                  - AMOUNT
+    21   6   8      //                               - GROSS_IND
+    22   6   6      //                               - TAX
+    23   6   437    //                               - CURRENCY_PKEY
+    24   13  9      // S_P_LOCATION                  - ADDRESS
+    25   13  487    //                               - NUMBERING_PLAN_PKEY
+    26   19  9      // ROUTING_NUMBER                - ADDRESS
+    27   19  487    //                               - NUMBERING_PLAN_PKEY
+    28   19  11     //                               - TYPE_OF_NUMBER
+    29   19  167    //                               - USER_PROFILE_ID
+    30   21  20     // CUG_INFO                      - CUG_INTERLOCK_CODE
+    31   21  21     //                               - CUG_INDEX
+    32   21  22     //                               - CUG_TYPE
+    33   26  26     // TECHNICAL_INFO                - REVERSE_CHARGING_IND
+    34   26  31     //                               - TERMINATION_IND
+    35   26  144    //                               - HOME_TERMINATED_IND
+    36   26  435    //                               - SC_PKEY
+    37   26  29     //                               - PARTIAL_REC_TYPE
+    38   34  90     // REMARK                        - REMARK
+    39   35  5      // XFILE_IC_CHARGE               - AMOUNT
+    40   35  6      //                               - TAX
+    41   35  437    //                               - CURRENCY_PKEY
+    42   35  8      //                               - GROSS_IND
+    43   37  3      // DATA_VOLUME                   - VOLUME
+    // Constant 'Byte' for DATA_VOLUME - UOM_PKEY
+    45   38  3      // MESSAGES                      - VOLUME
+    // Constant 'Msg' for MESSAGES - UOM_PKEY
+    47   79  9      // CAMEL_DESTINATION             - ADDRESS
+    48   79  487    //                               - NUMBERING_PLAN_PKEY
+    49   79  11     //                               - TYPE_OF_NUMBER
+    50   79  292    //                               - APN_SPLIT_SUPPORTED_IND
+    51   79  167    //                               - USER_PROFILE_ID
+    52   80  9      // CAMEL_SERVER_ADDRESS          - ADDRESS
+    53   80  487    //                               - NUMBERING_PLAN_PKEY
+    54   80  11     //                               - TYPE_OF_NUMBER
+    55   80  167    //                               - USER_PROFILE_ID
+    56   81  112    // QOS_REQUESTED                 - DELAY
+    57   81  113    //                               - PEAK_THROUGHPUT
+    58   81  114    //                               - MEAN_THROUGHPUT
+    59   81  126    //                               - PRECEDENCE
+    60   81  127    //                               - RELIABILITY
+    61   82  112    // QOS_NEGOTIATED                - DELAY
+    62   82  113    //                               - PEAK_THROUGHPUT
+    63   82  114    //                               - MEAN_THROUGHPUT
+    64   82  126    //                               - PRECEDENCE
+    65   82  127    //                               - RELIABILITY
+    66   83  9      // SERVED_PDP_ADDRESS            - ADDRESS
+    67   83  123    //                               - DYNAMIC_ADDRESS
+    68   83  487    //                               - NUMBERING_PLAN_PKEY
+    69   83  11     //                               - TYPE_OF_NUMBER
+    70   83  167    //                               - USER_PROFILE_ID
+    71   84  3      // UPLINK_VOLUME                 - VOLUME
+    // Constant 'Byte' for UPLINK_VOLUME - UOM_PKEY
+    73   85  3      // DOWNLINK_VOLUME               - VOLUME
+    // Constant 'Byte' for DOWNLINK_VOLUME - UOM_PKEY
+    75   86  115    // HSCSD_INFO                    - FNUR
+    76   86  116    //                               - AIUR
+    77   86  117    //                               - CHANNELS_MAX
+    78   86  118    //                               - CODING_ACC
+    79   86  119    //                               - CODING_USED
+    80   86  120    //                               - CHANNELS_USED
+    81   86  121    //                               - INIT_PARTY
+    82   87  124    // SGSN_ADDRESSES                - SGSN_ADDRESSES
+    83   98  3      // EVENT                         - VOLUME
+    // Constant 'Ev' for EVENT - UOM_PKEY
+    85   113 5      // XFILE_BASE_CHARGE             - AMOUNT
+    86   113 6      //                               - TAX
+    87   113 437    //                               - CURRENCY_PKEY
+    88   113 8      //                               - GROSS_IND
+    89   114 9      // RECIPIENT_NETWORK             - ADDRESS
+    90   114 487    //                               - NUMBERING_PLAN_PKEY
+    91   117 178    // VPN_INFO                      - VPN_CALL_TYPE
+    92   167 280    // UMTS_QOS_REQUESTED            - TRAFFIC_CLASS
+    93   167 281    //                               - MAX_BIT_RATE_UPLINK
+    94   167 282    //                               - MAX_BIT_RATE_DOWNLINK
+    95   167 431    //                               - GUARANTEED_BITRATE_DOWNLINK
+    96   167 430    //                               - GUARANTEED_BITRATE_UPLINK
+    97   167 283    //                               - DELIVERY_ORDER
+    98   167 284    //                               - MAX_SDU_SIZE
+    99   167 285    //                               - SDU_ERROR_RATIO
+    100  167 286    //                               - RESIDUAL_BER
+    101  167 287    //                               - ERRONEOUS_SDUS
+    102  167 288    //                               - HANDLING_PRIORITY
+    103  167 289    //                               - ALLOCATION_RETENTION_PRIORITY
+    104  167 291    //                               - TRANSFER_DELAY
+    105  168 280    // UMTS_QOS_NEGOTIATED           - TRAFFIC_CLASS
+    106  168 281    //                               - MAX_BIT_RATE_UPLINK
+    107  168 282    //                               - MAX_BIT_RATE_DOWNLINK
+    108  168 431    //                               - GUARANTEED_BITRATE_DOWNLINK
+    109  168 430    //                               - GUARANTEED_BITRATE_UPLINK
+    110  168 283    //                               - DELIVERY_ORDER
+    111  168 284    //                               - MAX_SDU_SIZE
+    112  168 285    //                               - SDU_ERROR_RATIO
+    113  168 286    //                               - RESIDUAL_BER
+    114  168 287    //                               - ERRONEOUS_SDUS
+    115  168 288    //                               - HANDLING_PRIORITY
+    116  168 289    //                               - ALLOCATION_RETENTION_PRIORITY
+    117  168 291    //                               - TRANSFER_DELAY
+    140  27  33     // LDC_INFO                      - CALL_MODE_FLAG
+    141  27  452    //                               - CONTRACT_PKEY
+    142  27  796    //                               - HOME_NET_IND
+    143  97  9      // NORMED_ROUTED_NUMBER          - ADDRESS
+    144  97  487    //                               - NUMBERING_PLAN_PKEY
+    145  116 9      // VPN_NUMBER                    - ADDRESS
+    146  116 487    //                               - NUMBERING_PLAN_PKEY
+    153  492 452    // LEC_INFO                      - CONTRACT_PKEY
+    154  492 796    //                               - HOME_NET_IND
+
+    T 12
+    P 1
+    1    99  64     // BASIC_CALL_TYPE_INFO          - CALL_TYPE
+    2    7   5      // XFILE_DISCOUNT                - AMOUNT
+    3    7   437    //                               - CURRENCY_PKEY
+    4    7   8      //                               - GROSS_IND
+    5    10  9      // S_P_NUMBER                    - ADDRESS
+    6    10  487    //                               - NUMBERING_PLAN_PKEY
+    7    10  11     //                               - TYPE_OF_NUMBER
+    8    10  436    //                               - NETWORK_PKEY
+    9    10  167    //                               - USER_PROFILE_ID
+    10   11  9      // S_P_PORT                      - ADDRESS
+    11   11  487    //                               - NUMBERING_PLAN_PKEY
+    12   11  167    //                               - USER_PROFILE_ID
+    13   12  18     // S_P_EQUIPMENT                 - NUMBER
+    14   12  19     //                               - CLASS_MARK
+    15   15  9      // NET_ELEMENT                   - ADDRESS
+    16   15  487    //                               - NUMBERING_PLAN_PKEY
+    17   15  436    //                               - NETWORK_PKEY
+    18   15  167    //                               - USER_PROFILE_ID
+    19   16  87     // NET_ELEMENT_ENTITY            - NET_ELEMENT_ENTITY
+    20   17  9      // O_P_NUMBER                    - ADDRESS
+    21   17  487    //                               - NUMBERING_PLAN_PKEY
+    22   17  11     //                               - TYPE_OF_NUMBER
+    23   17  292    //                               - APN_SPLIT_SUPPORTED_IND
+    24   17  13     //                               - CLIR
+    25   17  167    //                               - USER_PROFILE_ID
+    26   107 163    // OPTIMAL_ROUTING               - OPTIMAL_ROUTING_IND
+    27   18  9      // T_P_NUMBER                    - ADDRESS
+    28   18  487    //                               - NUMBERING_PLAN_PKEY
+    29   18  11     //                               - TYPE_OF_NUMBER
+    30   22  24     // SCU_INFO                      - PRIORITY_CODE
+    31   22  25     //                               - CHARGING_POINT
+    32   24  1      // SCU_OTHER_TIMESTAMP           - TIMESTAMP
+    33   24  2      //                               - TIME_OFFSET
+    34   25  9      // CAMEL_MSC_ADDRESS             - ADDRESS
+    35   25  487    //                               - NUMBERING_PLAN_PKEY
+    36   25  11     //                               - TYPE_OF_NUMBER
+    37   36  60     // RECORD_IDENTIFICATION         - CALL_ID
+    38   36  59     //                               - UDR_FILE_ID
+    39   36  62     //                               - CDR_ID
+    40   39  79     // CAMEL_DETAIL                  - CAMEL_REFERENCE_NUMBER
+    41   39  80     //                               - CAMEL_SERVICE_KEY
+    42   39  81     //                               - CAMEL_SERVICE_LEVEL
+    43   39  107    //                               - CAMEL_CALL_HANDLING_IND
+    44   39  108    //                               - CAMEL_CF_INDICATOR
+    45   39  562    //                               - CAMEL_MODIFICATION_LIST
+    46   78  111    // SIM_TOOLKIT                   - SIM_TOOLKIT_IND
+    47   95  9      // O_P_NORMED_NUMBER             - ADDRESS
+    48   95  487    //                               - NUMBERING_PLAN_PKEY
+    49   220 791    // CONTROL_DATA                  - RECORD_AGE
+    50   118 1      // INITIAL_START_TIME            - TIMESTAMP
+    51   118 2      //                               - TIME_OFFSET
+    52   65  436    // HOME_NETWORK                  - NETWORK_PKEY
+    53   65  83     //                               - COUNTRY_CODE
+    P 2
+    'Sec'    19
+    'Byte'   44
+    'Msg'    46
+    'Byte'   72
+    'Byte'   74
+    'Ev'     84
+    1    1   64     // CALL_TYPE_INFO                - CALL_TYPE
+    2    1   70     //                               - XFILE_IND
+    3    1   110    //                               - XFILE_CALL_TYPE
+    4    1   162    //                               - NETWORK_INIT_CONTEXT_IND
+    5    20  78     // CAUSE_FOR_FORWARD             - CAUSE_FOR_FORWARD
+    6    2   1      // START_TIME                    - TIMESTAMP
+    7    2   2      //                               - TIME_OFFSET
+    8    3   72     // SERVICE                       - ACTION_CODE
+    9    3   73     //                               - VAS_CODE
+    10   3   74     //                               - SPEECH_VERSION_USED
+    11   3   75     //                               - SPEECH_VERSION_REQUESTED
+    12   3   543    //                               - GUARANTEED_BIT_RATE
+    13   3   544    //                               - MAX_BIT_RATE
+    14   3   545    //                               - HSCSD_IND
+    15   3   546    //                               - IMS_SIGNALLING_CONTEXT
+    16   3   542    //                               - USER_PROTOCOL_INDICATOR
+    17   46  440    // TARIFF_INFO                   - SN_PKEY
+    18   5   3      // DURATION                      - VOLUME
+    // Constant 'Sec' for DURATION - UOM_PKEY
+    20   6   5      // XFILE_CHARGE                  - AMOUNT
+    21   6   8      //                               - GROSS_IND
+    22   6   6      //                               - TAX
+    23   6   437    //                               - CURRENCY_PKEY
+    24   13  9      // S_P_LOCATION                  - ADDRESS
+    25   13  487    //                               - NUMBERING_PLAN_PKEY
+    26   19  9      // ROUTING_NUMBER                - ADDRESS
+    27   19  487    //                               - NUMBERING_PLAN_PKEY
+    28   19  11     //                               - TYPE_OF_NUMBER
+    29   19  167    //                               - USER_PROFILE_ID
+    30   21  20     // CUG_INFO                      - CUG_INTERLOCK_CODE
+    31   21  21     //                               - CUG_INDEX
+    32   21  22     //                               - CUG_TYPE
+    33   26  26     // TECHNICAL_INFO                - REVERSE_CHARGING_IND
+    34   26  31     //                               - TERMINATION_IND
+    35   26  144    //                               - HOME_TERMINATED_IND
+    36   26  435    //                               - SC_PKEY
+    37   26  29     //                               - PARTIAL_REC_TYPE
+    38   34  90     // REMARK                        - REMARK
+    39   35  5      // XFILE_IC_CHARGE               - AMOUNT
+    40   35  6      //                               - TAX
+    41   35  437    //                               - CURRENCY_PKEY
+    42   35  8      //                               - GROSS_IND
+    43   37  3      // DATA_VOLUME                   - VOLUME
+    // Constant 'Byte' for DATA_VOLUME - UOM_PKEY
+    45   38  3      // MESSAGES                      - VOLUME
+    // Constant 'Msg' for MESSAGES - UOM_PKEY
+    47   79  9      // CAMEL_DESTINATION             - ADDRESS
+    48   79  487    //                               - NUMBERING_PLAN_PKEY
+    49   79  11     //                               - TYPE_OF_NUMBER
+    50   79  292    //                               - APN_SPLIT_SUPPORTED_IND
+    51   79  167    //                               - USER_PROFILE_ID
+    52   80  9      // CAMEL_SERVER_ADDRESS          - ADDRESS
+    53   80  487    //                               - NUMBERING_PLAN_PKEY
+    54   80  11     //                               - TYPE_OF_NUMBER
+    55   80  167    //                               - USER_PROFILE_ID
+    56   81  112    // QOS_REQUESTED                 - DELAY
+    57   81  113    //                               - PEAK_THROUGHPUT
+    58   81  114    //                               - MEAN_THROUGHPUT
+    59   81  126    //                               - PRECEDENCE
+    60   81  127    //                               - RELIABILITY
+    61   82  112    // QOS_NEGOTIATED                - DELAY
+    62   82  113    //                               - PEAK_THROUGHPUT
+    63   82  114    //                               - MEAN_THROUGHPUT
+    64   82  126    //                               - PRECEDENCE
+    65   82  127    //                               - RELIABILITY
+    66   83  9      // SERVED_PDP_ADDRESS            - ADDRESS
+    67   83  123    //                               - DYNAMIC_ADDRESS
+    68   83  487    //                               - NUMBERING_PLAN_PKEY
+    69   83  11     //                               - TYPE_OF_NUMBER
+    70   83  167    //                               - USER_PROFILE_ID
+    71   84  3      // UPLINK_VOLUME                 - VOLUME
+    // Constant 'Byte' for UPLINK_VOLUME - UOM_PKEY
+    73   85  3      // DOWNLINK_VOLUME               - VOLUME
+    // Constant 'Byte' for DOWNLINK_VOLUME - UOM_PKEY
+    75   86  115    // HSCSD_INFO                    - FNUR
+    76   86  116    //                               - AIUR
+    77   86  117    //                               - CHANNELS_MAX
+    78   86  118    //                               - CODING_ACC
+    79   86  119    //                               - CODING_USED
+    80   86  120    //                               - CHANNELS_USED
+    81   86  121    //                               - INIT_PARTY
+    82   87  124    // SGSN_ADDRESSES                - SGSN_ADDRESSES
+    83   98  3      // EVENT                         - VOLUME
+    // Constant 'Ev' for EVENT - UOM_PKEY
+    85   113 5      // XFILE_BASE_CHARGE             - AMOUNT
+    86   113 6      //                               - TAX
+    87   113 437    //                               - CURRENCY_PKEY
+    88   113 8      //                               - GROSS_IND
+    89   114 9      // RECIPIENT_NETWORK             - ADDRESS
+    90   114 487    //                               - NUMBERING_PLAN_PKEY
+    91   117 178    // VPN_INFO                      - VPN_CALL_TYPE
+    92   167 280    // UMTS_QOS_REQUESTED            - TRAFFIC_CLASS
+    93   167 281    //                               - MAX_BIT_RATE_UPLINK
+    94   167 282    //                               - MAX_BIT_RATE_DOWNLINK
+    95   167 431    //                               - GUARANTEED_BITRATE_DOWNLINK
+    96   167 430    //                               - GUARANTEED_BITRATE_UPLINK
+    97   167 283    //                               - DELIVERY_ORDER
+    98   167 284    //                               - MAX_SDU_SIZE
+    99   167 285    //                               - SDU_ERROR_RATIO
+    100  167 286    //                               - RESIDUAL_BER
+    101  167 287    //                               - ERRONEOUS_SDUS
+    102  167 288    //                               - HANDLING_PRIORITY
+    103  167 289    //                               - ALLOCATION_RETENTION_PRIORITY
+    104  167 291    //                               - TRANSFER_DELAY
+    105  168 280    // UMTS_QOS_NEGOTIATED           - TRAFFIC_CLASS
+    106  168 281    //                               - MAX_BIT_RATE_UPLINK
+    107  168 282    //                               - MAX_BIT_RATE_DOWNLINK
+    108  168 431    //                               - GUARANTEED_BITRATE_DOWNLINK
+    109  168 430    //                               - GUARANTEED_BITRATE_UPLINK
+    110  168 283    //                               - DELIVERY_ORDER
+    111  168 284    //                               - MAX_SDU_SIZE
+    112  168 285    //                               - SDU_ERROR_RATIO
+    113  168 286    //                               - RESIDUAL_BER
+    114  168 287    //                               - ERRONEOUS_SDUS
+    115  168 288    //                               - HANDLING_PRIORITY
+    116  168 289    //                               - ALLOCATION_RETENTION_PRIORITY
+    117  168 291    //                               - TRANSFER_DELAY
+    140  27  33     // LDC_INFO                      - CALL_MODE_FLAG
+    141  27  452    //                               - CONTRACT_PKEY
+    142  27  796    //                               - HOME_NET_IND
+    143  97  9      // NORMED_ROUTED_NUMBER          - ADDRESS
+    144  97  487    //                               - NUMBERING_PLAN_PKEY
+    145  116 9      // VPN_NUMBER                    - ADDRESS
+    146  116 487    //                               - NUMBERING_PLAN_PKEY
+    153  492 452    // LEC_INFO                      - CONTRACT_PKEY
+    154  492 796    //                               - HOME_NET_IND
+
+    T 13
+    P 1
+    1    99  64     // BASIC_CALL_TYPE_INFO          - CALL_TYPE
+    2    7   5      // XFILE_DISCOUNT                - AMOUNT
+    3    7   437    //                               - CURRENCY_PKEY
+    4    7   8      //                               - GROSS_IND
+    5    10  9      // S_P_NUMBER                    - ADDRESS
+    6    10  487    //                               - NUMBERING_PLAN_PKEY
+    7    10  11     //                               - TYPE_OF_NUMBER
+    8    10  436    //                               - NETWORK_PKEY
+    9    10  167    //                               - USER_PROFILE_ID
+    10   11  9      // S_P_PORT                      - ADDRESS
+    11   11  487    //                               - NUMBERING_PLAN_PKEY
+    12   11  167    //                               - USER_PROFILE_ID
+    13   12  18     // S_P_EQUIPMENT                 - NUMBER
+    14   12  19     //                               - CLASS_MARK
+    15   15  9      // NET_ELEMENT                   - ADDRESS
+    16   15  487    //                               - NUMBERING_PLAN_PKEY
+    17   15  436    //                               - NETWORK_PKEY
+    18   15  167    //                               - USER_PROFILE_ID
+    19   16  87     // NET_ELEMENT_ENTITY            - NET_ELEMENT_ENTITY
+    20   17  9      // O_P_NUMBER                    - ADDRESS
+    21   17  487    //                               - NUMBERING_PLAN_PKEY
+    22   17  11     //                               - TYPE_OF_NUMBER
+    23   17  292    //                               - APN_SPLIT_SUPPORTED_IND
+    24   17  13     //                               - CLIR
+    25   17  167    //                               - USER_PROFILE_ID
+    26   107 163    // OPTIMAL_ROUTING               - OPTIMAL_ROUTING_IND
+    27   18  9      // T_P_NUMBER                    - ADDRESS
+    28   18  487    //                               - NUMBERING_PLAN_PKEY
+    29   18  11     //                               - TYPE_OF_NUMBER
+    30   22  24     // SCU_INFO                      - PRIORITY_CODE
+    31   22  25     //                               - CHARGING_POINT
+    32   24  1      // SCU_OTHER_TIMESTAMP           - TIMESTAMP
+    33   24  2      //                               - TIME_OFFSET
+    34   25  9      // CAMEL_MSC_ADDRESS             - ADDRESS
+    35   25  487    //                               - NUMBERING_PLAN_PKEY
+    36   25  11     //                               - TYPE_OF_NUMBER
+    37   36  60     // RECORD_IDENTIFICATION         - CALL_ID
+    38   36  59     //                               - UDR_FILE_ID
+    39   36  62     //                               - CDR_ID
+    40   39  79     // CAMEL_DETAIL                  - CAMEL_REFERENCE_NUMBER
+    41   39  80     //                               - CAMEL_SERVICE_KEY
+    42   39  81     //                               - CAMEL_SERVICE_LEVEL
+    43   39  107    //                               - CAMEL_CALL_HANDLING_IND
+    44   39  108    //                               - CAMEL_CF_INDICATOR
+    45   39  562    //                               - CAMEL_MODIFICATION_LIST
+    46   78  111    // SIM_TOOLKIT                   - SIM_TOOLKIT_IND
+    47   95  9      // O_P_NORMED_NUMBER             - ADDRESS
+    48   95  487    //                               - NUMBERING_PLAN_PKEY
+    49   220 791    // CONTROL_DATA                  - RECORD_AGE
+    50   118 1      // INITIAL_START_TIME            - TIMESTAMP
+    51   118 2      //                               - TIME_OFFSET
+    52   65  436    // HOME_NETWORK                  - NETWORK_PKEY
+    53   65  83     //                               - COUNTRY_CODE
+    P 2
+    'Sec'    19
+    'Byte'   44
+    'Msg'    46
+    'Byte'   72
+    'Byte'   74
+    'Ev'     84
+    1    1   64     // CALL_TYPE_INFO                - CALL_TYPE
+    2    1   70     //                               - XFILE_IND
+    3    1   110    //                               - XFILE_CALL_TYPE
+    4    1   162    //                               - NETWORK_INIT_CONTEXT_IND
+    5    20  78     // CAUSE_FOR_FORWARD             - CAUSE_FOR_FORWARD
+    6    2   1      // START_TIME                    - TIMESTAMP
+    7    2   2      //                               - TIME_OFFSET
+    8    3   72     // SERVICE                       - ACTION_CODE
+    9    3   73     //                               - VAS_CODE
+    10   3   74     //                               - SPEECH_VERSION_USED
+    11   3   75     //                               - SPEECH_VERSION_REQUESTED
+    12   3   543    //                               - GUARANTEED_BIT_RATE
+    13   3   544    //                               - MAX_BIT_RATE
+    14   3   545    //                               - HSCSD_IND
+    15   3   546    //                               - IMS_SIGNALLING_CONTEXT
+    16   3   542    //                               - USER_PROTOCOL_INDICATOR
+    17   46  440    // TARIFF_INFO                   - SN_PKEY
+    18   5   3      // DURATION                      - VOLUME
+    // Constant 'Sec' for DURATION - UOM_PKEY
+    20   6   5      // XFILE_CHARGE                  - AMOUNT
+    21   6   8      //                               - GROSS_IND
+    22   6   6      //                               - TAX
+    23   6   437    //                               - CURRENCY_PKEY
+    24   13  9      // S_P_LOCATION                  - ADDRESS
+    25   13  487    //                               - NUMBERING_PLAN_PKEY
+    26   19  9      // ROUTING_NUMBER                - ADDRESS
+    27   19  487    //                               - NUMBERING_PLAN_PKEY
+    28   19  11     //                               - TYPE_OF_NUMBER
+    29   19  167    //                               - USER_PROFILE_ID
+    30   21  20     // CUG_INFO                      - CUG_INTERLOCK_CODE
+    31   21  21     //                               - CUG_INDEX
+    32   21  22     //                               - CUG_TYPE
+    33   26  26     // TECHNICAL_INFO                - REVERSE_CHARGING_IND
+    34   26  31     //                               - TERMINATION_IND
+    35   26  144    //                               - HOME_TERMINATED_IND
+    36   26  435    //                               - SC_PKEY
+    37   26  29     //                               - PARTIAL_REC_TYPE
+    38   34  90     // REMARK                        - REMARK
+    39   35  5      // XFILE_IC_CHARGE               - AMOUNT
+    40   35  6      //                               - TAX
+    41   35  437    //                               - CURRENCY_PKEY
+    42   35  8      //                               - GROSS_IND
+    43   37  3      // DATA_VOLUME                   - VOLUME
+    // Constant 'Byte' for DATA_VOLUME - UOM_PKEY
+    45   38  3      // MESSAGES                      - VOLUME
+    // Constant 'Msg' for MESSAGES - UOM_PKEY
+    47   79  9      // CAMEL_DESTINATION             - ADDRESS
+    48   79  487    //                               - NUMBERING_PLAN_PKEY
+    49   79  11     //                               - TYPE_OF_NUMBER
+    50   79  292    //                               - APN_SPLIT_SUPPORTED_IND
+    51   79  167    //                               - USER_PROFILE_ID
+    52   80  9      // CAMEL_SERVER_ADDRESS          - ADDRESS
+    53   80  487    //                               - NUMBERING_PLAN_PKEY
+    54   80  11     //                               - TYPE_OF_NUMBER
+    55   80  167    //                               - USER_PROFILE_ID
+    56   81  112    // QOS_REQUESTED                 - DELAY
+    57   81  113    //                               - PEAK_THROUGHPUT
+    58   81  114    //                               - MEAN_THROUGHPUT
+    59   81  126    //                               - PRECEDENCE
+    60   81  127    //                               - RELIABILITY
+    61   82  112    // QOS_NEGOTIATED                - DELAY
+    62   82  113    //                               - PEAK_THROUGHPUT
+    63   82  114    //                               - MEAN_THROUGHPUT
+    64   82  126    //                               - PRECEDENCE
+    65   82  127    //                               - RELIABILITY
+    66   83  9      // SERVED_PDP_ADDRESS            - ADDRESS
+    67   83  123    //                               - DYNAMIC_ADDRESS
+    68   83  487    //                               - NUMBERING_PLAN_PKEY
+    69   83  11     //                               - TYPE_OF_NUMBER
+    70   83  167    //                               - USER_PROFILE_ID
+    71   84  3      // UPLINK_VOLUME                 - VOLUME
+    // Constant 'Byte' for UPLINK_VOLUME - UOM_PKEY
+    73   85  3      // DOWNLINK_VOLUME               - VOLUME
+    // Constant 'Byte' for DOWNLINK_VOLUME - UOM_PKEY
+    75   86  115    // HSCSD_INFO                    - FNUR
+    76   86  116    //                               - AIUR
+    77   86  117    //                               - CHANNELS_MAX
+    78   86  118    //                               - CODING_ACC
+    79   86  119    //                               - CODING_USED
+    80   86  120    //                               - CHANNELS_USED
+    81   86  121    //                               - INIT_PARTY
+    82   87  124    // SGSN_ADDRESSES                - SGSN_ADDRESSES
+    83   98  3      // EVENT                         - VOLUME
+    // Constant 'Ev' for EVENT - UOM_PKEY
+    85   113 5      // XFILE_BASE_CHARGE             - AMOUNT
+    86   113 6      //                               - TAX
+    87   113 437    //                               - CURRENCY_PKEY
+    88   113 8      //                               - GROSS_IND
+    89   114 9      // RECIPIENT_NETWORK             - ADDRESS
+    90   114 487    //                               - NUMBERING_PLAN_PKEY
+    91   117 178    // VPN_INFO                      - VPN_CALL_TYPE
+    92   167 280    // UMTS_QOS_REQUESTED            - TRAFFIC_CLASS
+    93   167 281    //                               - MAX_BIT_RATE_UPLINK
+    94   167 282    //                               - MAX_BIT_RATE_DOWNLINK
+    95   167 431    //                               - GUARANTEED_BITRATE_DOWNLINK
+    96   167 430    //                               - GUARANTEED_BITRATE_UPLINK
+    97   167 283    //                               - DELIVERY_ORDER
+    98   167 284    //                               - MAX_SDU_SIZE
+    99   167 285    //                               - SDU_ERROR_RATIO
+    100  167 286    //                               - RESIDUAL_BER
+    101  167 287    //                               - ERRONEOUS_SDUS
+    102  167 288    //                               - HANDLING_PRIORITY
+    103  167 289    //                               - ALLOCATION_RETENTION_PRIORITY
+    104  167 291    //                               - TRANSFER_DELAY
+    105  168 280    // UMTS_QOS_NEGOTIATED           - TRAFFIC_CLASS
+    106  168 281    //                               - MAX_BIT_RATE_UPLINK
+    107  168 282    //                               - MAX_BIT_RATE_DOWNLINK
+    108  168 431    //                               - GUARANTEED_BITRATE_DOWNLINK
+    109  168 430    //                               - GUARANTEED_BITRATE_UPLINK
+    110  168 283    //                               - DELIVERY_ORDER
+    111  168 284    //                               - MAX_SDU_SIZE
+    112  168 285    //                               - SDU_ERROR_RATIO
+    113  168 286    //                               - RESIDUAL_BER
+    114  168 287    //                               - ERRONEOUS_SDUS
+    115  168 288    //                               - HANDLING_PRIORITY
+    116  168 289    //                               - ALLOCATION_RETENTION_PRIORITY
+    117  168 291    //                               - TRANSFER_DELAY
+    140  27  33     // LDC_INFO                      - CALL_MODE_FLAG
+    141  27  452    //                               - CONTRACT_PKEY
+    142  27  796    //                               - HOME_NET_IND
+    143  97  9      // NORMED_ROUTED_NUMBER          - ADDRESS
+    144  97  487    //                               - NUMBERING_PLAN_PKEY
+    145  116 9      // VPN_NUMBER                    - ADDRESS
+    146  116 487    //                               - NUMBERING_PLAN_PKEY
+    153  492 452    // LEC_INFO                      - CONTRACT_PKEY
+    154  492 796    //                               - HOME_NET_IND
+
+    T 21
+    P 1
+    1    99  64     // BASIC_CALL_TYPE_INFO          - CALL_TYPE
+    2    7   5      // XFILE_DISCOUNT                - AMOUNT
+    3    7   437    //                               - CURRENCY_PKEY
+    4    7   8      //                               - GROSS_IND
+    5    10  9      // S_P_NUMBER                    - ADDRESS
+    6    10  487    //                               - NUMBERING_PLAN_PKEY
+    7    10  11     //                               - TYPE_OF_NUMBER
+    8    10  436    //                               - NETWORK_PKEY
+    9    10  167    //                               - USER_PROFILE_ID
+    10   11  9      // S_P_PORT                      - ADDRESS
+    11   11  487    //                               - NUMBERING_PLAN_PKEY
+    12   11  167    //                               - USER_PROFILE_ID
+    13   12  18     // S_P_EQUIPMENT                 - NUMBER
+    14   12  19     //                               - CLASS_MARK
+    15   15  9      // NET_ELEMENT                   - ADDRESS
+    16   15  487    //                               - NUMBERING_PLAN_PKEY
+    17   15  436    //                               - NETWORK_PKEY
+    18   15  167    //                               - USER_PROFILE_ID
+    19   16  87     // NET_ELEMENT_ENTITY            - NET_ELEMENT_ENTITY
+    20   17  9      // O_P_NUMBER                    - ADDRESS
+    21   17  487    //                               - NUMBERING_PLAN_PKEY
+    22   17  11     //                               - TYPE_OF_NUMBER
+    23   17  292    //                               - APN_SPLIT_SUPPORTED_IND
+    24   17  13     //                               - CLIR
+    25   17  167    //                               - USER_PROFILE_ID
+    26   107 163    // OPTIMAL_ROUTING               - OPTIMAL_ROUTING_IND
+    27   18  9      // T_P_NUMBER                    - ADDRESS
+    28   18  487    //                               - NUMBERING_PLAN_PKEY
+    29   18  11     //                               - TYPE_OF_NUMBER
+    30   22  24     // SCU_INFO                      - PRIORITY_CODE
+    31   22  25     //                               - CHARGING_POINT
+    32   24  1      // SCU_OTHER_TIMESTAMP           - TIMESTAMP
+    33   24  2      //                               - TIME_OFFSET
+    34   25  9      // CAMEL_MSC_ADDRESS             - ADDRESS
+    35   25  487    //                               - NUMBERING_PLAN_PKEY
+    36   25  11     //                               - TYPE_OF_NUMBER
+    37   36  60     // RECORD_IDENTIFICATION         - CALL_ID
+    38   36  59     //                               - UDR_FILE_ID
+    39   36  62     //                               - CDR_ID
+    40   39  79     // CAMEL_DETAIL                  - CAMEL_REFERENCE_NUMBER
+    41   39  80     //                               - CAMEL_SERVICE_KEY
+    42   39  81     //                               - CAMEL_SERVICE_LEVEL
+    43   39  107    //                               - CAMEL_CALL_HANDLING_IND
+    44   39  108    //                               - CAMEL_CF_INDICATOR
+    45   39  562    //                               - CAMEL_MODIFICATION_LIST
+    46   78  111    // SIM_TOOLKIT                   - SIM_TOOLKIT_IND
+    47   95  9      // O_P_NORMED_NUMBER             - ADDRESS
+    48   95  487    //                               - NUMBERING_PLAN_PKEY
+    49   220 791    // CONTROL_DATA                  - RECORD_AGE
+    50   118 1      // INITIAL_START_TIME            - TIMESTAMP
+    51   118 2      //                               - TIME_OFFSET
+    52   65  436    // HOME_NETWORK                  - NETWORK_PKEY
+    53   65  83     //                               - COUNTRY_CODE
+    P 2
+    'Sec'    19
+    'Byte'   44
+    'Msg'    46
+    'Byte'   72
+    'Byte'   74
+    'Ev'     84
+    1    1   64     // CALL_TYPE_INFO                - CALL_TYPE
+    2    1   70     //                               - XFILE_IND
+    3    1   110    //                               - XFILE_CALL_TYPE
+    4    1   162    //                               - NETWORK_INIT_CONTEXT_IND
+    5    20  78     // CAUSE_FOR_FORWARD             - CAUSE_FOR_FORWARD
+    6    2   1      // START_TIME                    - TIMESTAMP
+    7    2   2      //                               - TIME_OFFSET
+    8    3   72     // SERVICE                       - ACTION_CODE
+    9    3   73     //                               - VAS_CODE
+    10   3   74     //                               - SPEECH_VERSION_USED
+    11   3   75     //                               - SPEECH_VERSION_REQUESTED
+    12   3   543    //                               - GUARANTEED_BIT_RATE
+    13   3   544    //                               - MAX_BIT_RATE
+    14   3   545    //                               - HSCSD_IND
+    15   3   546    //                               - IMS_SIGNALLING_CONTEXT
+    16   3   542    //                               - USER_PROTOCOL_INDICATOR
+    17   46  440    // TARIFF_INFO                   - SN_PKEY
+    18   5   3      // DURATION                      - VOLUME
+    // Constant 'Sec' for DURATION - UOM_PKEY
+    20   6   5      // XFILE_CHARGE                  - AMOUNT
+    21   6   8      //                               - GROSS_IND
+    22   6   6      //                               - TAX
+    23   6   437    //                               - CURRENCY_PKEY
+    24   13  9      // S_P_LOCATION                  - ADDRESS
+    25   13  487    //                               - NUMBERING_PLAN_PKEY
+    26   19  9      // ROUTING_NUMBER                - ADDRESS
+    27   19  487    //                               - NUMBERING_PLAN_PKEY
+    28   19  11     //                               - TYPE_OF_NUMBER
+    29   19  167    //                               - USER_PROFILE_ID
+    30   21  20     // CUG_INFO                      - CUG_INTERLOCK_CODE
+    31   21  21     //                               - CUG_INDEX
+    32   21  22     //                               - CUG_TYPE
+    33   26  26     // TECHNICAL_INFO                - REVERSE_CHARGING_IND
+    34   26  31     //                               - TERMINATION_IND
+    35   26  144    //                               - HOME_TERMINATED_IND
+    36   26  435    //                               - SC_PKEY
+    37   26  29     //                               - PARTIAL_REC_TYPE
+    38   34  90     // REMARK                        - REMARK
+    39   35  5      // XFILE_IC_CHARGE               - AMOUNT
+    40   35  6      //                               - TAX
+    41   35  437    //                               - CURRENCY_PKEY
+    42   35  8      //                               - GROSS_IND
+    43   37  3      // DATA_VOLUME                   - VOLUME
+    // Constant 'Byte' for DATA_VOLUME - UOM_PKEY
+    45   38  3      // MESSAGES                      - VOLUME
+    // Constant 'Msg' for MESSAGES - UOM_PKEY
+    47   79  9      // CAMEL_DESTINATION             - ADDRESS
+    48   79  487    //                               - NUMBERING_PLAN_PKEY
+    49   79  11     //                               - TYPE_OF_NUMBER
+    50   79  292    //                               - APN_SPLIT_SUPPORTED_IND
+    51   79  167    //                               - USER_PROFILE_ID
+    52   80  9      // CAMEL_SERVER_ADDRESS          - ADDRESS
+    53   80  487    //                               - NUMBERING_PLAN_PKEY
+    54   80  11     //                               - TYPE_OF_NUMBER
+    55   80  167    //                               - USER_PROFILE_ID
+    71   84  3      // UPLINK_VOLUME                 - VOLUME
+    // Constant 'Byte' for UPLINK_VOLUME - UOM_PKEY
+    73   85  3      // DOWNLINK_VOLUME               - VOLUME
+    // Constant 'Byte' for DOWNLINK_VOLUME - UOM_PKEY
+    75   86  115    // HSCSD_INFO                    - FNUR
+    76   86  116    //                               - AIUR
+    77   86  117    //                               - CHANNELS_MAX
+    78   86  118    //                               - CODING_ACC
+    79   86  119    //                               - CODING_USED
+    80   86  120    //                               - CHANNELS_USED
+    81   86  121    //                               - INIT_PARTY
+    83   98  3      // EVENT                         - VOLUME
+    // Constant 'Ev' for EVENT - UOM_PKEY
+    85   113 5      // XFILE_BASE_CHARGE             - AMOUNT
+    86   113 6      //                               - TAX
+    87   113 437    //                               - CURRENCY_PKEY
+    88   113 8      //                               - GROSS_IND
+    89   114 9      // RECIPIENT_NETWORK             - ADDRESS
+    90   114 487    //                               - NUMBERING_PLAN_PKEY
+    91   117 178    // VPN_INFO                      - VPN_CALL_TYPE
+    140  27  33     // LDC_INFO                      - CALL_MODE_FLAG
+    141  27  452    //                               - CONTRACT_PKEY
+    142  27  796    //                               - HOME_NET_IND
+    143  97  9      // NORMED_ROUTED_NUMBER          - ADDRESS
+    144  97  487    //                               - NUMBERING_PLAN_PKEY
+    145  116 9      // VPN_NUMBER                    - ADDRESS
+    146  116 487    //                               - NUMBERING_PLAN_PKEY
+    153  492 452    // LEC_INFO                      - CONTRACT_PKEY
+    154  492 796    //                               - HOME_NET_IND
+
+    T 31
+    P 1
+    1    99  64     // BASIC_CALL_TYPE_INFO          - CALL_TYPE
+    2    7   5      // XFILE_DISCOUNT                - AMOUNT
+    3    7   437    //                               - CURRENCY_PKEY
+    4    7   8      //                               - GROSS_IND
+    5    10  9      // S_P_NUMBER                    - ADDRESS
+    6    10  487    //                               - NUMBERING_PLAN_PKEY
+    7    10  11     //                               - TYPE_OF_NUMBER
+    8    10  436    //                               - NETWORK_PKEY
+    9    10  167    //                               - USER_PROFILE_ID
+    10   11  9      // S_P_PORT                      - ADDRESS
+    11   11  487    //                               - NUMBERING_PLAN_PKEY
+    12   11  167    //                               - USER_PROFILE_ID
+    13   12  18     // S_P_EQUIPMENT                 - NUMBER
+    14   12  19     //                               - CLASS_MARK
+    15   15  9      // NET_ELEMENT                   - ADDRESS
+    16   15  487    //                               - NUMBERING_PLAN_PKEY
+    17   15  436    //                               - NETWORK_PKEY
+    18   15  167    //                               - USER_PROFILE_ID
+    19   16  87     // NET_ELEMENT_ENTITY            - NET_ELEMENT_ENTITY
+    20   17  9      // O_P_NUMBER                    - ADDRESS
+    21   17  487    //                               - NUMBERING_PLAN_PKEY
+    22   17  11     //                               - TYPE_OF_NUMBER
+    23   17  292    //                               - APN_SPLIT_SUPPORTED_IND
+    24   17  13     //                               - CLIR
+    25   17  167    //                               - USER_PROFILE_ID
+    26   107 163    // OPTIMAL_ROUTING               - OPTIMAL_ROUTING_IND
+    27   18  9      // T_P_NUMBER                    - ADDRESS
+    28   18  487    //                               - NUMBERING_PLAN_PKEY
+    29   18  11     //                               - TYPE_OF_NUMBER
+    30   22  24     // SCU_INFO                      - PRIORITY_CODE
+    31   22  25     //                               - CHARGING_POINT
+    32   24  1      // SCU_OTHER_TIMESTAMP           - TIMESTAMP
+    33   24  2      //                               - TIME_OFFSET
+    34   25  9      // CAMEL_MSC_ADDRESS             - ADDRESS
+    35   25  487    //                               - NUMBERING_PLAN_PKEY
+    36   25  11     //                               - TYPE_OF_NUMBER
+    37   36  60     // RECORD_IDENTIFICATION         - CALL_ID
+    38   36  59     //                               - UDR_FILE_ID
+    39   36  62     //                               - CDR_ID
+    40   39  79     // CAMEL_DETAIL                  - CAMEL_REFERENCE_NUMBER
+    41   39  80     //                               - CAMEL_SERVICE_KEY
+    42   39  81     //                               - CAMEL_SERVICE_LEVEL
+    43   39  107    //                               - CAMEL_CALL_HANDLING_IND
+    44   39  108    //                               - CAMEL_CF_INDICATOR
+    45   39  562    //                               - CAMEL_MODIFICATION_LIST
+    46   78  111    // SIM_TOOLKIT                   - SIM_TOOLKIT_IND
+    47   95  9      // O_P_NORMED_NUMBER             - ADDRESS
+    48   95  487    //                               - NUMBERING_PLAN_PKEY
+    49   220 791    // CONTROL_DATA                  - RECORD_AGE
+    50   118 1      // INITIAL_START_TIME            - TIMESTAMP
+    51   118 2      //                               - TIME_OFFSET
+    52   65  436    // HOME_NETWORK                  - NETWORK_PKEY
+    53   65  83     //                               - COUNTRY_CODE
+    P 2
+    'Sec'    19
+    'Byte'   44
+    'Msg'    46
+    'Byte'   72
+    'Byte'   74
+    'Ev'     84
+    1    1   64     // CALL_TYPE_INFO                - CALL_TYPE
+    2    1   70     //                               - XFILE_IND
+    3    1   110    //                               - XFILE_CALL_TYPE
+    4    1   162    //                               - NETWORK_INIT_CONTEXT_IND
+    5    20  78     // CAUSE_FOR_FORWARD             - CAUSE_FOR_FORWARD
+    6    2   1      // START_TIME                    - TIMESTAMP
+    7    2   2      //                               - TIME_OFFSET
+    8    3   72     // SERVICE                       - ACTION_CODE
+    9    3   73     //                               - VAS_CODE
+    10   3   74     //                               - SPEECH_VERSION_USED
+    11   3   75     //                               - SPEECH_VERSION_REQUESTED
+    12   3   543    //                               - GUARANTEED_BIT_RATE
+    13   3   544    //                               - MAX_BIT_RATE
+    14   3   545    //                               - HSCSD_IND
+    15   3   546    //                               - IMS_SIGNALLING_CONTEXT
+    16   3   542    //                               - USER_PROTOCOL_INDICATOR
+    17   46  440    // TARIFF_INFO                   - SN_PKEY
+    18   5   3      // DURATION                      - VOLUME
+    // Constant 'Sec' for DURATION - UOM_PKEY
+    20   6   5      // XFILE_CHARGE                  - AMOUNT
+    21   6   8      //                               - GROSS_IND
+    22   6   6      //                               - TAX
+    23   6   437    //                               - CURRENCY_PKEY
+    24   13  9      // S_P_LOCATION                  - ADDRESS
+    25   13  487    //                               - NUMBERING_PLAN_PKEY
+    26   19  9      // ROUTING_NUMBER                - ADDRESS
+    27   19  487    //                               - NUMBERING_PLAN_PKEY
+    28   19  11     //                               - TYPE_OF_NUMBER
+    29   19  167    //                               - USER_PROFILE_ID
+    30   21  20     // CUG_INFO                      - CUG_INTERLOCK_CODE
+    31   21  21     //                               - CUG_INDEX
+    32   21  22     //                               - CUG_TYPE
+    33   26  26     // TECHNICAL_INFO                - REVERSE_CHARGING_IND
+    34   26  31     //                               - TERMINATION_IND
+    35   26  144    //                               - HOME_TERMINATED_IND
+    36   26  435    //                               - SC_PKEY
+    37   26  29     //                               - PARTIAL_REC_TYPE
+    38   34  90     // REMARK                        - REMARK
+    39   35  5      // XFILE_IC_CHARGE               - AMOUNT
+    40   35  6      //                               - TAX
+    41   35  437    //                               - CURRENCY_PKEY
+    42   35  8      //                               - GROSS_IND
+    43   37  3      // DATA_VOLUME                   - VOLUME
+    // Constant 'Byte' for DATA_VOLUME - UOM_PKEY
+    45   38  3      // MESSAGES                      - VOLUME
+    // Constant 'Msg' for MESSAGES - UOM_PKEY
+    47   79  9      // CAMEL_DESTINATION             - ADDRESS
+    48   79  487    //                               - NUMBERING_PLAN_PKEY
+    49   79  11     //                               - TYPE_OF_NUMBER
+    50   79  292    //                               - APN_SPLIT_SUPPORTED_IND
+    51   79  167    //                               - USER_PROFILE_ID
+    52   80  9      // CAMEL_SERVER_ADDRESS          - ADDRESS
+    53   80  487    //                               - NUMBERING_PLAN_PKEY
+    54   80  11     //                               - TYPE_OF_NUMBER
+    55   80  167    //                               - USER_PROFILE_ID
+    71   84  3      // UPLINK_VOLUME                 - VOLUME
+    // Constant 'Byte' for UPLINK_VOLUME - UOM_PKEY
+    73   85  3      // DOWNLINK_VOLUME               - VOLUME
+    // Constant 'Byte' for DOWNLINK_VOLUME - UOM_PKEY
+    75   86  115    // HSCSD_INFO                    - FNUR
+    76   86  116    //                               - AIUR
+    77   86  117    //                               - CHANNELS_MAX
+    78   86  118    //                               - CODING_ACC
+    79   86  119    //                               - CODING_USED
+    80   86  120    //                               - CHANNELS_USED
+    81   86  121    //                               - INIT_PARTY
+    83   98  3      // EVENT                         - VOLUME
+    // Constant 'Ev' for EVENT - UOM_PKEY
+    85   113 5      // XFILE_BASE_CHARGE             - AMOUNT
+    86   113 6      //                               - TAX
+    87   113 437    //                               - CURRENCY_PKEY
+    88   113 8      //                               - GROSS_IND
+    89   114 9      // RECIPIENT_NETWORK             - ADDRESS
+    90   114 487    //                               - NUMBERING_PLAN_PKEY
+    91   117 178    // VPN_INFO                      - VPN_CALL_TYPE
+    128  292 541    // LCS_QOS_INFO                  - AGE_OF_LOCATION
+    129  292 540    //                               - POSITIONING_METHOD
+    130  292 539    //                               - RESPONSE_TIME
+    131  292 538    //                               - RESPONSE_TIME_CATEGORY
+    132  291 536    // LCS_QOS_REQUESTED             - HORIZONTAL_ACCURACY
+    133  291 535    //                               - TRACKING_FREQUENCY
+    134  291 534    //                               - TRACKING_PERIOD
+    135  291 537    //                               - VERTICAL_ACCURACY
+    136  290 536    // LCS_QOS_DELIVERED             - HORIZONTAL_ACCURACY
+    137  290 535    //                               - TRACKING_FREQUENCY
+    138  290 534    //                               - TRACKING_PERIOD
+    139  290 537    //                               - VERTICAL_ACCURACY
+    140  27  33     // LDC_INFO                      - CALL_MODE_FLAG
+    141  27  452    //                               - CONTRACT_PKEY
+    142  27  796    //                               - HOME_NET_IND
+    143  97  9      // NORMED_ROUTED_NUMBER          - ADDRESS
+    144  97  487    //                               - NUMBERING_PLAN_PKEY
+    145  116 9      // VPN_NUMBER                    - ADDRESS
+    146  116 487    //                               - NUMBERING_PLAN_PKEY
+    153  492 452    // LEC_INFO                      - CONTRACT_PKEY
+    154  492 796    //                               - HOME_NET_IND
+
+    T 99
+    P 1
+    1    99  64     // BASIC_CALL_TYPE_INFO          - CALL_TYPE
+    2    7   5      // XFILE_DISCOUNT                - AMOUNT
+    3    7   437    //                               - CURRENCY_PKEY
+    4    7   8      //                               - GROSS_IND
+    5    10  9      // S_P_NUMBER                    - ADDRESS
+    6    10  487    //                               - NUMBERING_PLAN_PKEY
+    7    10  11     //                               - TYPE_OF_NUMBER
+    8    10  436    //                               - NETWORK_PKEY
+    9    10  167    //                               - USER_PROFILE_ID
+    10   11  9      // S_P_PORT                      - ADDRESS
+    11   11  487    //                               - NUMBERING_PLAN_PKEY
+    12   11  167    //                               - USER_PROFILE_ID
+    13   12  18     // S_P_EQUIPMENT                 - NUMBER
+    14   12  19     //                               - CLASS_MARK
+    15   15  9      // NET_ELEMENT                   - ADDRESS
+    16   15  487    //                               - NUMBERING_PLAN_PKEY
+    17   15  436    //                               - NETWORK_PKEY
+    18   15  167    //                               - USER_PROFILE_ID
+    19   16  87     // NET_ELEMENT_ENTITY            - NET_ELEMENT_ENTITY
+    20   17  9      // O_P_NUMBER                    - ADDRESS
+    21   17  487    //                               - NUMBERING_PLAN_PKEY
+    22   17  11     //                               - TYPE_OF_NUMBER
+    23   17  292    //                               - APN_SPLIT_SUPPORTED_IND
+    24   17  13     //                               - CLIR
+    25   17  167    //                               - USER_PROFILE_ID
+    26   107 163    // OPTIMAL_ROUTING               - OPTIMAL_ROUTING_IND
+    27   18  9      // T_P_NUMBER                    - ADDRESS
+    28   18  487    //                               - NUMBERING_PLAN_PKEY
+    29   18  11     //                               - TYPE_OF_NUMBER
+    30   22  24     // SCU_INFO                      - PRIORITY_CODE
+    31   22  25     //                               - CHARGING_POINT
+    32   24  1      // SCU_OTHER_TIMESTAMP           - TIMESTAMP
+    33   24  2      //                               - TIME_OFFSET
+    34   25  9      // CAMEL_MSC_ADDRESS             - ADDRESS
+    35   25  487    //                               - NUMBERING_PLAN_PKEY
+    36   25  11     //                               - TYPE_OF_NUMBER
+    37   36  60     // RECORD_IDENTIFICATION         - CALL_ID
+    38   36  59     //                               - UDR_FILE_ID
+    39   36  62     //                               - CDR_ID
+    40   39  79     // CAMEL_DETAIL                  - CAMEL_REFERENCE_NUMBER
+    41   39  80     //                               - CAMEL_SERVICE_KEY
+    42   39  81     //                               - CAMEL_SERVICE_LEVEL
+    43   39  107    //                               - CAMEL_CALL_HANDLING_IND
+    44   39  108    //                               - CAMEL_CF_INDICATOR
+    45   39  562    //                               - CAMEL_MODIFICATION_LIST
+    46   78  111    // SIM_TOOLKIT                   - SIM_TOOLKIT_IND
+    47   95  9      // O_P_NORMED_NUMBER             - ADDRESS
+    48   95  487    //                               - NUMBERING_PLAN_PKEY
+    49   220 791    // CONTROL_DATA                  - RECORD_AGE
+    50   118 1      // INITIAL_START_TIME            - TIMESTAMP
+    51   118 2      //                               - TIME_OFFSET
+    52   65  436    // HOME_NETWORK                  - NETWORK_PKEY
+    53   65  83     //                               - COUNTRY_CODE
+    P 2
+    'Sec'    19
+    'Byte'   44
+    'Msg'    46
+    'Byte'   72
+    'Byte'   74
+    'Ev'     84
+    1    1   64     // CALL_TYPE_INFO                - CALL_TYPE
+    2    1   70     //                               - XFILE_IND
+    3    1   110    //                               - XFILE_CALL_TYPE
+    4    1   162    //                               - NETWORK_INIT_CONTEXT_IND
+    5    20  78     // CAUSE_FOR_FORWARD             - CAUSE_FOR_FORWARD
+    6    2   1      // START_TIME                    - TIMESTAMP
+    7    2   2      //                               - TIME_OFFSET
+    8    3   72     // SERVICE                       - ACTION_CODE
+    9    3   73     //                               - VAS_CODE
+    10   3   74     //                               - SPEECH_VERSION_USED
+    11   3   75     //                               - SPEECH_VERSION_REQUESTED
+    12   3   543    //                               - GUARANTEED_BIT_RATE
+    13   3   544    //                               - MAX_BIT_RATE
+    14   3   545    //                               - HSCSD_IND
+    15   3   546    //                               - IMS_SIGNALLING_CONTEXT
+    16   3   542    //                               - USER_PROTOCOL_INDICATOR
+    17   46  440    // TARIFF_INFO                   - SN_PKEY
+    18   5   3      // DURATION                      - VOLUME
+    // Constant 'Sec' for DURATION - UOM_PKEY
+    20   6   5      // XFILE_CHARGE                  - AMOUNT
+    21   6   8      //                               - GROSS_IND
+    22   6   6      //                               - TAX
+    23   6   437    //                               - CURRENCY_PKEY
+    24   13  9      // S_P_LOCATION                  - ADDRESS
+    25   13  487    //                               - NUMBERING_PLAN_PKEY
+    26   19  9      // ROUTING_NUMBER                - ADDRESS
+    27   19  487    //                               - NUMBERING_PLAN_PKEY
+    28   19  11     //                               - TYPE_OF_NUMBER
+    29   19  167    //                               - USER_PROFILE_ID
+    30   21  20     // CUG_INFO                      - CUG_INTERLOCK_CODE
+    31   21  21     //                               - CUG_INDEX
+    32   21  22     //                               - CUG_TYPE
+    33   26  26     // TECHNICAL_INFO                - REVERSE_CHARGING_IND
+    34   26  31     //                               - TERMINATION_IND
+    35   26  144    //                               - HOME_TERMINATED_IND
+    36   26  435    //                               - SC_PKEY
+    37   26  29     //                               - PARTIAL_REC_TYPE
+    38   34  90     // REMARK                        - REMARK
+    39   35  5      // XFILE_IC_CHARGE               - AMOUNT
+    40   35  6      //                               - TAX
+    41   35  437    //                               - CURRENCY_PKEY
+    42   35  8      //                               - GROSS_IND
+    43   37  3      // DATA_VOLUME                   - VOLUME
+    // Constant 'Byte' for DATA_VOLUME - UOM_PKEY
+    45   38  3      // MESSAGES                      - VOLUME
+    // Constant 'Msg' for MESSAGES - UOM_PKEY
+    47   79  9      // CAMEL_DESTINATION             - ADDRESS
+    48   79  487    //                               - NUMBERING_PLAN_PKEY
+    49   79  11     //                               - TYPE_OF_NUMBER
+    50   79  292    //                               - APN_SPLIT_SUPPORTED_IND
+    51   79  167    //                               - USER_PROFILE_ID
+    52   80  9      // CAMEL_SERVER_ADDRESS          - ADDRESS
+    53   80  487    //                               - NUMBERING_PLAN_PKEY
+    54   80  11     //                               - TYPE_OF_NUMBER
+    55   80  167    //                               - USER_PROFILE_ID
+    71   84  3      // UPLINK_VOLUME                 - VOLUME
+    // Constant 'Byte' for UPLINK_VOLUME - UOM_PKEY
+    73   85  3      // DOWNLINK_VOLUME               - VOLUME
+    // Constant 'Byte' for DOWNLINK_VOLUME - UOM_PKEY
+    75   86  115    // HSCSD_INFO                    - FNUR
+    76   86  116    //                               - AIUR
+    77   86  117    //                               - CHANNELS_MAX
+    78   86  118    //                               - CODING_ACC
+    79   86  119    //                               - CODING_USED
+    80   86  120    //                               - CHANNELS_USED
+    81   86  121    //                               - INIT_PARTY
+    83   98  3      // EVENT                         - VOLUME
+    // Constant 'Ev' for EVENT - UOM_PKEY
+    85   113 5      // XFILE_BASE_CHARGE             - AMOUNT
+    86   113 6      //                               - TAX
+    87   113 437    //                               - CURRENCY_PKEY
+    88   113 8      //                               - GROSS_IND
+    89   114 9      // RECIPIENT_NETWORK             - ADDRESS
+    90   114 487    //                               - NUMBERING_PLAN_PKEY
+    91   117 178    // VPN_INFO                      - VPN_CALL_TYPE
+    118  228 371    // CONTENT                       - AUTOHRISATION_CODE
+    119  228 372    //                               - CONTENT_CHARGING_POINT
+    120  228 452    //                               - CONTRACT_PKEY
+    121  228 368    //                               - DESC_SUPPRESS
+    122  228 375    //                               - PAID_IND
+    123  228 376    //                               - PAYMENT_METHOD
+    124  228 373    //                               - REFUND_IND
+    125  228 369    //                               - SHORT_DESC
+    126  228 370    //                               - TRANSACTION_ID
+    127  164 277    // DESCRIPTION                   - PRODUCT_USAGE_LONG_DESC
+    140  27  33     // LDC_INFO                      - CALL_MODE_FLAG
+    141  27  452    //                               - CONTRACT_PKEY
+    142  27  796    //                               - HOME_NET_IND
+    143  97  9      // NORMED_ROUTED_NUMBER          - ADDRESS
+    144  97  487    //                               - NUMBERING_PLAN_PKEY
+    145  116 9      // VPN_NUMBER                    - ADDRESS
+    146  116 487    //                               - NUMBERING_PLAN_PKEY
+    147  312 5      // XFILE_ADV_CHARGE              - AMOUNT
+    148  312 437    //                               - CURRENCY_PKEY
+    149  312 8      //                               - GROSS_IND
+    150  313 5      // XFILE_COMMISSION              - AMOUNT
+    151  313 437    //                               - CURRENCY_PKEY
+    152  313 8      //                               - GROSS_IND
+    153  492 452    // LEC_INFO                      - CONTRACT_PKEY
+    154  492 796    //                               - HOME_NET_IND

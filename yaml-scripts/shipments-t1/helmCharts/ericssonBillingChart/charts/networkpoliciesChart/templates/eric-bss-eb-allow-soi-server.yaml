@@ -1,0 +1,76 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: eric-bss-eb-allow-soi-server
+spec:
+  podSelector:
+    matchLabels:
+      eric-bss-eb-network-soi-server: 'true'
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - ports:
+# both ports below are multicast-ports used for internal communication between soi-servers
+        - port: 4446
+          protocol: UDP
+        - port: 4556
+          protocol: UDP
+    - from:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-soi-client: 'true'
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-soi-fedfactory: 'true'
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-soi-server: 'true'
+  egress:
+# both ports below are multicast-ports used for internal communication between soi-servers
+    - ports:
+        - port: 4446
+          protocol: UDP
+        - port: 4556
+          protocol: UDP
+    - to:
+        - ipBlock:
+            cidr: {{ .Values.forgerock.cidr }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.forgerock.amPort }}
+        - protocol: TCP
+          port: {{ .Values.forgerock.dsPort }}
+    - to:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-soi-fedfactory: 'true'
+      ports:
+        - protocol: TCP
+          port: 24000
+        - protocol: UDP
+          port: 24000
+    - to:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-soi-ns: 'true'
+      ports:
+        - protocol: TCP
+          port: 2010
+        - protocol: UDP
+          port: 2010
+        - protocol: TCP
+          port: 1049
+        - protocol: UDP
+          port: 1049
+    - to:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-web-client: 'true'
+      ports:
+        - protocol: TCP
+          port: 8080
+    - to:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-soi-server: 'true'

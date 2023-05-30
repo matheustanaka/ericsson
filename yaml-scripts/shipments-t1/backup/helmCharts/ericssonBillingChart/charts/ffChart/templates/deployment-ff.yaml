@@ -1,0 +1,255 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eric-bss-eb-ff
+  labels:
+    app: eb-java-ff
+    chart: {{ template "eric-bss-eb-ff.chart" . }}
+    {{- include "eric-bss-eb-ff.kubernetesIoInfo" . | nindent 4 }}
+    heritage: {{ .Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-ff.productInfo" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount  | default 3}}
+  selector:
+    matchLabels:
+      app: eb-java-ff
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: eb-java-ff
+        eric-bss-eb-network-soi-fedfactory: 'true'
+        eric-bss-eb-network-database-client: 'true'
+        eric-bss-eb-network-lem-client: 'true'
+        eric-bss-eb-network-vault-client: 'true'
+        {{- include "eric-bss-eb-ff.kubernetesIoInfo" . | nindent 8 }}
+      annotations:
+      {{- include "eric-bss-eb-ff.productInfo" . | indent 8 }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - eb-java-ff
+              topologyKey: kubernetes.io/hostname
+      securityContext:
+        {{- include "eric-bss-eb-ff.checkPodUserLoginData" . | nindent 8 }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      initContainers:
+        - name: init-logging-jff
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "init-logging-jff" }}
+          image: "{{ template "eric-bss-eb-ff.registryUrl" $templDict }}/{{ template "eric-bss-eb-ff.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-ff.pullPolicy" $templDict }}
+          command: ["/bin/sh"]
+          args: ["-c","sed s/{HOSTNAME}/$HOSTNAME/g /ericssonbilling/log4j2.xml >> /ericssonbilling/resource/init/log4j2.xml && \
+                       mkdir -p /log/fedfactory -m 740"]
+          volumeMounts:
+          - name: init-properties-volume
+            mountPath: /ericssonbilling/resource/init
+          - name: ff-log4j2-xml-volume
+            mountPath: /ericssonbilling/log4j2.xml
+            subPath: log4j2.xml
+          - name: logs-volume
+            mountPath: /log
+      {{- if .Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ .Chart.Name }}-sa
+      {{- end }}
+      containers:
+        - name: eric-bss-eb-ff
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "eb-java-ff" }}
+          image: "{{ template "eric-bss-eb-ff.registryUrl" $templDict }}/{{ template "eric-bss-eb-ff.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-ff.pullPolicy" $templDict }}
+          resources:
+            limits:
+              memory: "{{ .Values.resources.limits.memory}}"
+              cpu: "{{ .Values.resources.limits.cpu}}"
+            requests:
+              memory: "{{ .Values.resources.requests.memory}}"
+              cpu: "{{ .Values.resources.requests.cpu}}"
+          command: ["/bin/bash"]
+          args: ["-c","mkdir -p {{ .Values.global.coredumpDirectory }}/fedfactory && ${JAVA_HOME}/bin/java \
+                       {{ .Values.args.javaOpts }} \
+                       {{ .Values.args.javaDebugOpts }} \
+                       ${CERTIFICATE_PATH} \
+                       -cp ${BSCS_RESOURCE}/init:\
+                       ${BSCS_RESOURCE}/fedfactory:\
+                       ${BSCS_RESOURCE}:\
+                       ${BSCS_JAR}/fedfactory.jar:\
+                       ${BSCS_JAR}/func_util.jar:\
+                       ${BSCS_JAR}/func_frwmwk_cmn.jar:\
+                       ${BSCS_JAR}/func_frwmwk_srv.jar:\
+                       ${BSCS_JAR}/func_sop_cmn.jar:\
+                       ${BSCS_JAR}/func_sop_corba.jar:\
+                       ${BSCS_JAR}/func_sop_lib.jar:\
+                       ${BSCS_JAR}/soi.jar:\
+                       ${BSCS_3PP_JAR}/* \
+                       -DSVAPPLINDEX= \
+                       -DSVAPPLHOST=`hostname` \
+                       -Djgroups.use.jdk_logger=true \
+                       -Djava.io.tmpdir=${BSCS_LOG}/fedfactory \
+                       -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager \
+                       -Xlog:gc*:file={{ .Values.global.coredumpDirectory }}/fedfactory/${HOSTNAME}_%p_%t.gc \
+                       -XX:HeapDumpPath={{ .Values.global.coredumpDirectory }}/fedfactory/${HOSTNAME}.hprof \
+                       --add-opens java.base/java.lang=ALL-UNNAMED \
+                       com.lhs.fedfactory.FedFactory"]
+          env:
+            - name: ORB_HOST
+              value: "eric-bss-eb-ff-orb"
+            - name: ORB_ENDPOINT
+              value: "24000"
+            - name: K8S_ENV
+              value: "true"
+            - name: SOISRV_DATABASE_NAME
+              value: "{{ .Values.global.bscsDb }}"
+            - name: SOISRV_DATABASE_PORT
+              value: "{{ int .Values.global.databaseServerPort }}"
+            - name: SOISRV_DATABASE_SERVER
+              value: "{{ .Values.global.databaseServerName }}"
+            {{ if .Values.global.databaseTls.enable }}
+            - name: ORA_SEC_WLT
+              value: "/oratns/secret"
+            - name: TNS_ADMIN
+              value: "/oratns"
+            - name: WALLET_LOCATION
+              value: "/oratns/secret"
+            - name: SOISRV_TNS_ENTRY
+              value: '{{ tpl .Values.tnsnames.bscsdb . | replace "\n" "" | nospace }}'
+            {{ end }}
+            - name: TZ
+              value: "{{ .Values.global.timezone }}"
+            {{ if .Values.global.ebTruststore.secretName }}
+            - name: CERTIFICATE_PATH
+              value: "-Djavax.net.ssl.trustStore=/ssl/{{ .Values.global.ebTruststore.trustStoreName }} \
+                      -Djavax.net.ssl.trustStorePassword={{ .Values.global.ebTruststore.trustStorePassword }}"
+            {{ end }}
+            {{ if not $.Values.global.secretManager.enable }}
+            - name: NO_SECRET_MANAGER
+              value: "true"
+            {{ end }}
+          volumeMounts:
+          {{ if .Values.global.ebTruststore.secretName }}
+          - name: eb-trust-store-volume
+            mountPath: "/ssl"
+            readOnly: true
+          {{ end }}
+          - name: init-properties-volume
+            mountPath: /ericssonbilling/resource/init
+          - name: logs-volume
+            mountPath: /log
+          - name: coredump-volume
+            mountPath: "{{ .Values.global.coredumpDirectory }}"
+          - name: pwdmgr-security-volume
+            mountPath: /workdir/PWDMGR_SECURITY
+          - name: ff-applicationcontext-sfw-security-openam-xml-volume
+            mountPath: /ericssonbilling/resource/applicationContext-sfw-security-openAM.xml
+            subPath: applicationContext-sfw-security-openAM.xml
+          - name: ff-jacorb-properties-volume
+            mountPath: /ericssonbilling/resource/fedfactory/jacorb.properties
+            subPath: jacorb.properties
+          - name: ff-database-properties-volume
+            mountPath: /ericssonbilling/resource/fedfactory/database.properties
+            subPath: database.properties
+          - name: ff-applicationcontext-jff-xml-volume
+            mountPath: /ericssonbilling/resource/fedfactory/applicationContext-jff.xml
+            subPath: applicationContext-jff.xml
+          - name: ff-registry-xml-volume
+            mountPath: /ericssonbilling/resource/fedfactory/Registry.xml
+            subPath: Registry.xml
+          - name: ff-registry-ff-xml-volume
+            mountPath: /ericssonbilling/resource/fedfactory/Registry_FF.xml
+            subPath: Registry_FF.xml
+          - name: vault-clientcfg-xml-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.xml
+            subPath: vault-clientcfg.xml
+          - name: tnsnames-ora-volume
+            mountPath: /oratns/tnsnames.ora
+            subPath: tnsnames.ora
+          - name: sqlnet-ora-volume
+            mountPath: /oratns/sqlnet.ora
+            subPath: sqlnet.ora
+          {{ if .Values.global.databaseTls.enable }}
+          - name: wallet-volume
+            mountPath: /oratns/secret
+          {{ end }}
+          ports:
+            - name: orb-endpoint
+              containerPort: 24000
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "/ericssonbilling/scripts/pre-stop_ff.sh"]
+      {{- if .Values.nodeSelector }}
+      nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector: {{ toYaml .Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity: {{ toYaml .Values.affinity | nindent 8 }}
+      {{- else if .Values.global.affinity }}
+      affinity: {{ toYaml .Values.global.affinity | nindent 8 }}
+      {{- end }}
+      volumes:
+      {{ if .Values.global.ebTruststore.secretName }}
+      - name: eb-trust-store-volume
+        secret:
+          secretName: {{ .Values.global.ebTruststore.secretName }}
+      {{ end }}
+      - name: vault-clientcfg-xml-volume
+        configMap:
+          name: eric-bss-eb-ff-vault-clientcfg.xml
+      - name: ff-registry-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryXml | default "eric-bss-eb-ff-registry.xml" }}
+      - name: ff-registry-ff-xml-volume
+        configMap:
+          name: eric-bss-eb-ff-registry-ff.xml
+      - name: ff-database-properties-volume
+        configMap:
+          name: eric-bss-eb-ff-database.properties
+      - name: ff-log4j2-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.log42xml | default "eric-bss-eb-ff-log4j2.xml" }}
+      - name: ff-applicationcontext-jff-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.applicationcontextJffXml | default "eric-bss-eb-ff-applicationcontext-jff.xml" }}
+      - name: ff-applicationcontext-sfw-security-openam-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.applicationcontextSfwSecurityOpenamXml | default "eric-bss-eb-ff-applicationcontext-sfw-security-openam.xml" }}
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-logs
+      - name: coredump-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-coredump
+      - name: init-properties-volume
+        emptyDir: {}
+      - name: pwdmgr-security-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-pwdmgr-security
+      - name: ff-jacorb-properties-volume
+        configMap:
+          name: eric-bss-eb-ff-jacorb.properties
+      - name: tnsnames-ora-volume
+        configMap:
+          name: eric-bss-eb-ff-tnsnames.ora
+      - name: sqlnet-ora-volume
+        configMap:
+          name: eric-bss-eb-ff-sqlnet.ora
+      {{ if $.Values.global.databaseTls.enable }}
+      - name: wallet-volume
+        secret:
+          secretName: "{{ $.Values.global.databaseTls.clientSecretName }}"
+      {{ end }}

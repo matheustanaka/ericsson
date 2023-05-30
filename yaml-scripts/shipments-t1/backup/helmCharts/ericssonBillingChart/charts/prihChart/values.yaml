@@ -1,0 +1,200 @@
+# Default values for prihChart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+imageCredentials:
+  init-wait-for-data:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  init-wait-for-xrefs:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  prih:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  prih-init-customized:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  rdh-prih:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  rdh-udmap:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+
+images:
+  init-wait-for-data:
+    name: "eric-bss-eb-wait-for-condition"
+    tag: "22.15.12"
+  init-wait-for-xrefs:
+    name: "eric-bss-eb-wait-for-condition"
+    tag: "22.15.12"
+  prih:
+    name: "eric-bss-eb-prih"
+    tag: "22.15.12"
+  prih-init-customized:
+#   Example for customization:
+#    name: bscs/batch-init
+#    directory: /external-files
+    name:
+    tag:
+    directory:
+  rdh-prih:
+    name: "eric-bss-eb-rdh"
+    tag: "22.15.12"
+  rdh-udmap:
+    name: "eric-bss-eb-rdh"
+    tag: "22.15.12"
+
+restartPolicy: Always
+
+metadataName: eric-bss-eb
+
+prihDeployments:
+  - name: "prih-00-pod"
+    replicaCount: 1
+    # Activate the node selector to assign each prih pod to a node labeled for this purpose. Example:
+    # nodeSelector:
+    #   ericsson.com/prih-node: "yes"
+    prihContainer:
+      - name: "eric-bss-eb-prih-00"
+        # Optional PRIH start parameters:
+        #  -a <application number>,
+        #  -e (extended error description),
+        #  -i (print version of binary and exits)
+        #  -o (enabled throttling (deprecated functionality))
+        #  -s <0|1|2|3> (creation of statistical data),
+        #  -t (tracing information to standard output),
+        #  -T<file name> (tracing information written to file)
+        #  -w<working directory> (changes the working directory)
+        startParameters: "-a 0 -t -e"
+        prihResources:
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        # To generate tracefiles, it is necessary set the tracefile name in the variables below.
+        # These files will be stored in the log PVC.
+        tracingAndLogging:
+          bscsErrorTimestamp: ""
+          # dtaTracefile: "dta.prih-00-container.trc"
+          dtaTracefile: ""
+          # dxlTracefile: "dxl.prih-00-container.trc"
+          dxlTracefile: ""
+          # udrTracefile: "udr.prih-00-container.trc"
+          udrTracefile: ""
+    rdhUdmap:
+      traceLevel: "0"
+      useSlave: ""
+      dataTimeout: "-w -1"
+      optionalParameters: ""
+      resources:
+        limits:
+          cpu: 1
+          memory: 5Gi
+        requests:
+          cpu: 100m
+          memory: 64Mi
+      envVariables:
+        shmMaxEnvironments: "20"
+        shmMaxSectors: "10"
+        shmMaxSegments: "1000"
+        shmMinSegmentSize: "65536"
+      tracingAndLogging:
+        # dtaTracefile: "dta.rdh-udmap.trc"
+        dtaTracefile: ""
+        # dxlTracefile: "dxl.rdh-udmap.trc"
+        dxlTracefile: ""
+        # udrTracefile: "udr.rdh-udmap.trc"
+        udrTracefile: ""
+    rdhForPrih:
+      # trace level: 0,1,2,3
+      traceLevel: 0
+      # Create slave process: 1 = yes, 0 = no
+      useSlave: "-useSlave 0"
+      # Reconnect to DaTA timeout:
+      #   -1 = never time out, 0 = shut down when connection fails
+      #    A value > 0 represents the timeout (in sec) for retrying to connect to DaTA
+      dataTimeout: "-w -1"
+      # Optional parameters can be added here:
+      #   -a <application number>
+      optionalParameters: ""
+      resources:
+        limits:
+          cpu: 1
+          memory: 5Gi
+        requests:
+          cpu: 100m
+          memory: 64Mi
+      envVariables:
+        shmMaxEnvironments: "20"
+        shmMaxSectors: "10"
+        shmMaxSegments: "1000"
+        shmMinSegmentSize: "65536"
+      tracingAndLogging:
+        bscsErrorTimestamp: ""
+        # dtaTracefile: "dta.rdh-prih.trc"
+        dtaTracefile: ""
+        # dxlTracefile: "dxl.rdh-prih.trc"
+        dxlTracefile: ""
+        # udrTracefile: "udr.rdh-prih.trc"
+        udrTracefile: ""
+
+# PRIH LOG_FILTER_LEVEL = <0|1|2>
+prihLogFilterLevel: 0
+
+#DATA_RETRY_TIME, DATA_RETRY_TIME_MAX
+#By default, there is no definition for a time interval in which applications try to reconnect to DaTA.
+#If you set the environment variable, the value represents the time interval an application waits
+#until it tries to reconnect to DaTA.
+#Subsequent connection retries are performed under the following conditions:
+# - A double time interval has elapsed and has exceeded a maximum of 60 seconds.
+# - A double time interval has elapsed and the value specified by DATA_RETRY_TIME_MAX has been exceeded
+dataRetry:
+  dataRetryTime:
+  dataRetryTimeMax:
+
+# A local nodeSelector definition has priority over a global definition,
+# but will be overwritten by the pod specific nodeSelector above.
+#nodeSelector: {}
+
+# A local affinity definition has priority over the global definition.
+# affinity: {}
+# Example:
+# affinity:
+#   nodeAffinity:
+#     preferredDuringSchedulingIgnoredDuringExecution:
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1a
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1b
+
+tnsnames:
+  bscsdb: '{{ tpl .Values.global.tnsnames.bscsdb . }}'
+
+sqlnet:
+  ora: '{{ tpl .Values.global.sqlnet.ora . }}'

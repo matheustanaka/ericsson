@@ -1,0 +1,76 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: eric-bss-eb-administrator-role
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments", "deployments/scale", "daemonsets", "statefulsets", "statefulsets/scale"]
+    verbs: ["create", "get", "list", "watch", "patch", "update", "delete", "deletecollection"]
+
+  - apiGroups: ["batch"]
+    resources: ["cronjobs", "jobs"]
+    verbs: ["create", "get", "list", "watch", "patch", "update", "delete", "deletecollection"]
+
+  - apiGroups: [""]
+    resources: ["pods", "services", "configmaps", "persistentvolumeclaims"]
+    verbs: ["create", "get", "list", "watch", "patch", "update", "delete", "deletecollection"]
+
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get", "list", "watch"]
+
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
+
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["roles", "rolebindings"]
+    verbs: ["create", "get", "list", "watch", "patch", "update", "delete", "deletecollection", "bind"]
+
+  - apiGroups: [""]
+    resources: ["serviceaccounts"]
+    verbs: ["create", "get", "list", "watch", "patch", "update", "delete", "deletecollection", "bind"]
+
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["create", "get", "list", "watch", "patch", "update", "delete"]
+
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["networkpolicies"]
+    verbs: ["create", "get", "list", "watch", "patch", "update", "delete", "deletecollection", "bind"]
+
+  # Following permissions for secrets are added so that "helm list/install/uninstall/upgrade" works
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["create", "get", "list", "patch", "update", "delete"]
+
+  - apiGroups: [""]
+    resources: ["endpoints"]
+    verbs: ["get", "list"]
+
+  - apiGroups: ["projectcontour.io"]
+    resources: ["httpproxies"]
+    verbs: ["get", "list"]
+
+  # Added, so that one can execute "kubectl describe configmap ..."
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list"]
+
+  # Added, so that one can execute "kubectl get all"
+  - apiGroups: ["apps"]
+    resources: ["replicasets"]
+    verbs: ["get", "list", "watch"]
+
+  - apiGroups: [""]
+    resources: ["replicationcontrollers"]
+    verbs: ["get", "list", "watch"]
+
+  - apiGroups: ["autoscaling"]
+    resources: ["horizontalpodautoscalers"]
+    verbs: ["get", "list", "watch"]
+
+# Following permissions for proxies / httpproxies are added
+  - apiGroups: [""]
+    resources: ["proxies"]
+    verbs: ["create", "get", "list", "update", "delete"]

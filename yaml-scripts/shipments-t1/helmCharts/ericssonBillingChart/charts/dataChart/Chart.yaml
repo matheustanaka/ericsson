@@ -1,0 +1,5 @@
+apiVersion: v2
+appVersion: "1.0"
+description: A Helm chart for Data Transmission Application (DaTA)
+name: eric-bss-eb-data
+version: 22.15.12+0

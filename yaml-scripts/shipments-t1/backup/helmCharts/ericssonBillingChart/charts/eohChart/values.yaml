@@ -1,0 +1,114 @@
+# Default values for eohChart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+imageCredentials:
+  eric-bss-eb-eoh:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  init-wait-for-data:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  init-wait-for-xrefs:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+
+images:
+  eric-bss-eb-eoh:
+    name: "eric-bss-eb-eoh"
+    tag: "22.15.12"
+  init-wait-for-data:
+    name: "eric-bss-eb-wait-for-condition"
+    tag: "22.15.12"
+  init-wait-for-xrefs:
+    name: "eric-bss-eb-wait-for-condition"
+    tag: "22.15.12"
+
+# Customizable start parameters for EOH.
+# You can run more EOH instances with specific settings by defining a new block with:
+# -name: will appear in pod name and log files
+# -startParameters: your specific parameters
+# -replicaCount: {1..n}
+# Allowed values and ranges for start parameter and replica count must be in-sync with
+# documention.
+eohDeployments:
+  - name: "nomap"
+    startParameters: "-nomapping"
+    replicaCount: 1
+    # To generate tracefiles, it is necessary set the tracefile name in the variables below.
+    # These files will be stored in the log PVC.
+    tracingAndLogging:
+      bscsErrorTimestamp: ""
+      # dtaTracefile: "dta.eoh-nomap.trc"
+      dtaTracefile: ""
+      # dxlTracefile: "dxl.eoh-nomap.trc"
+      dxlTracefile: ""
+      # udrTracefile: "udr.eoh-nomap.trc"
+      udrTracefile: ""
+
+# Grace period for pod termination, which is used to shut down ESH gracefully.
+# By default, k8s allows a graceful application shutdown within 30s
+# This default value can be overwritten here.
+terminationGracePeriodSeconds: 300
+
+restartPolicy: Always
+
+#DATA_RETRY_TIME, DATA_RETRY_TIME_MAX
+#By default, there is no definition for a time interval in which applications try to reconnect to DaTA.
+#If you set the environment variable, the value represents the time interval an application waits
+#until it tries to reconnect to DaTA.
+#Subsequent connection retries are performed under the following conditions:
+# - A double time interval has elapsed and has exceeded a maximum of 60 seconds.
+# - A double time interval has elapsed and the value specified by DATA_RETRY_TIME_MAX has been exceeded
+dataRetry:
+  dataRetryTime:
+  dataRetryTimeMax:
+
+#A local nodeSelector definition has priority over the global definition above.
+#nodeSelector: {}
+
+# A local affinity definition has priority over the global definition.
+# affinity: {}
+# Example:
+# affinity:
+#   nodeAffinity:
+#     preferredDuringSchedulingIgnoredDuringExecution:
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1a
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1b
+
+EohRegistry:
+  udrOnline: "UDR_EXP_ONLINE"
+  exportDir: "/tmp/ICP_EXPORT"
+
+tnsnames:
+  bscsdb: '{{ tpl .Values.global.tnsnames.bscsdb . }}'
+  rtxdb: '{{ tpl .Values.global.tnsnames.rtxdb . }}'
+
+sqlnet:
+  ora: '{{ tpl .Values.global.sqlnet.ora . }}'
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 4Gi
+  requests:
+    cpu: 100m
+    memory: 512Mi

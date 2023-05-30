@@ -1,0 +1,25 @@
+{{- if .Values.global.rbac.sa_roles_create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: eric-bss-eb-regular-role
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-2000"
+    "helm.sh/hook-delete-policy": before-hook-creation
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list"]
+---
+{{ if .Values.global.dataHighAvailability.enable }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: eric-bss-eb-lease-role
+rules:
+  - apiGroups: [coordination.k8s.io]
+    resources: [leases]
+    verbs: ["get", "create", "update", "list"]
+{{- end -}}
+{{- end -}}

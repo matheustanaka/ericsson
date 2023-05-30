@@ -1,0 +1,154 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-bp-logging.properties
+data:
+  logging.properties: |
+    ############################################################
+    #      Default Logging Configuration File
+    #
+    # You can use a different file by specifying a filename
+    # with the java.util.logging.config.file system property.
+    # For example java -Djava.util.logging.config.file=myfile
+    ############################################################
+
+
+    # A pattern consists of a string that includes the following special components that will be replaced at runtime:
+    # "/" the local pathname separator
+    # "%t" the system temporary directory (C:\TEMP) directory for NT and (/var/tmp) for solaris.
+    # "%h" the value of the "user.home" system property
+    # "%g" the generation number to distinguish rotated logs
+    # "%u" a unique number to resolve conflicts
+    # "%%" translates to a single percent sign "%"
+
+
+    ############################################################
+    #      Global properties
+    ############################################################
+
+    # "handlers" specifies a comma separated list of log Handler
+    # classes.  These handlers will be installed during VM startup.
+    # Note that these classes must be on the system classpath.
+    # By default we only configure a ConsoleHandler, which will only
+    # show messages at the INFO and above levels.
+    #handlers= java.util.logging.ConsoleHandler
+
+    # To also add the FileHandler, use the following line instead.
+    handlers= java.util.logging.FileHandler, java.util.logging.ConsoleHandler
+
+    # Default global logging level.
+    # This specifies which kinds of events are logged across
+    # all loggers.  For any given facility this global level
+    # can be overriden by a facility specific level
+    # Note that the ConsoleHandler also has a separate level
+    # setting to limit messages printed to the console.
+    .level = INFO
+
+    ############################################################
+    # Handler specific properties.
+    # Describes specific configuration info for Handlers.
+    ############################################################
+
+    # default file output is in user's temporary(C:\TEMP) directory for NT and (/var/tmp) for solaris.
+    java.util.logging.FileHandler.level = ALL
+    java.util.logging.FileHandler.pattern = %t/bp.{HOSTNAME}.ClientLog%g.log
+    java.util.logging.FileHandler.limit = 500000
+    java.util.logging.FileHandler.count = 5
+    java.util.logging.FileHandler.formatter = {{ .Values.global.webClientLogFormatter }}
+
+
+    # Limit the message that are printed on the console to INFO and above.
+    java.util.logging.ConsoleHandler.level = ALL
+    java.util.logging.ConsoleHandler.formatter = {{ .Values.global.webClientLogFormatter }}
+
+
+    ############################################################
+    # Settings for:
+    # -SystemLog
+    # -CFW
+    # -execute
+    # -gateway
+    # -debug
+    ############################################################
+
+
+    ##################################
+    #                                #
+    #      SystemLog properties      #
+    #                                #
+    ##################################
+
+    # 'true' indicates one single trace log for all clients
+    # 'false' indicates one trace log per client
+    SystemLog.useGlobalHandlers=true
+
+    # If none are defined the global handlers will be used!
+    #SystemLog.handlers=java.util.logging.FileHandler, java.util.logging.ConsoleHandler
+
+    # Defines the log level
+    SystemLog.level=INFO
+
+    # The number of rotating files per trace log (0 = rotation disabled)
+    SystemLog.FileHandler.count=0
+
+    # The file size limit before log rotation (if rotation enabled)
+    SystemLog.FileHandler.limit=100000
+
+    # The formatter used by this log
+    SystemLog.FileHandler.formatter={{ .Values.global.webClientLogFormatter }}
+
+
+    ##################################
+    #                                #
+    #      CFW properties            #
+    #                                #
+    ##################################
+
+    # 'true' indicates one single trace log for all clients
+    # 'false' indicates one trace log per client
+    CFW.useGlobalHandlers=true
+
+    # If none are defined the global handlers will be used!
+    #CFW.handlers=java.util.logging.FileHandler, java.util.logging.ConsoleHandler
+
+    # Defines the log level
+    CFW.level=INFO
+
+    ##################################
+    #                                #
+    #      execute properties        #
+    #                                #
+    ##################################
+
+
+    # 'true' indicates one single trace log for all clients
+    # 'false' indicates one trace log per client
+    execute.useGlobalHandlers=true
+
+    # If none are defined the global handlers will be used!
+    #gateway.handlers=java.util.logging.FileHandler, java.util.logging.ConsoleHandler
+
+    # Defines the log level
+    execute.level=WARNING
+
+    execute.pattern = %t/bp.{HOSTNAME}.ClientLog%g.log
+
+    ##################################
+    #                                #
+    #      gateway properties        #
+    #                                #
+    ##################################
+
+    # 'true' indicates one single trace log for all clients
+    # 'false' indicates one trace log per client
+    gateway.useGlobalHandlers=true
+
+    # If none are defined the global handlers will be used!
+    #gateway.handlers=java.util.logging.FileHandler, java.util.logging.ConsoleHandler
+
+    # Defines the log level
+    gateway.level=WARNING
+
+    # Comment the following two lines if Tomcat is not uses as Web Container
+    org.apache.catalina.core.ContainerBase.[Catalina].[localhost].level = WARNING
+    org.apache.catalina.core.ContainerBase.[Catalina].[localhost].handlers = java.util.logging.FileHandler

@@ -1,0 +1,220 @@
+{{- if .Values.pwdmgrPreInstallJob.initialInstallation -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: eric-bss-eb-pwdmgr-pre-install-hook
+  labels:
+    app: eb-java-pwdmgrjob
+    chart: {{ template "eric-bss-eb-pwdmgr.chart" . }}
+    {{- include "eric-bss-eb-pwdmgr.kubernetesIoInfo" . | nindent 4 }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-1000"
+    "helm.sh/hook-delete-policy": hook-succeeded
+  {{- include "eric-bss-eb-pwdmgr.productInfo" . | indent 4 }}
+spec:
+  template:
+    metadata:
+      labels:
+        app: eb-java-pwdmgrjob
+        chart: {{ template "eric-bss-eb-pwdmgr.chart" . }}
+        {{- include "eric-bss-eb-pwdmgr.kubernetesIoInfo" . | nindent 8 }}
+        eric-bss-eb-pwdmgr-network-database-client: 'true'
+        eric-bss-eb-pwdmgr-network-ldap-client: 'true'
+        eric-bss-eb-network-lem-client: 'true'
+        eric-bss-eb-pwdmgr-network-vault-client: 'true'
+        heritage: {{ .Release.Service }}
+      annotations:
+      {{- include "eric-bss-eb-pwdmgr.productInfo" . | indent 8 }}
+    spec:
+      securityContext:
+        {{- include "eric-bss-eb-pwdmgr.checkPodUserLoginData" . | nindent 8 }}
+      {{- if .Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ .Chart.Name }}-sa
+      {{- end }}
+      restartPolicy: Never
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      containers:
+        - name: pwdmgrjob
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "pwdmgrjob" }}
+          image: "{{ template "eric-bss-eb-pwdmgr.registryUrl" $templDict }}/{{ template "eric-bss-eb-pwdmgr.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-pwdmgr.pullPolicy" $templDict }}
+          resources:
+            limits:
+              memory: "{{ .Values.resources.limits.memory}}"
+              cpu: "{{ .Values.resources.limits.cpu}}"
+            requests:
+              memory: "{{ .Values.resources.requests.memory}}"
+              cpu: "{{ .Values.resources.requests.cpu}}"
+          env:
+            - name: K8S_ENV
+              value: "true"
+            - name: WALLET_LOCATION
+              value: "/oratns/secret"
+            - name: SYSLOG_TRUSTSTORE
+              value: "{{ .Values.global.SyslogAppenderSecurityTls.syslogTlsPath }}/truststore/truststoreLog4j.jks"
+            - name: SYSLOG_TRUSTSTORE_PASSWORD_FILE
+              value: "{{ .Values.global.SyslogAppenderSecurityTls.syslogTlsPath }}/truststore/truststoreLog4j.pwd"
+            - name: SYSLOG_KEYSTORE
+              value: "{{ .Values.global.SyslogAppenderSecurityTls.syslogTlsPath }}/keystore/keystoreLog4j.jks"
+            - name: SYSLOG_KEYSTORE_PASSWORD_FILE
+              value: "{{ .Values.global.SyslogAppenderSecurityTls.syslogTlsPath }}/keystore/keystoreLog4j.pwd"
+            - name: SOISRV_DATABASE_NAME
+              value: "{{ .Values.global.bscsDb }}"
+            - name: SOISRV_DATABASE_SERVER
+              value: "{{ .Values.global.databaseServerName }}"
+            - name: SOISRV_DATABASE_PORT
+              value: "{{ .Values.global.databaseServerPort }}"
+            - name: SOISRV_TNS_ENTRY
+              value: "{{ tpl .Values.tnsnames.bscsdb . | indent 6 }}"
+            - name: TZ
+              value: "{{ .Values.global.timezone }}"
+            - name: INITIAL_SET_PASSWORDS
+              value: "{{ .Values.pwdmgrPreInstallJob.initialSetPasswords }}"
+            - name: TARGET_SYSTEM_CONTROL
+              value: "{{ .Values.pwdmgrPreInstallJob.targetSystemControl }}"
+            - name: DB_ADMIN_USER
+              value: "{{ .Values.pwdmgrPreInstallJob.dbAdminUser }}"
+            - name: LDAP_ADMIN_USER
+              value: "{{ .Values.pwdmgrPreInstallJob.ldapAdminUser }}"
+            - name: NONEMB_LDAP_APPLICATION_USER
+              value: "{{ .Values.pwdmgrPreInstallJob.nonembeddedLdapApplicationUser }}"
+            {{ if .Values.global.databaseTls.enable }}
+            - name: TNS_ADMIN
+              value: "/oratns"
+            {{ end }}
+            {{ if .Values.global.ebTruststore.secretName }}
+            - name: CERTIFICATE_PATH
+              value: "-Djavax.net.ssl.trustStore=/ssl/{{ .Values.global.ebTruststore.trustStoreName }} \
+                      -Djavax.net.ssl.trustStorePassword={{ .Values.global.ebTruststore.trustStorePassword }}"
+            {{ end }}
+            {{ if not $.Values.global.secretManager.enable }}
+            - name: NO_SECRET_MANAGER
+              value: "true"
+            {{ end }}
+          command: ["/bin/bash"]
+          args: ["-c", "printf '%s' '{{ .Values.pwdmgrPreInstallJob.dbAdminPassword }} \
+                              {{ .Values.pwdmgrPreInstallJob.ldapAdminPassword }} \
+                              {{ .Values.pwdmgrPreInstallJob.nonembeddedDefaultApplicationUserPassword }}' \
+                              | $BSCS_SCRIPTS/pre-install_pwdmgr.sh"]
+          volumeMounts:
+            - name: logs-volume
+              mountPath: /log
+            - name: pwdmgr-security-volume
+              mountPath: /workdir/PWDMGR_SECURITY
+            - name: tnsnames-ora-volume
+              mountPath: /oratns/tnsnames.ora
+              subPath: tnsnames.ora
+            - name: sqlnet-ora-volume
+              mountPath: /oratns/sqlnet.ora
+              subPath: sqlnet.ora
+            - name: registry-pwdmgr-passwordmanager-xml-volume
+              mountPath: /ericssonbilling/resource/pwdmgr/Registry_PWDMGR_PasswordManager.xml
+              subPath: Registry_PWDMGR_PasswordManager.xml
+            - name: passwordmanager-properties-volume
+              mountPath: /ericssonbilling/resource/pwdmgr/passwordManager.properties
+              subPath: passwordManager.properties
+            {{ if .Values.global.databaseTls.enable }}
+            - name: wallet-volume
+              mountPath: /oratns/secret
+            {{ end }}
+            {{ if .Values.global.SyslogAppenderSecurityTls.enable }}
+            - name: tls-syslog-keystore-volume
+              mountPath: "/tls/syslog/keystore"
+              readOnly: true
+            - name: tls-syslog-truststore-volume
+              mountPath: "/tls/syslog/truststore"
+              readOnly: true
+            {{ end }}
+            {{ if .Values.global.ebTruststore.secretName }}
+            - name: eb-trust-store-volume
+              mountPath: "/ssl"
+              readOnly: true
+            {{ end }}
+            - name: seclogs-volume
+              mountPath: /seclog
+            - name: log4j2-xml-volume
+              mountPath: /ericssonbilling/resource/pwdmgr/log4j2.xml
+              subPath: log4j2.xml
+            - name: vault-clientcfg-xml-volume
+              mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.xml
+              subPath: vault-clientcfg.xml
+            - name: pwdmgrjob-database-properties-volume
+              mountPath: /ericssonbilling/resource/database.properties
+              subPath: database.properties
+      {{- if $.Values.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.nodeSelector | nindent 8 }}
+      {{- else if $.Values.global.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if $.Values.affinity }}
+      affinity: {{ toYaml $.Values.affinity | nindent 8 }}
+      {{- else if $.Values.global.affinity }}
+      affinity: {{ toYaml $.Values.global.affinity | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: logs-volume
+          persistentVolumeClaim:
+            claimName: eric-bss-eb-pvc-logs
+        - name: pwdmgr-security-volume
+          persistentVolumeClaim:
+            claimName: eric-bss-eb-pvc-pwdmgr-security
+        - name: tnsnames-ora-volume
+          configMap:
+            name: eric-bss-eb-pwdmgrjob-tnsnames.ora
+        - name: sqlnet-ora-volume
+          configMap:
+            name: eric-bss-eb-pwdmgrjob-sqlnet.ora
+        - name: registry-pwdmgr-passwordmanager-xml-volume
+          configMap:
+            name: eric-bss-eb-pwdmgrjob-registry-pwdmgr-passwordmanager.xml
+        - name: passwordmanager-properties-volume
+          configMap:
+            name: eric-bss-eb-pwdmgrjob-passwordmanager.properties
+        - name: vault-clientcfg-xml-volume
+          configMap:
+            name: eric-bss-eb-pwdmgrjob-vault-clientcfg.xml
+        - name: pwdmgrjob-database-properties-volume
+          configMap:
+            name: eric-bss-eb-pwdmgrjob-database.properties
+        {{ if .Values.global.databaseTls.enable }}
+        - name: wallet-volume
+          secret:
+            secretName: "{{ .Values.global.databaseTls.clientSecretName }}"
+        {{ end }}
+        {{ if .Values.global.SyslogAppenderSecurityTls.enable }}
+        - name: tls-syslog-keystore-volume
+          secret:
+            secretName: "{{ .Values.global.SyslogAppenderSecurityTls.syslogServerKeystoreSecretName }}"
+            items:
+            - key: {{ .Values.global.SyslogAppenderSecurityTls.syslogServerKeystoreKey }}
+              path: keystoreLog4j.jks
+            - key: {{ .Values.global.SyslogAppenderSecurityTls.syslogKeystorePasswordKey }}
+              path: keystoreLog4j.pwd
+        - name: tls-syslog-truststore-volume
+          secret:
+            secretName: "{{ .Values.global.SyslogAppenderSecurityTls.syslogServerTrustStoreSecretName }}"
+            items:
+            - key: {{ .Values.global.SyslogAppenderSecurityTls.syslogServerKeystoreKey }}
+              path: truststoreLog4j.jks
+            - key: {{ .Values.global.SyslogAppenderSecurityTls.syslogKeystorePasswordKey }}
+              path: truststoreLog4j.pwd
+        {{ end }}
+        {{ if .Values.global.ebTruststore.secretName }}
+        - name: eb-trust-store-volume
+          secret:
+            secretName: {{ .Values.global.ebTruststore.secretName }}
+        {{ end }}
+        - name: seclogs-volume
+          persistentVolumeClaim:
+            claimName: eric-bss-eb-pvc-seclogs
+        - name: log4j2-xml-volume
+          secret:
+            secretName: eric-bss-eb-secret-pwdmgrjob-log4j2.xml
+  backoffLimit: 0
+{{- end -}}

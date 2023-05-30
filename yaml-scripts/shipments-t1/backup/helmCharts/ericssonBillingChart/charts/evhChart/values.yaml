@@ -1,0 +1,203 @@
+# Default values for evhChart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+imageCredentials:
+  eric-bss-eb-evh:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  evh-init-customized:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  init-wait-for-data:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  init-wait-for-xrefs:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  init-logging-evh:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  rdh-udmap:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+
+images:
+  eric-bss-eb-evh:
+    name: "eric-bss-eb-evh"
+    tag: "22.15.12"
+  evh-init-customized:
+#   Example for customization:
+#    name: bscs/batch-init
+#    directory: /external-files
+    name:
+    tag:
+    directory:
+  init-wait-for-data:
+    name: "eric-bss-eb-wait-for-condition"
+    tag: "22.15.12"
+  init-wait-for-xrefs:
+    name: "eric-bss-eb-wait-for-condition"
+    tag: "22.15.12"
+  init-logging-evh:
+    name: "eric-bss-eb-init-logging"
+    tag: "22.15.12"
+  rdh-udmap:
+    name: "eric-bss-eb-rdh"
+    tag: "22.15.12"
+
+# Allowed values: 0,1
+replicaCount: 1
+
+# To generate tracefiles, it is necessary set the tracefile name in the variables below.
+# These files will be stored in the log PVC.
+tracingAndLogging:
+  # to activate tracing in evh, set: "-t"
+  evhTrace: "-t"
+  # To activate dxl Tracing set to "on", to deactivate, leave empty
+  EvhDxlTracing: "on"
+  bscsErrorTimestamp: ""
+  # dtaTracefile: "dta.evh.trc"
+  dtaTracefile: ""
+  # dxlTracefile: "dxl.evh.trc"
+  dxlTracefile: ""
+
+# Grace period for pod termination, which is used to shut down ESH gracefully.
+# By default, k8s allows a graceful application shutdown within 30s
+# This default value can be overwritten here.
+terminationGracePeriodSeconds: 30
+
+restartPolicy: Always
+
+# The deprecated UDR_ASCII plugin needs rdh -udmap running.
+# With the flag "useRdh" we provide the option to activate RDH in the EVH container and use this plugin.
+# Might also be used in case of customized libraries that require rdh.
+useRdh: false
+
+# only used if useRdh=true
+rdhUdmap:
+  traceLevel: 0
+  useSlave: "-useSlave 1"
+  dataTimeout: "-w -1"
+  optionalParameters: ""
+  envVariables:
+    shmMaxEnvironments: "20"
+    shmMaxSectors: "10"
+    shmMaxSegments: "1000"
+    shmMinSegmentSize: "65536"
+  resources:
+    limits:
+      cpu: 1
+      memory: 5Gi
+    requests:
+      cpu: 100m
+      memory: 64Mi
+  tracingAndLogging:
+    bscsErrorTimestamp: ""
+    # dtaTracefile: "dta.rdh-udmap.trc"
+    dtaTracefile: ""
+    # udrTracefile: "udr.rdh-udmap.trc"
+    udrTracefile: ""
+    # dxlTracefile: "dxl.rdh-udmap.trc"
+    dxlTracefile: ""
+
+#DATA_RETRY_TIME, DATA_RETRY_TIME_MAX
+#By default, there is no definition for a time interval in which applications try to reconnect to DaTA.
+#If you set the environment variable, the value represents the time interval an application waits
+#until it tries to reconnect to DaTA.
+#Subsequent connection retries are performed under the following conditions:
+# - A double time interval has elapsed and has exceeded a maximum of 60 seconds.
+# - A double time interval has elapsed and the value specified by DATA_RETRY_TIME_MAX has been exceeded
+dataRetry:
+  dataRetryTime:
+  dataRetryTimeMax:
+
+#A local nodeSelector definition has priority over the global definition above.
+#nodeSelector: {}
+
+# A local affinity definition has priority over the global definition.
+# affinity: {}
+# Example:
+# affinity:
+#   nodeAffinity:
+#     preferredDuringSchedulingIgnoredDuringExecution:
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1a
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1b
+
+jacorb:
+  log:
+    logLevel: 2
+    logFileAppend: "off"
+    logFileMaxSize: 0
+    dumpOutgoingMessages: "off"
+    dumpIncomingMessages: "off"
+  orbConnection:
+    retries: 5
+    retryInterval: 500
+    clientIdleTimeout: 0
+    clientConnectTimeout: 90000
+    clientPendingReplyTimeout: 2000000
+  poaConfig:
+    threadPoolMax: 20
+    threadPoolMin: 5
+
+tnsnames:
+  bscsdb: '{{ tpl .Values.global.tnsnames.bscsdb . }}'
+
+sqlnet:
+  ora: '{{ tpl .Values.global.sqlnet.ora . }}'
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 4Gi
+  requests:
+    cpu: 100m
+    memory: 512Mi
+
+#Business Config Files - customizable configmaps
+overrideConfigmap:
+  # Default configmap: eric-bss-eb-evh-logging.properties
+  loggingProperties:
+  # Default configmap: eric-bss-eb-evh-evh-registry.xml
+  evhRegistry:
+  # Default configmap: eric-bss-eb-evh-evh-registry-nk.xml
+  evhRegistryNk:
+  # Default configmap: eric-bss-eb-evh-func-frmwk-cmn-registry.xml
+  funcFrmwkCmnRegistryXml:
+  # Default configmap: eric-bss-eb-evh-bir-ascii.ini
+  birAscii:
+  # Default configmap: eric-bss-eb-evh-css.properties
+  cssProperties:
+  # Default configmap: eric-bss-eb-evh-ovd.properties
+  ovdProperties:
+  # Default configmap: eric-bss-eb-evh-udr-ascii.ini
+  udrAscii:
+  # Default configmap: eric-bss-eb-evh-svc-conf
+  svcConf:
+  # Default configmap: eric-bss-eb-evh-system.properties
+  systemProperties:

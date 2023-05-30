@@ -1,0 +1,998 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eric-bss-eb-cms
+  labels:
+    app: eric-bss-eb-cms
+    chart: {{ template "eric-bss-eb-cms.chart" . }}
+    {{- include "eric-bss-eb-cms.kubernetesIoInfo" . | nindent 4 }}
+    heritage: {{ .Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-cms.productInfo" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount | default 1}}
+  selector:
+    matchLabels:
+      app: eric-bss-eb-cms
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: eric-bss-eb-cms
+        eric-bss-eb-network-soi-gateway: 'true'
+        eric-bss-eb-network-soi-server: 'true'
+        eric-bss-eb-network-database-client: 'true'
+        eric-bss-eb-network-data-client: 'true'
+        eric-bss-eb-network-lem-client: 'true'
+        eric-bss-eb-network-vault-client: 'true'
+        {{- include "eric-bss-eb-cms.kubernetesIoInfo" . | nindent 8 }}
+      annotations:
+      {{- include "eric-bss-eb-cms.productInfo" . | indent 8 }}
+    spec:
+      securityContext:
+        {{- include "eric-bss-eb-cms.checkPodUserLoginData" . | nindent 8 }}
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      initContainers:
+        {{ if index .Values "images" "cms-init-customized" "name" }}
+        - name: cms-init-customized
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "cms-init-customized" }}
+          image: "{{ template "eric-bss-eb-cms.registryUrl" $templDict }}/{{ template "eric-bss-eb-cms.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-cms.pullPolicy" $templDict }}
+          command: ["/bin/sh"]
+          args: ["-c","cp -r {{ index .Values "images" $templDict.containerKey "directory" }}/* /ericssonbilling/3pp/custom_jar "]
+          volumeMounts:
+          - mountPath: /ericssonbilling/3pp/custom_jar
+            name: cms-customized-jars-volume
+         {{ end }}
+        - name: init-logging-cms
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "init-logging-cms" }}
+          image: "{{ template "eric-bss-eb-cms.registryUrl" $templDict }}/{{ template "eric-bss-eb-cms.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-cms.pullPolicy" $templDict }}
+          command: ["/bin/sh"]
+          args: ["-c","sed s/{HOSTNAME}/$HOSTNAME/g /ericssonbilling/tracing.properties >> /ericssonbilling/resource/init/tracing.properties && \
+                       sed s/{HOSTNAME}/$HOSTNAME/g /ericssonbilling/log4j2.xml >> /ericssonbilling/resource/init/log4j2.xml && \
+                       mkdir -p /log/cms -m 750"]
+          volumeMounts:
+          - name: init-properties-volume
+            mountPath: /ericssonbilling/resource/init
+          - name: cms-tracing-properties-volume
+            mountPath: /ericssonbilling/tracing.properties
+            subPath: tracing.properties
+          - name: cms-log4j2-xml-volume
+            mountPath: /ericssonbilling/log4j2.xml
+            subPath: log4j2.xml
+          - name: logs-volume
+            mountPath: /log
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- if .Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ .Chart.Name }}-sa
+      {{- end }}
+      containers:
+        - name: eric-bss-eb-cms
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "eric-bss-eb-cms" }}
+          image: "{{ template "eric-bss-eb-cms.registryUrl" $templDict }}/{{ template "eric-bss-eb-cms.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-cms.pullPolicy" $templDict }}
+          startupProbe:
+            httpGet:
+              port: 8443
+              path: /wsi/view/
+              {{ if .Values.tomcat.secretName }}
+              scheme: HTTPS
+              {{ else }}
+              scheme: HTTP
+              {{ end }}
+            initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.startupProbe.periodSeconds }}
+            successThreshold: {{ .Values.startupProbe.successThreshold }}
+            failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+            timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
+          readinessProbe:
+            httpGet:
+              port: 8443
+              path: /wsi/health
+              {{ if .Values.tomcat.secretName }}
+              scheme: HTTPS
+              {{ else }}
+              scheme: HTTP
+              {{ end }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          livenessProbe:
+            httpGet:
+              port: 8443
+              path: /wsi/health
+              {{ if .Values.tomcat.secretName }}
+              scheme: HTTPS
+              {{ else }}
+              scheme: HTTP
+              {{ end }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          resources:
+            limits:
+              memory: "{{ .Values.resources.limits.memory}}"
+              cpu: "{{ .Values.resources.limits.cpu}}"
+            requests:
+              memory: "{{ .Values.resources.requests.memory}}"
+              cpu: "{{ .Values.resources.requests.cpu}}"
+          command: ["/bin/bash"]
+          args: ["-c","ulimit -c unlimited && mkdir -p {{ .Values.global.coredumpDirectory }}/cms && \
+                  ${JAVA_HOME}/bin/java {{ .Values.args.javaOpts }} \
+                       {{ .Values.args.javaDebugOpts }} \
+                       ${CERTIFICATE_PATH} \
+                       -cp ${BSCS_RESOURCE}/init:\
+                       ${BSCS_RESOURCE}/cms:\
+                       ${BSCS_RESOURCE}/esh:\
+                       ${BSCS_RESOURCE}/cms_sx:\
+                       ${BSCS_RESOURCE}/fms:\
+                       ${BSCS_RESOURCE}/jcil:\
+                       ${BSCS_RESOURCE}/jcil-core:\
+                       ${BSCS_RESOURCE}:\
+                       ${BSCS_RESOURCE}/cps:\
+                       ${BSCS_RESOURCE}/as:\
+                       ${BSCS_RESOURCE}/bee:\
+                       ${BSCS_RESOURCE}/csadapters:\
+                       ${BSCS_RESOURCE}/jdatalib:\
+                       ${BSCS_RESOURCE}/jdxlib:\
+                       ${BSCS_RESOURCE}/judrlib:\
+                       ${BSCS_RESOURCE}/docgen:\
+                       ${BSCS_RESOURCE}/secServer:\
+                       ${BSCS_RESOURCE}/pms:\
+                       ${BSCS_JAR}/func_util.jar:\
+                       ${BSCS_JAR}/func_frwmwk_cmn.jar:\
+                       ${BSCS_JAR}/func_frwmwk_srv.jar:\
+                       ${BSCS_JAR}/func_sop_cmn.jar:\
+                       ${BSCS_JAR}/func_sop_corba.jar:\
+                       ${BSCS_JAR}/func_sop_lib.jar:\
+                       ${BSCS_JAR}/jdatalib.jar:\
+                       ${BSCS_JAR}/jdxlib.jar:\
+                       ${BSCS_JAR}/judrlib.jar:\
+                       ${BSCS_JAR}/docgen.jar:\
+                       ${BSCS_JAR}/cms.jar:\
+                       ${BSCS_JAR}/cms_sx.jar:\
+                       ${BSCS_JAR}/cms_external.jar:\
+                       ${BSCS_JAR}/bee.jar:\
+                       ${BSCS_JAR}/as.jar:\
+                       ${BSCS_JAR}/cps.jar:\
+                       ${BSCS_JAR}/jcil.jar:\
+                       ${BSCS_JAR}/jcil-core.jar:\
+                       ${BSCS_JAR}/csadapters.jar:\
+                       ${BSCS_JAR}/soi.jar:\
+                       ${BSCS_JAR}/secServer.jar:\
+                       ${BSCS_3PP_JAR}/tomcat-embed-core-9.0.63.jar:\
+                       ${BSCS_3PP_JAR}/tomcat-embed-jasper-9.0.63.jar:\
+                       ${BSCS_3PP_JAR}/jaxb-api-2.3.1.jar:\
+                       ${BSCS_3PP_JAR}/jaxb-impl-2.3.3.jar:\
+                       ${BSCS_3PP_JAR}/javax.xml.soap-api-1.4.0.jar:\
+                       ${BSCS_3PP_CUSTOM_JAR}:\
+                       ${BSCS_JAR}/wsi.jar:\
+                       ${BSCS_RESOURCE}/wsi/config:\
+                       ${BSCS_RESOURCE}/wsi/embedded-tomcat-config:\
+                       ${BSCS_RESOURCE}/scs:\
+                       ${BSCS_JAR}/scs.jar:\
+                       ${BSCS_RESOURCE}/oab:\
+                       ${BSCS_RESOURCE}/wma:\
+                       ${BSCS_RESOURCE}/wma/plugin:\
+                       ${BSCS_RESOURCE}/wfms:\
+                       ${BSCS_RESOURCE}/common_adaptor:\
+                       ${BSCS_RESOURCE}/repdat:\
+                       ${BSCS_RESOURCE}/oms/config:\
+                       ${BSCS_RESOURCE}/wms/config:\
+                       ${BSCS_RESOURCE}/cab/:\
+                       ${BSCS_RESOURCE}/cdi/:\
+                       ${BSCS_RESOURCE}/ceb/:\
+                       ${BSCS_RESOURCE}/dcs/config:\
+                       ${BSCS_JAR}/oms.jar:\
+                       ${BSCS_JAR}/wms.jar:\
+                       ${BSCS_JAR}/oab.jar:\
+                       ${BSCS_JAR}/wma.jar:\
+                       ${BSCS_JAR}/wma_plugin/wma_plugin.jar:\
+                       ${BSCS_JAR}/common_adaptor.jar:\
+                       ${BSCS_JAR}/repdat.jar:\
+                       ${BSCS_JAR}/cab.jar:\
+                       ${BSCS_JAR}/cdi.jar:\
+                       ${BSCS_JAR}/ceb.jar:\
+                       ${BSCS_JAR}/dcs.jar:\
+                       ${BSCS_3PP_JAR}/jbpm/*:\
+                       ${BSCS_3PP_JAR}/jbpm/lib/*:\
+                       ${BSCS_RESOURCE}/oms:\
+                       ${BSCS_RESOURCE}/wms:\
+                       ${BSCS_RESOURCE}/dcs:\
+                       ${BSCS_3PP_JAR}/*:\
+                       ${BSCS_JAR}/cms_plugin/* \
+                       -DdevMode \
+                       -Djava.security.egd=file:///dev/urandom \
+                       -DSVAPPLHOST=`hostname` \
+                       -DSVAPPLINDEX= \
+                       -DBSCS_RESOURCE=${BSCS_RESOURCE} \
+                       -Dcom.lhs.BigDecimalCache=1000 \
+                       -Dspring.profiles.active=production \
+                       -Dwsi.dir=${BSCS_RESOURCE}/wsi \
+                       -Dorg.apache.catalina.startup.EXIT_ON_INIT_FAILURE=true \
+                       -Djava.io.tmpdir=${BSCS_LOG}/cms \
+                       -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager \
+                       -Dorg.apache.commons.logging.LogFactory=org.apache.commons.logging.impl.LogFactoryImpl \
+                       -Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.Jdk14Logger \
+                       -Djgroups.use.jdk_logger=true \
+                       -Dcom.sun.jndi.ldap.connect.pool.maxsize=500 \
+                       -Dcom.sun.jndi.ldap.connect.pool.prefsize=100 \
+                       -Dcom.sun.jndi.ldap.connect.pool.timeout=300000 \
+                       -Djava.security.krb5.conf=${BSCS_RESOURCE}/krb5.conf \
+                       -Djavax.security.auth.useSubjectCredsOnly=false \
+                       -DtomcatEmbedded.acceptCount={{ .Values.tomcat.connector.acceptCount }} \
+                       -DtomcatEmbedded.connectionTimeout={{ .Values.tomcat.connector.connectionTimeout }} \
+                       -DtomcatEmbedded.maxConnections={{ .Values.tomcat.connector.maxConnections }} \
+                       -DtomcatEmbedded.maxThreads={{ .Values.tomcat.connector.maxThreads }} \
+                       -DtomcatEmbedded.keystoreFile={{ .Values.tomcat.connector.keystoreFile }} \
+                       -DtomcatEmbedded.keystorePass={{ .Values.tomcat.connector.keystorePass }} \
+                       -Xlog:gc*:file={{ .Values.global.coredumpDirectory }}/cms/${HOSTNAME}_%p_%t.gc \
+                       -XX:HeapDumpPath={{ .Values.global.coredumpDirectory }}/cms/${HOSTNAME}.hprof \
+                       --add-opens java.base/java.lang=ALL-UNNAMED \
+                       com.lhs.ccb.sfw.application.ExtendedServer \
+                       -name ${HOSTNAME} "]
+          env:
+          - name: K8S_ENV
+            value: "true"
+          - name: SYSLOG_TRUSTSTORE
+            value: "{{ .Values.global.SyslogAppenderSecurityTls.syslogTlsPath }}/truststore/truststoreLog4j.jks"
+          - name: SYSLOG_TRUSTSTORE_PASSWORD_FILE
+            value: "{{ .Values.global.SyslogAppenderSecurityTls.syslogTlsPath }}/truststore/truststoreLog4j.pwd"
+          - name: SYSLOG_KEYSTORE
+            value: "{{ .Values.global.SyslogAppenderSecurityTls.syslogTlsPath }}/keystore/keystoreLog4j.jks"
+          - name: SYSLOG_KEYSTORE_PASSWORD_FILE
+            value: "{{ .Values.global.SyslogAppenderSecurityTls.syslogTlsPath }}/keystore/keystoreLog4j.pwd"
+          - name: SOISRV_DATABASE_NAME
+            value: "{{ .Values.global.bscsDb }}"
+          - name: SOISRV_DATABASE_PORT
+            value: "{{ int .Values.global.databaseServerPort }}"
+          - name: SOISRV_DATABASE_SERVER
+            value: "{{ .Values.global.databaseServerName }}"
+          - name: EMB_TOM_PORT
+            value: "8443"
+          - name: EMB_TOM_SEC_PORT
+            value: "8443"
+          {{ if .Values.global.dataHighAvailability.enable }}
+          - name: DATA_CONNECT_NAME
+            value: "{{ .Values.global.dataServerName }}"
+          - name: DATA_CONNECT_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ .Values.global.dataClusterPort }},T:eric-bss-eb-data1-service:{{ .Values.global.dataClusterPort }}"
+          - name: DATA_CONNECT_MODE
+            value: "0"
+          {{ else }}
+          - name: DATA_SERVER_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ .Values.global.dataClusterPort }}"
+          {{ end }}
+          - name: BSCSDB
+            value: "{{ .Values.global.bscsDb }}"
+          {{ if .Values.global.databaseTls.enable }}
+          - name: ORA_SEC_WLT
+            value: "/oratns/secret"
+          - name: TNS_ADMIN
+            value: "/oratns"
+          - name: WALLET_LOCATION
+            value: "/oratns/secret"
+          - name: SOISRV_TNS_ENTRY
+            value: '{{ tpl .Values.tnsnames.bscsdb . | replace "\n" "" | nospace }}'
+          {{ end }}
+          - name: DXL_CONTINUE_AFTER_CORRUPT
+            value: "{{ .Values.global.tracingAndLogging.dxlContinueAfterCorrupt }}"
+          {{ if .Values.global.bee.mdcSecretName }}
+          - name: MONITOR_CERT_INPUT
+            value: "/bee/jobInput/monitorDigitalCertificates"
+          {{ end }}
+          - name: NLS_LANG
+            value: "{{ .Values.global.nlsLang }}"
+          - name: TZ
+            value: "{{ .Values.global.timezone }}"
+          - name: DOCIMAGES_ROOTDIR
+            value: "/workdir/BGH/PRINT"
+          - name: K8S_NAMING_SERVICE_LIST
+            value: "{{ .Values.global.k8sNamingServiceList }}"
+          {{ if .Values.global.securityTls.enable }}
+          - name: DATA_SSL_CONNECT
+            value: "1"
+          - name: DATA_CIPHER_LIST
+            value: "{{ $.Values.global.securityTls.cipherList }}"
+          {{ end }}
+          - name: DATA_RETRY_TIME
+            value: "{{ .Values.dataRetry.dataRetryTime }}"
+          - name: DATA_RETRY_TIME_MAX
+            value: "{{ .Values.dataRetry.dataRetryTimeMax }}"
+          {{ if .Values.global.ebTruststore.secretName }}
+          - name: CERTIFICATE_PATH
+            value: "-Djavax.net.ssl.trustStore=/ssl/{{ .Values.global.ebTruststore.trustStoreName }} \
+                    -Djavax.net.ssl.trustStorePassword={{ .Values.global.ebTruststore.trustStorePassword }}"
+          {{ end }}
+          - name: USE_FORGEROCK
+            value: "true"
+          {{ if not $.Values.global.secretManager.enable }}
+          - name: NO_SECRET_MANAGER
+            value: "true"
+          {{ end }}
+          volumeMounts:
+          {{ if .Values.global.securityTls.enable }}
+          - name: tls-volume
+            mountPath: "/tls/connect"
+            readOnly: true
+          {{ end }}
+          {{ if .Values.global.SyslogAppenderSecurityTls.enable }}
+          - name: tls-syslog-keystore-volume
+            mountPath: "/tls/syslog/keystore"
+            readOnly: true
+          - name: tls-syslog-truststore-volume
+            mountPath: "/tls/syslog/truststore"
+            readOnly: true
+          {{ end }}
+          {{ if .Values.global.databaseTls.enable }}
+          - name: wallet-volume
+            mountPath: /oratns/secret
+          {{ end }}
+          - name: init-properties-volume
+            mountPath: /ericssonbilling/resource/init
+          - mountPath: /log
+            name: logs-volume
+          - mountPath: /seclog
+            name: seclogs-volume
+          - name: coredump-volume
+            mountPath: "{{ .Values.global.coredumpDirectory }}"
+          - mountPath: /workdir/DOCS
+            name: docs-volume
+          - mountPath: /workdir/CAB
+            name: cab-volume
+          - mountPath: /conf
+            name: tomcat-empty-conf-volume
+          - mountPath: /webapps
+            name: tomcat-empty-webapps-volume
+          - mountPath: /bee/jobInput
+            name: bee-jobs-input-volume
+          - mountPath: /bee/jobOutput
+            name: bee-jobs-output-volume
+          - mountPath: /workdir/BGH/PRINT
+            name: print-volume
+          - mountPath: /workdir/PWDMGR_SECURITY
+            name: pwdmgr-security-volume
+          - name: cms-database-properties-volume
+            mountPath: /ericssonbilling/resource/database.properties
+            subPath: database.properties
+          - name: cms-jacorb-properties-volume
+            mountPath: /ericssonbilling/resource/jacorb.properties
+            subPath: jacorb.properties
+          - name: cms-registry-xml-volume
+            mountPath: /ericssonbilling/resource/Registry.xml
+            subPath: Registry.xml
+          - name: cms-func-frmwk-cmn-registry-xml-volume
+            mountPath: /ericssonbilling/resource/FUNC_FRMWK_CMN_Registry.xml
+            subPath: FUNC_FRMWK_CMN_Registry.xml
+          - name: cms-func-frmwk-srv-registry-xml-volume
+            mountPath: /ericssonbilling/resource/FUNC_FRMWK_SRV_Registry.xml
+            subPath: FUNC_FRMWK_SRV_Registry.xml
+          - name: cms-ehcache-sfw-xml-volume
+            mountPath: /ericssonbilling/resource/ehcache-sfw.xml
+            subPath: ehcache-sfw.xml
+          - name: cms-registry-usage-data-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_UsageData.xml
+            subPath: Registry_CMS_UsageData.xml
+          - name: tnsnames-ora-volume
+            mountPath: /oratns/tnsnames.ora
+            subPath: tnsnames.ora
+          - name: sqlnet-ora-volume
+            mountPath: /oratns/sqlnet.ora
+            subPath: sqlnet.ora
+          - name: cms-applicationcontext-sfw-security-xml-volume
+            mountPath: /ericssonbilling/resource/applicationContext-sfw-security.xml
+            subPath: applicationContext-sfw-security.xml
+          - name: cms-applicationcontext-sfw-security-openam-xml-volume
+            mountPath: /ericssonbilling/resource/applicationContext-sfw-security-openAM.xml
+            subPath: applicationContext-sfw-security-openAM.xml
+          - name: cms-customer-management-server-registry-xml-volume
+            mountPath: /ericssonbilling/resource/Registry_CMS_CustomerManagementServer.xml
+            subPath: Registry_CMS_CustomerManagementServer.xml
+          - name: cms-cmi-soi-volume
+            mountPath: /ericssonbilling/resource/cms/soi
+          - name: cms-asi-soi-volume
+            mountPath: /ericssonbilling/resource/as/soi
+          - name: cms-fmi-soi-volume
+            mountPath: /ericssonbilling/resource/fms/soi
+          - name: cms-omi-soi-volume
+            mountPath: /ericssonbilling/resource/oms/soi
+          - name: cms-wmi-soi-volume
+            mountPath: /ericssonbilling/resource/wms/soi
+          - name: cms-cil-soi-volume
+            mountPath: /ericssonbilling/resource/jcil/soi
+          - name: cms-cpi-soi-volume
+            mountPath: /ericssonbilling/resource/cps/soi
+          - name: cms-dci-soi-volume
+            mountPath: /ericssonbilling/resource/dcs/soi
+          - name: cms-scs-soi-volume
+            mountPath: /ericssonbilling/resource/scs/soi
+          - name: cms-sec-soi-volume
+            mountPath: /ericssonbilling/resource/secServer/soi
+          {{ if index .Values "images" "cms-init-customized" "name" }}
+          - mountPath: /ericssonbilling/3pp/custom_jar
+            name: cms-customized-jars-volume
+          {{ end }}
+          {{ if .Values.tomcat.secretName }}
+          - name: key-store-volume
+            mountPath: "/ssl_tomcat"
+            readOnly: true
+          {{ end }}
+          {{ if .Values.global.ebTruststore.secretName }}
+          - name: eb-trust-store-volume
+            mountPath: "/ssl"
+            readOnly: true
+          {{ end }}
+          {{ if .Values.global.bee.mdcSecretName }}
+          - name: mdc-certificate-volume
+            mountPath: "/bee/jobInput/monitorDigitalCertificates/ssl"
+            readOnly: true
+          {{ end }}
+          - name: tomcat-server-volume
+            mountPath: /ericssonbilling/resource/wsi/embedded-tomcat-config/server.xml
+            subPath: server.xml
+          - name: cms-jbpm-cfg-xml-volume
+            mountPath: /ericssonbilling/resource/wfms/jbpm.cfg.xml
+            subPath: jbpm.cfg.xml
+          - name: cms-registry-dcs-debtcollectionserver-xml-volume
+            mountPath: /ericssonbilling/resource/dcs/config/Registry_DCS_DebtCollectionServer.xml
+            subPath: Registry_DCS_DebtCollectionServer.xml
+          - name: cms-registry-dcs-collectionsagency-xml-volume
+            mountPath: /ericssonbilling/resource/dcs/config/Registry_DCS_CollectionsAgency.xml
+            subPath: Registry_DCS_CollectionsAgency.xml
+          - name: cms-registry-dcs-installments-xml-volume
+            mountPath: /ericssonbilling/resource/dcs/config/Registry_DCS_Installments.xml
+            subPath: Registry_DCS_Installments.xml
+          - name: cms-registry-wms-workflowmanagementserver-xml-volume
+            mountPath: /ericssonbilling/resource/wms/config/Registry_WMS_WorkflowManagementServer.xml
+            subPath: Registry_WMS_WorkflowManagementServer.xml
+          - name: cms-registry-wms-notehistory-xml-volume
+            mountPath: /ericssonbilling/resource/wms/config/Registry_WMS_NoteHistory.xml
+            subPath: Registry_WMS_NoteHistory.xml
+          - name: cms-wms-workgroup-xml-volume
+            mountPath: /ericssonbilling/resource/wms/config/Registry_WMS_Workgroup.xml
+            subPath: Registry_WMS_Workgroup.xml
+          - name: cms-registry-wms-workqueue-xml-volume
+            mountPath: /ericssonbilling/resource/wms/config/Registry_WMS_Workqueue.xml
+            subPath: Registry_WMS_Workqueue.xml
+          - name: cms-registry-wms-task-xml-volume
+            mountPath: /ericssonbilling/resource/wms/config/Registry_WMS_Task.xml
+            subPath: Registry_WMS_Task.xml
+          - name: cms-registry-wsi-xml-volume
+            mountPath: /ericssonbilling/resource/wsi/config/Registry_WSI.xml
+            subPath: Registry_WSI.xml
+          - name: cms-wsi-ws-soi-properties-volume
+            mountPath: /ericssonbilling/resource/wsi/config/ws-soi.properties
+            subPath: ws-soi.properties
+          - name: cms-registry-cab-collectionadaptorbscs-xml-volume
+            mountPath: /ericssonbilling/resource/cab/Registry_CAB_CollectionAdaptorBSCS.xml
+            subPath: Registry_CAB_CollectionAdaptorBSCS.xml
+          - name: cms-registry-ceb-cirtoworkflowattributesmapping-xml-volume
+            mountPath: /ericssonbilling/resource/ceb/Registry_CEB_CIRToWorkflowAttributesMapping.xml
+            subPath: Registry_CEB_CIRToWorkflowAttributesMapping.xml
+          - name: cms-registry-cdi-collectionagencyadaptor-xml-volume
+            mountPath: /ericssonbilling/resource/cdi/Registry_CDI_CollectionAgencyAdaptor.xml
+            subPath: Registry_CDI_CollectionAgencyAdaptor.xml
+          - name: cms-registry-cdi-elementtoworkflowattributesmapping-xml-volume
+            mountPath: /ericssonbilling/resource/cdi/Registry_CDI_ElementToWorkflowAttributesMapping.xml
+            subPath: Registry_CDI_ElementToWorkflowAttributesMapping.xml
+          - name: cms-registry-batch-xml-volume
+            mountPath: /ericssonbilling/resource/bee/plugin/Registry_Batch.xml
+            subPath: Registry_Batch.xml
+          - name: cms-bee-properties-volume
+            mountPath: /ericssonbilling/resource/bee/bee.properties
+            subPath: bee.properties
+          - name: cms-bee-inputmassremoveiotdevicesrecord-volume
+            mountPath: /ericssonbilling/resource/jsonSchemas/batchJobs/inputMassRemoveIoTDevicesRecord.v1.schema.json
+            subPath: inputMassRemoveIoTDevicesRecord.v1.schema.json
+          - name: cms-bee-inputmassaddiotdevicesrecord-volume
+            mountPath: /ericssonbilling/resource/jsonSchemas/batchJobs/inputMassAddIoTDevicesRecord.v1.schema.json
+            subPath: inputMassAddIoTDevicesRecord.v1.schema.json
+          {{ if .Values.global.bee.mdcSecretName }}
+          - name: cms-batch-mdc-input-volume
+            mountPath: /bee/jobInput/monitorDigitalCertificates/BATCH_MDC_INPUT.csv
+            subPath: BATCH_MDC_INPUT.csv
+          {{ end }}
+          - name: cms-collectibleadaptor-applicationcontext-xml-volume
+            mountPath: /ericssonbilling/resource/ceb/collectibleAdaptor-ApplicationContext.xml
+            subPath: collectibleAdaptor-ApplicationContext.xml
+          - name: cms-requesteventadaptor-applicationcontext-xml-volume
+            mountPath: /ericssonbilling/resource/ceb/requestEventAdaptor-ApplicationContext.xml
+            subPath: requestEventAdaptor-ApplicationContext.xml
+          - name: cms-eventadaptor-applicationcontext-xml-volume
+            mountPath: /ericssonbilling/resource/ceb/eventAdaptor-ApplicationContext.xml
+            subPath: eventAdaptor-ApplicationContext.xml
+          - name: cms-jbpm-businesscalendar-cfg-xml-volume
+            mountPath: /ericssonbilling/resource/wfms/jbpm.businesscalendar.cfg.xml
+            subPath: jbpm.businesscalendar.cfg.xml
+          - name: cms-jbpm-holidayscalendar-cfg-xml-volume
+            mountPath: /ericssonbilling/resource/wfms/jbpm.holidayscalendar.cfg.xml
+            subPath: jbpm.holidayscalendar.cfg.xml
+          - name: cms-registry-fms-xml-volume
+            mountPath: /ericssonbilling/resource/fms/plugin/Registry_FMS.xml
+            subPath: Registry_FMS.xml
+          - name: cms-registry-cil-fms-xml-volume
+            mountPath: /ericssonbilling/resource/fms/plugin/Registry_CIL_FMS.xml
+            subPath: Registry_CIL_FMS.xml
+          - name: cms-registry-fms-searcher-xml-volume
+            mountPath: /ericssonbilling/resource/fms/plugin/Registry_FMS_Searcher.xml
+            subPath: Registry_FMS_Searcher.xml
+          - name: cms-registry-fms-soi-xml-volume
+            mountPath: /ericssonbilling/resource/fms/plugin/Registry_FMS_SOI.xml
+            subPath: Registry_FMS_SOI.xml
+          - name: cms-wfms-hibernate-properties-volume
+            mountPath: /ericssonbilling/resource/wfms/hibernate.properties
+            subPath: hibernate.properties
+          - name: cms-common-applicationcontext-xml-volume
+            mountPath: /ericssonbilling/resource/ceb/common-ApplicationContext.xml
+            subPath: common-ApplicationContext.xml
+          - name: cms-configurablecompositecommandlistener-config-xml-volume
+            mountPath: /ericssonbilling/resource/jcil/ConfigurableCompositeCommandListener-Config.xml
+            subPath: ConfigurableCompositeCommandListener-Config.xml
+          - name: cms-registry-cma-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMA.xml
+            subPath: Registry_CMA.xml
+          - name: cms-registry-cms-accounting-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_Accounting.xml
+            subPath: Registry_CMS_Accounting.xml
+          - name: cms-registry-cms-apauthentication-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_APAuthentication.xml
+            subPath: Registry_CMS_APAuthentication.xml
+          - name: cms-registry-cms-billing-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_Billing.xml
+            subPath: Registry_CMS_Billing.xml
+          - name: cms-registry-cms-batchjob-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_BatchJob.xml
+            subPath: Registry_CMS_BatchJob.xml
+          - name: cms-registry-cms-bscs-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_bscs.xml
+            subPath: Registry_CMS_bscs.xml
+          - name: cms-registry-cms-businesspartner-searcher-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_BusinessPartner_Searcher.xml
+            subPath: Registry_CMS_BusinessPartner_Searcher.xml
+          - name: cms-registry-cms-businesspartner-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_BusinessPartner.xml
+            subPath: Registry_CMS_BusinessPartner.xml
+          - name: cms-registry-cms-businesspartnereventmanagement-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_BusinessPartnerEventManagement.xml
+            subPath: Registry_CMS_BusinessPartnerEventManagement.xml
+          - name: cms-registry-cms-commondomain-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_CommonDomain.xml
+            subPath: Registry_CMS_CommonDomain.xml
+          - name: cms-registry-cms-contract-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_Contract.xml
+            subPath: Registry_CMS_Contract.xml
+          - name: cms-registry-cms-contract-searcher1-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_Contract_searcher1.xml
+            subPath: Registry_CMS_Contract_searcher1.xml
+          - name: cms-registry-cms-contract-searcher2-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_Contract_searcher2.xml
+            subPath: Registry_CMS_Contract_searcher2.xml
+          - name: cms-registry-cms-contract-searcher3-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_Contract_searcher3.xml
+            subPath: Registry_CMS_Contract_searcher3.xml
+          - name: cms-registry-cms-costcontrol-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_CostControl.xml
+            subPath: Registry_CMS_CostControl.xml
+          - name: cms-registry-cms-creditscorebatchjob-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_CreditScoreBatchJob.xml
+            subPath: Registry_CMS_CreditScoreBatchJob.xml
+          - name: cms-registry-cms-product-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_Product.xml
+            subPath: Registry_CMS_Product.xml
+          - name: cms-registry-cms-promotions-searcher-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_Promotions_Searcher.xml
+            subPath: Registry_CMS_Promotions_Searcher.xml
+          - name: cms-registry-cms-resource-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_Resource.xml
+            subPath: Registry_CMS_Resource.xml
+          - name: cms-registry-cms-riskmanagement-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_RiskManagement.xml
+            subPath: Registry_CMS_RiskManagement.xml
+          - name: cms-registry-cms-taskmanagement-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CMS_TaskManagement.xml
+            subPath: Registry_CMS_TaskManagement.xml
+          - name: cms-registry-cs-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_CS.xml
+            subPath: Registry_CS.xml
+          - name: cms-registry-in-volume
+            mountPath: /ericssonbilling/resource/cms/Registry_IN.xml
+            subPath: Registry_IN.xml
+          - name: cms-security-log4j2-volume
+            mountPath: /ericssonbilling/resource/secServer/security_log4j2.xml
+            subPath: security_log4j2.xml
+          - name: vault-clientcfg-xml-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.xml
+            subPath: vault-clientcfg.xml
+          - name: cms-rootapplicationcontext-cms-volume
+            mountPath: /ericssonbilling/resource/cms/rootApplicationContext-cms.xml
+            subPath: rootApplicationContext-cms.xml
+          - name: cms-registry-compcmd-volume
+            mountPath: /ericssonbilling/resource/jcil/plugin/Registry_CompCmd.xml
+            subPath: Registry_CompCmd.xml
+          {{range $cmpCmd := .Values.additionalCompositeCommands }}
+          - name: {{$cmpCmd.volumeName}}
+            mountPath: /ericssonbilling/resource/jcil/cdf/{{$cmpCmd.configMapFolderName}}/{{$cmpCmd.commandVersion}}.xml
+            subPath: {{$cmpCmd.commandVersion}}.xml
+          {{end}}
+          ports:
+          - name: cms-endpoint
+            containerPort: 8443
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "/ericssonbilling/scripts/pre-stop_cms.sh"]
+      {{- if .Values.nodeSelector }}
+      nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector: {{ toYaml .Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity: {{ toYaml .Values.affinity | nindent 8 }}
+      {{- else if .Values.global.affinity }}
+      affinity: {{ toYaml .Values.global.affinity | nindent 8 }}
+      {{- end }}
+      # Teste Matheus Tanaka
+      tolerations:
+      - key: "nodepool"
+          operator: "Equal"
+          value: "sfppdev"
+          effect: "NoSchedule"
+      volumes:
+      {{ if .Values.global.securityTls.enable }}
+      - name: tls-volume
+        secret:
+          secretName: "{{ .Values.global.securityTls.clientSecretName }}"
+          items:
+          - key: {{ .Values.global.securityTls.trustedCertificateKey }}
+            path: certificate.pem
+      {{ end }}
+      {{ if .Values.global.SyslogAppenderSecurityTls.enable }}
+      - name: tls-syslog-keystore-volume
+        secret:
+          secretName: "{{ .Values.global.SyslogAppenderSecurityTls.syslogServerKeystoreSecretName }}"
+          items:
+          - key: {{ .Values.global.SyslogAppenderSecurityTls.syslogServerKeystoreKey }}
+            path: keystoreLog4j.jks
+          - key: {{ .Values.global.SyslogAppenderSecurityTls.syslogKeystorePasswordKey }}
+            path: keystoreLog4j.pwd
+      - name: tls-syslog-truststore-volume
+        secret:
+          secretName: "{{ .Values.global.SyslogAppenderSecurityTls.syslogServerTrustStoreSecretName }}"
+          items:
+          - key: {{ .Values.global.SyslogAppenderSecurityTls.syslogServerKeystoreKey }}
+            path: truststoreLog4j.jks
+          - key: {{ .Values.global.SyslogAppenderSecurityTls.syslogKeystorePasswordKey }}
+            path: truststoreLog4j.pwd
+      {{ end }}
+      {{ if .Values.global.databaseTls.enable }}
+      - name: wallet-volume
+        secret:
+          secretName: "{{ .Values.global.databaseTls.clientSecretName }}"
+      {{ end }}
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-logs
+      - name: seclogs-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-seclogs
+      - name: coredump-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-coredump
+      - name: docs-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-docs
+      - name: cab-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-cab
+      - name: init-properties-volume
+        emptyDir: {}
+      - name: tomcat-empty-conf-volume
+        emptyDir: {}
+      - name: tomcat-empty-webapps-volume
+        emptyDir: {}
+      - name: bee-jobs-input-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-beejobsinput
+      - name: bee-jobs-output-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-beejobsoutput
+      - name: print-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-print
+      - name: pwdmgr-security-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-pwdmgr-security
+      - name: cms-database-properties-volume
+        configMap:
+          name: eric-bss-eb-cms-database.properties
+      - name: cms-tracing-properties-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.tracingProperties | default "eric-bss-eb-cms-tracing.properties" }}
+      - name: cms-log4j2-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.log4j2xml | default "eric-bss-eb-cms-log4j2.xml" }}
+      - name: cms-security-log4j2-volume
+        secret:
+          secretName: eric-bss-eb-secret-cms-security-log4j2.xml
+      - name: cms-registry-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-registry.xml
+      - name: cms-func-frmwk-cmn-registry-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.funcFrmwkCmnRegistryXml | default "eric-bss-eb-cms-func-frmwk-cmn-registry.xml" }}
+      - name: cms-func-frmwk-srv-registry-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-func-frmwk-srv-registry.xml
+      - name: cms-ehcache-sfw-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.ehcacheSfwXml | default "eric-bss-eb-cms-ehcache-sfw.xml" }}
+      - name: cms-registry-usage-data-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsUsagedataXml | default "eric-bss-eb-cms-registry-cms-usagedata.xml" }}
+      - name: tnsnames-ora-volume
+        configMap:
+          name: eric-bss-eb-cms-tnsnames.ora
+      - name: sqlnet-ora-volume
+        configMap:
+          name: eric-bss-eb-cms-sqlnet.ora
+      - name: cms-applicationcontext-sfw-security-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.applicationcontextSfwSecurityXml | default "eric-bss-eb-cms-applicationcontext-sfw-security.xml" }}
+      - name: cms-applicationcontext-sfw-security-openam-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.applicationcontextSfwSecurityOpenamXml | default "eric-bss-eb-cms-applicationcontext-sfw-security-openam.xml" }}
+      - name: cms-customer-management-server-registry-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsCustomermanagementserverXml | default "eric-bss-eb-cms-registry-cms-customermanagementserver.xml" }}
+      - name: cms-cmi-soi-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.soiCmi | default "eric-bss-eb-soi-cmi" }}
+      - name: cms-asi-soi-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.soiAsi | default "eric-bss-eb-soi-asi" }}
+      - name: cms-fmi-soi-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.soiFmi | default "eric-bss-eb-soi-fmi" }}
+      - name: cms-omi-soi-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.soiOmi | default "eric-bss-eb-soi-omi" }}
+      - name: cms-wmi-soi-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.soiWmi | default "eric-bss-eb-soi-wmi" }}
+      - name: cms-cil-soi-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.soiCil | default "eric-bss-eb-soi-cil" }}
+      - name: cms-cpi-soi-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.soiCpi | default "eric-bss-eb-soi-cpi" }}
+      - name: cms-dci-soi-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.soiDci | default "eric-bss-eb-soi-dci" }}
+      - name: cms-scs-soi-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.soiScs | default "eric-bss-eb-soi-scs" }}
+      - name: cms-sec-soi-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.soiSec | default "eric-bss-eb-soi-sec" }}
+      {{ if index .Values "images" "cms-init-customized" "name" }}
+      - name: cms-customized-jars-volume
+        emptyDir: {}
+      {{ end }}
+      {{ if .Values.tomcat.secretName }}
+      - name: key-store-volume
+        secret:
+          secretName: {{ .Values.tomcat.secretName }}
+      {{ end }}
+      {{ if .Values.global.bee.mdcSecretName }}
+      - name: mdc-certificate-volume
+        secret:
+          secretName: {{ .Values.global.bee.mdcSecretName }}
+          items:
+          - key: {{ .Values.global.bee.mdcCertificateFile }}
+            path: mdc-certificate.pem
+      {{ end }}
+      {{ if .Values.global.ebTruststore.secretName }}
+      - name: eb-trust-store-volume
+        secret:
+          secretName: {{ .Values.global.ebTruststore.secretName }}
+      {{ end }}
+      - name: tomcat-server-volume
+        configMap:
+          name: eric-bss-eb-cms-tomcat-server.xml
+      - name: cms-jbpm-cfg-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-jbpm-cfg.xml
+      - name: vault-clientcfg-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-vault-clientcfg.xml
+      - name: cms-registry-dcs-debtcollectionserver-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-registry-dcs-debtcollectionserver.xml
+      - name: cms-registry-dcs-collectionsagency-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-registry-dcs-collectionsagency.xml
+      - name: cms-registry-dcs-installments-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-registry-dcs-installments.xml
+      - name: cms-registry-wms-workflowmanagementserver-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-registry-wms-workflowmanagementserver.xml
+      - name: cms-registry-wms-notehistory-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-registry-wms-notehistory.xml
+      - name: cms-wms-workgroup-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-registry-wms-workgroup.xml
+      - name: cms-registry-wms-workqueue-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-registry-wms-workqueue.xml
+      - name: cms-registry-wms-task-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-registry-wms-task.xml
+      - name: cms-registry-wsi-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryWsiXml | default "eric-bss-eb-cms-registry-wsi.xml" }}
+      - name: cms-wsi-ws-soi-properties-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.wsSoiProperties | default "eric-bss-eb-cms-ws-soi.properties" }}
+      - name: cms-registry-cab-collectionadaptorbscs-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCabCollectionadaptorbscsXml | default "eric-bss-eb-cms-registry-cab-collectionadaptorbscs.xml" }}
+      - name: cms-registry-ceb-cirtoworkflowattributesmapping-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-registry-ceb-cirtoworkflowattributesmapping.xml
+      - name: cms-registry-cdi-collectionagencyadaptor-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-registry-cdi-collectionagencyadaptor.xml
+      - name: cms-registry-cdi-elementtoworkflowattributesmapping-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-registry-cdi-elementtoworkflowattributesmapping.xml
+      - name: cms-registry-batch-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryBatchXml | default "eric-bss-eb-cms-registry-batch.xml" }}
+      - name: cms-bee-properties-volume
+        configMap:
+          name: eric-bss-eb-cms-bee.properties
+      - name: cms-bee-inputmassremoveiotdevicesrecord-volume
+        configMap:
+          name: eric-bss-eb-cms-bee-inputmassremoveiotdevicesrecord.v1.schema.json
+      - name: cms-bee-inputmassaddiotdevicesrecord-volume
+        configMap:
+          name: eric-bss-eb-cms-bee-inputmassaddiotdevicesrecord.v1.schema.json
+      - name: cms-batch-mdc-input-volume
+        configMap:
+          name: eric-bss-eb-cms-batch-mdc-input.csv
+      - name: cms-collectibleadaptor-applicationcontext-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-collectibleadaptor-applicationcontext.xml
+      - name: cms-requesteventadaptor-applicationcontext-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.requestEventAdaptorApplicationContextXml | default "eric-bss-eb-cms-requesteventadaptor-applicationcontext.xml" }}
+      - name: cms-eventadaptor-applicationcontext-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-eventadaptor-applicationcontext.xml
+      - name: cms-jbpm-businesscalendar-cfg-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-jbpm-businesscalendar-cfg.xml
+      - name: cms-jbpm-holidayscalendar-cfg-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-jbpm-holidayscalendar-cfg.xml
+      - name: cms-registry-fms-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-registry-fms.xml
+      - name: cms-registry-cil-fms-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCilFmsXml | default "eric-bss-eb-cms-registry-cil-fms.xml" }}
+      - name: cms-registry-fms-searcher-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryFmsSearcherXml | default "eric-bss-eb-cms-registry-fms-searcher.xml" }}
+      - name: cms-registry-fms-soi-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryFmsSoiXml | default "eric-bss-eb-cms-registry-fms-soi.xml" }}
+      - name: cms-wfms-hibernate-properties-volume
+        configMap:
+          name: eric-bss-eb-cms-wfms-hibernate.properties
+      - name: cms-common-applicationcontext-xml-volume
+        configMap:
+          name: eric-bss-eb-cms-common-applicationcontext.xml
+      - name: cms-configurablecompositecommandlistener-config-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.configurableCompositeCommandListenerConfigXml | default "eric-bss-eb-cms-configurablecompositecommandlistener-config.xml" }}
+      - name: cms-jacorb-properties-volume
+        configMap:
+          name: eric-bss-eb-cms-jacorb.properties
+      - name: cms-registry-cma-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmaXml | default "eric-bss-eb-cms-registry-cma.xml" }}
+      - name: cms-registry-cms-accounting-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsAccountingXml | default "eric-bss-eb-cms-registry-cms-accounting.xml" }}
+      - name: cms-registry-cms-apauthentication-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsApauthenticationXml | default "eric-bss-eb-cms-registry-cms-apauthentication.xml" }}
+      - name: cms-registry-cms-batchjob-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsBatchjobXml | default "eric-bss-eb-cms-registry-cms-batchjob.xml" }}
+      - name: cms-registry-cms-billing-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsBillingXml | default "eric-bss-eb-cms-registry-cms-billing.xml" }}
+      - name: cms-registry-cms-bscs-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsBscsXml | default "eric-bss-eb-cms-registry-cms-bscs.xml" }}
+      - name: cms-registry-cms-businesspartner-searcher-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsBusinesspartnerSearcherXml | default "eric-bss-eb-cms-registry-cms-businesspartner-searcher.xml" }}
+      - name: cms-registry-cms-businesspartner-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsBusinesspartnerXml | default "eric-bss-eb-cms-registry-cms-businesspartner.xml" }}
+      - name: cms-registry-cms-businesspartnereventmanagement-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsBusinesspartnereventmanagementXml | default "eric-bss-eb-cms-registry-cms-businesspartnereventmanagement.xml" }}
+      - name: cms-registry-cms-commondomain-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsCommondomainXml | default "eric-bss-eb-cms-registry-cms-commondomain.xml" }}
+      - name: cms-registry-cms-contract-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsContractXml | default "eric-bss-eb-cms-registry-cms-contract.xml" }}
+      - name: cms-registry-cms-contract-searcher1-volume
+        configMap:
+          name: eric-bss-eb-cms-registry-cms-contract-searcher1.xml
+      - name: cms-registry-cms-contract-searcher2-volume
+        configMap:
+          name: eric-bss-eb-cms-registry-cms-contract-searcher2.xml
+      - name: cms-registry-cms-contract-searcher3-volume
+        configMap:
+          name: eric-bss-eb-cms-registry-cms-contract-searcher3.xml
+      - name: cms-registry-cms-costcontrol-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsCostcontrolXml | default "eric-bss-eb-cms-registry-cms-costcontrol.xml" }}
+      - name: cms-registry-cms-creditscorebatchjob-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsCreditscorebatchjobXml | default "eric-bss-eb-cms-registry-cms-creditscorebatchjob.xml" }}
+      - name: cms-registry-cms-product-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsProductXml | default "eric-bss-eb-cms-registry-cms-product.xml" }}
+      - name: cms-registry-cms-promotions-searcher-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsPromotionsSearcherXml | default "eric-bss-eb-cms-registry-cms-promotions-searcher.xml" }}
+      - name: cms-registry-cms-resource-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsResourceXml | default "eric-bss-eb-cms-registry-cms-resource.xml" }}
+      - name: cms-registry-cms-riskmanagement-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsRiskmanagementXml | default "eric-bss-eb-cms-registry-cms-riskmanagement.xml" }}
+      - name: cms-registry-cms-taskmanagement-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCmsTaskmanagementXml | default "eric-bss-eb-cms-registry-cms-taskmanagement.xml" }}
+      - name: cms-registry-cs-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCsXml | default "eric-bss-eb-cms-registry-cs.xml" }}
+      - name: cms-registry-in-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryInXml | default "eric-bss-eb-cms-registry-in.xml" }}
+      - name: cms-registry-oab-ordermanagementserver
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryOabOrdermanagementserverXml | default "eric-bss-eb-cms-registry-oab-ordermanagementserver.xml" }}
+      - name: cms-registry-oms-ordermanagementserver
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryOmsOrdermanagementserverXml | default "eric-bss-eb-cms-registry-oms-ordermanagementserver.xml" }}
+      - name: cms-rootapplicationcontext-cms-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.rootapplicationcontextCmsXml | default "eric-bss-eb-cms-rootapplicationcontext-cms.xml" }}
+      - name: cms-registry-compcmd-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryCompCmdXml | default "eric-bss-eb-cms-registry-compcmd.xml" }}
+      {{range $cmpCmd := .Values.additionalCompositeCommands }}
+      - name: {{$cmpCmd.volumeName}}
+        configMap:
+          name: {{$cmpCmd.configMap}}
+      {{end}}

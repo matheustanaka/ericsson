@@ -1,0 +1,655 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-cms-customermanagementserver.xml
+data:
+  Registry_CMS_CustomerManagementServer.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+
+    <ComponentRegistry>
+
+        <Node name="FUNC_FRMWK_SRV">
+
+
+            <KeyValue key="CDFRootDirectory" value="cdf" comment="Root directory for the command definition files. Case sensitive entry."/>
+
+            <KeyValue key="SOIRootDirectory" value="soi" comment="Root directory for the service oriented interface definition files. Case sensitive entry."/>
+            <!--
+            List of files defining SOI's. These files are searched in SOIRootDirectory
+            Filenames should be entered in as "key" attributes, "value" attributes remains empty.
+            -->
+            <Node name="SOIDefinitions" >
+              <KeyValue key="CMI_6.xml" value=""/>
+              <KeyValue key="CMI_7.xml" value=""/>
+            </Node>
+
+
+            <KeyValue key="ValidationRootDirectory" value="val" comment="Root directory for the validation definition files. Case sensitive entry."/>
+            <!--
+            List of validation definitions. These files are searched in ValidationRootDirectory
+            Filenames should be entered in as "key" attributes, "value" attributes remains empty.
+            -->
+            <Node name="ValidationDefinitions" >
+              <KeyValue key="CMS_Validation.xml" value=""/>
+            </Node>
+
+            <!-- Flag indicates whether to validate the input-SVLObjects against the  command definitions. Allowed values are 'true' and 'false'. -->
+            <KeyValue key="ValidateInput" value="false" type="Boolean"/>
+
+        <!--
+        List of listeners implementing ServerStartupListener interface.
+        Each listener entered here will be instantiated using default constructor without parameters and
+        corresponding before- and after- methods will be called during server initialization process
+        -->
+            <Node name="StartupListeners" >
+          <KeyValue key="com.lhs.CustomerManagementServer.bscs_core.CMSInitializer" value=""/>
+              <KeyValue key="com.lhs.ccb.sfw.spring.SpringIntegrationServerEventListener" value="" />
+            </Node>
+
+        <!--
+        List of listeners implementing ServerShutdown interface.
+        Each listener entered here will be instantiated using default constructor without parameters and
+        corresponding before- and after- methods will be called during server shutdown
+        -->
+            <Node name="ShutdownListeners" >
+            </Node>
+
+            <!-- This node holds the names of all DomainServiceAdapter classes. -->
+            <Node name="ServiceLayerAdapterNames" >
+              <KeyValue key="com.lhs.Product.bscs_core.services.ServicesRead" value=""/>
+                <KeyValue key="com.lhs.cms.server.servicelayeradapter.AccountingServiceAdapter" value=""/>
+                <KeyValue key="com.lhs.cms.server.servicelayeradapter.BillingServiceAdapter" value=""/>
+                <KeyValue key="com.lhs.cms.server.servicelayeradapter.BusinessPartnerServiceAdapter" value=""/>
+                <KeyValue key="com.lhs.cms.server.servicelayeradapter.BusinessPartnerEventManagementServiceAdapter" value=""/>
+                <KeyValue key="com.lhs.cms.server.servicelayeradapter.CommonDomainServiceAdapter" value=""/>
+                <KeyValue key="com.lhs.cms.server.servicelayeradapter.ParameterServiceAdapter" value=""/>
+                <KeyValue key="com.lhs.cms.server.servicelayeradapter.ContractServiceAdapter" value=""/>
+                <KeyValue key="com.lhs.cms.server.servicelayeradapter.MarketSegmentServiceAdapter" value=""/>
+                <KeyValue key="com.lhs.cms.server.servicelayeradapter.ProductServiceAdapter" value=""/>
+                <KeyValue key="com.lhs.cms.server.servicelayeradapter.PromotionsServiceAdapter" value=""/>
+                <KeyValue key="com.lhs.cms.server.servicelayeradapter.ResourceServiceAdapter" value=""/>
+                <KeyValue key="com.lhs.cms.server.servicelayeradapter.TaxManagementServiceAdapter" value=""/>
+                <KeyValue key="com.lhs.cms.server.servicelayeradapter.TopologyServiceAdapter" value=""/>
+                <KeyValue key="com.lhs.cms.server.servicelayeradapter.UsageDataServiceAdapter" value=""/>
+                <KeyValue key="com.lhs.CostControl.bscs_core.services.BalanceSearch" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractWrite" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractCancel" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractNew" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractHistoryRead" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractDeviceDelete" value=""/>
+              <KeyValue key="com.lhs.CostControl.bscs_core.services.BalanceHistoryRead" value=""/>
+
+          <KeyValue key="com.lhs.CostControl.bscs_core.services.PrepaidTransactionTypesRead" value=""/>
+
+              <KeyValue key="com.lhs.CostControl.bscs_core.services.CostControlPackageRead" value=""/>
+          <KeyValue key="com.lhs.CostControl.bscs_core.services.BalanceItemDefinitionRead" value=""/>
+          <KeyValue key="com.lhs.CostControl.bscs_core.services.CostControlPackageSearch" value=""/>
+          <KeyValue key="com.lhs.CostControl.bscs_core.services.VoucherSearch" value=""/>
+          <KeyValue key="com.lhs.CostControl.bscs_core.services.VoucherRead" value=""/>
+          <KeyValue key="com.lhs.CostControl.bscs_core.services.VoucherTypeRead" value=""/>
+          <KeyValue key="com.lhs.CostControl.bscs_core.services.VoucherActionTypeRead" value=""/>
+          <KeyValue key="com.lhs.CostControl.bscs_core.services.VoucherActionRead" value=""/>
+          <KeyValue key="com.lhs.CostControl.bscs_core.services.PricingAlternativeRead" value=""/>
+
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractBundleRead" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractBundleWrite" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractInfoRead" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractInfoWrite" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractRatingOptionRead" value=""/>
+          <KeyValue key="com.lhs.Contract.bscs_core.services.ContractRatingOptionWrite" value=""/>
+            <KeyValue key="com.lhs.Product.bscs_core.services.PrepaidTimepackagesRead" value=""/>
+            <KeyValue key="com.lhs.Product.bscs_core.services.BearerCapabilitiesRead" value=""/>
+
+
+            <KeyValue key="com.lhs.BusinessPartnerEventManagement.bscs_core.services.TicklersSearch" value=""/>
+            <KeyValue key="com.lhs.BusinessPartnerEventManagement.bscs_core.services.TicklerDelete" value=""/>
+            <KeyValue key="com.lhs.BusinessPartnerEventManagement.bscs_core.services.TicklerTrackingReferenceRead" value=""/>
+
+                <KeyValue key="com.lhs.Resource.bscs_core.services.EquipmentWrite" value=""/>
+            <KeyValue key="com.lhs.Resource.bscs_core.services.EquipmentDelete" value=""/>
+             <KeyValue key="com.lhs.Resource.bscs_core.services.EquipmentsRead" value=""/>
+             <KeyValue key="com.lhs.Resource.bscs_core.services.GenericDirectoryNumberCreate" value=""/>
+             <KeyValue key="com.lhs.Resource.bscs_core.services.GenericDirectoryNumberRead" value=""/>
+             <KeyValue key="com.lhs.Resource.bscs_core.services.GenericDirectoryNumberSearch" value=""/>
+          <KeyValue key="com.lhs.Resource.bscs_core.services.PhoneNumberExportSearch" value=""/>
+                 <KeyValue key="com.lhs.Resource.bscs_core.services.VPNPrivateNumberRead" value=""/>
+          <KeyValue key="com.lhs.Resource.bscs_core.services.MicrocellsRead" value=""/>
+          <KeyValue key="com.lhs.Resource.bscs_core.services.MicrocellsWrite" value=""/>
+                <KeyValue key="com.lhs.Resource.bscs_core.services.MicrocellMemberRead" value=""/>
+                <KeyValue key="com.lhs.Resource.bscs_core.services.MicrocellMembersWrite" value=""/>
+          <KeyValue key="com.lhs.Resource.bscs_core.services.OriginsRead" value=""/>
+          <KeyValue key="com.lhs.Resource.bscs_core.services.DestinationsRead" value=""/>
+              <KeyValue key="com.lhs.Resource.bscs_core.services.VirtualPrivateNetworkCreate" value=""/>
+              <KeyValue key="com.lhs.Resource.bscs_core.services.VirtualPrivateNetworkSearch" value=""/>
+
+              <KeyValue key="com.lhs.Resource.bscs_core.services.ResourceStateWrite" value=""/>
+
+          <KeyValue key="com.lhs.Contract.bscs_core.services.ContractResourcesRead" value=""/>
+            <KeyValue key="com.lhs.Contract.bscs_core.services.AllowedServicePackagesRead" value=""/>
+
+                 <KeyValue key="com.lhs.UsageData.bscs_core.services.UsageDataRecordsRead" value=""/>
+
+               <KeyValue key="com.lhs.CostControl.bscs_core.services.FamiliesSearch" value=""/>
+                <KeyValue key="com.lhs.CostControl.bscs_core.services.FamilyRead" value=""/>
+                <KeyValue key="com.lhs.CostControl.bscs_core.services.FamilyDefaultRead" value=""/>
+                <KeyValue key="com.lhs.CostControl.bscs_core.services.FamiliesMerge" value=""/>
+                <KeyValue key="com.lhs.CostControl.bscs_core.services.FamilyNew" value=""/>
+                <KeyValue key="com.lhs.CostControl.bscs_core.services.FamilyWrite" value=""/>
+                <KeyValue key="com.lhs.CostControl.bscs_core.services.FamilyMemberMove" value=""/>
+                <KeyValue key="com.lhs.CostControl.bscs_core.services.FamilyGroupRead" value=""/>
+
+            <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.AddressrolesRead" value=""/>
+            <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.CustomerCancel" value=""/>
+                  <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.CustomerNew" value=""/>
+                  <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.CustomerRead" value=""/>
+                  <!--<KeyValue key="com.lhs.BusinessPartner.bscs_core.services.CustomerWrite" value=""/>-->
+                  <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.AreasRead" value=""/>
+                   <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.CustcatcodeRead" value=""/>
+                  <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.CustomerDuplicateCheck" value=""/>
+                  <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.DummyCustomerNew" value=""/>
+                  <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.DummyCustomerRead" value=""/>
+                  <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.LanguagesRead" value=""/>
+                  <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.TradesRead" value=""/>
+
+                  <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.DealerDataMove" value=""/>
+                  <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.CustomerMailItemWrite" value=""/>
+                  <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.CustomerMailItemRead" value=""/>
+                  <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.CustomerMailItemDelete" value=""/>
+                  <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.CustomersSearch" value=""/>
+                  <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.DealersSearch" value=""/>
+
+                  <KeyValue key="com.lhs.MarketSegment.bscs_core.services.MailItemRead" value=""/>
+                  <KeyValue key="com.lhs.MarketSegment.bscs_core.services.CustomerInfoRead" value=""/>
+                  <KeyValue key="com.lhs.MarketSegment.bscs_core.services.MarketSegmentPaymentOptionRead" value=""/>
+
+                  <KeyValue key="com.lhs.RiskManagement.bscs_core.services.PaymentDataValidate" value=""/>
+
+                  <KeyValue key="com.lhs.CommonDomain.bscs_core.services.CurrenciesRead" value=""/>
+                  <KeyValue key="com.lhs.CommonDomain.bscs_core.services.CurrencyHistoryRead" value=""/>
+                  <KeyValue key="com.lhs.CommonDomain.bscs_core.services.SessionChange" value=""/>
+                  <KeyValue key="com.lhs.CommonDomain.bscs_core.services.BusinessUnitRead" value=""/>
+                  <KeyValue key="com.lhs.CommonDomain.bscs_core.services.AmountFunctionRead" value=""/>
+                  <KeyValue key="com.lhs.CommonDomain.bscs_core.services.UserSettingRead" value=""/>
+                  <KeyValue key="com.lhs.CommonDomain.bscs_core.services.SystemSettingRead" value=""/>
+                  <KeyValue key="com.lhs.CommonDomain.bscs_core.services.RateplanMassChange" value=""/>
+                  <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.CostcentersRead" value=""/>
+                  <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.CustomerGroupsRead" value=""/>
+                  <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.BusinessUnitChange" value=""/>
+                  <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.BusinessUnitCheck" value=""/>
+
+                  <KeyValue key="com.lhs.Product.bscs_core.services.RateplansRead" value=""/>
+                  <KeyValue key="com.lhs.Product.bscs_core.services.AllowedRateplansRead" value=""/>
+                  <KeyValue key="com.lhs.Product.bscs_core.services.OCCRateplansRead" value=""/>
+                  <KeyValue key="com.lhs.Product.bscs_core.services.ServicePackagesRead" value=""/>
+                  <KeyValue key="com.lhs.Product.bscs_core.services.AlternateRateplansRead" value=""/>
+                  <KeyValue key="com.lhs.Product.bscs_core.services.RateplanHistoryRead" value=""/>
+                  <KeyValue key="com.lhs.Product.bscs_core.services.FreeUnitPackageElementsRead" value=""/>
+                  <KeyValue key="com.lhs.Product.bscs_core.services.FreeUnitPackagesRead" value=""/>
+
+                  <KeyValue key="com.lhs.Billing.bscs_core.services.BillingAccountAssignmentFinish" value="" />
+             <KeyValue key="com.lhs.Billing.bscs_core.services.BillingAccountAssignmentHistoryRead" value="" />
+            <KeyValue key="com.lhs.Billing.bscs_core.services.BillingAccountAssignmentRead" value="" />
+             <KeyValue key="com.lhs.Billing.bscs_core.services.BillingAccountAssignmentWrite" value="" />
+            <KeyValue key="com.lhs.Billing.bscs_core.services.BillingAccountRead" value="" />
+            <KeyValue key="com.lhs.Billing.bscs_core.services.BillingAccountSearch" value="" />
+            <KeyValue key="com.lhs.Billing.bscs_core.services.BillingAccountWrite" value="" />
+            <KeyValue key="com.lhs.Pricing.bscs_core.services.ChargeTypeRead" value="" />
+              <KeyValue key="com.lhs.Topology.bscs_core.services.PortingNetworkRead" value="" />
+
+              <KeyValue key="com.lhs.Billing.bscs_core.services.BillCycleAssignmentHistoryRead" value="" />
+              <KeyValue key="com.lhs.Billing.bscs_core.services.BillCycleChangeReasonsRead" value="" />
+
+                  <KeyValue key="com.lhs.Contract.bscs_core.services.BOPHistoryRead" value=""/>
+                  <KeyValue key="com.lhs.Product.bscs_core.services.BOPModesRead" value=""/>
+                  <KeyValue key="com.lhs.Product.bscs_core.services.BOPPackageAssignmentCheck" value=""/>
+                  <KeyValue key="com.lhs.Product.bscs_core.services.BOPPackagesRead" value=""/>
+                  <KeyValue key="com.lhs.Product.bscs_core.services.BOPPurposesRead" value=""/>
+              <KeyValue key="com.lhs.Product.bscs_core.services.ContentProductItemDetailRead" value=""/>
+
+          <KeyValue key="com.lhs.Contract.bscs_core.services.ContractTemplateResourceRead" value="" />
+          <KeyValue key="com.lhs.Contract.bscs_core.services.ContractTemplateResourceWrite" value="" />
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractTemplateServiceResourcesRead" value="" />
+          <KeyValue key="com.lhs.Contract.bscs_core.services.ContractTemplateServiceResourcesWrite" value="" />
+                 <KeyValue key="com.lhs.Contract.bscs_core.services.ContractProductRead" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractProductWrite" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractRatingInvoiceRead" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractRatingInvoiceHistoryRead" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractRatingInvoiceWrite" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.CreditLimitHistoryRead" value=""/>
+
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractSectionsRead" value="" />
+          <KeyValue key="com.lhs.Contract.bscs_core.services.ContractSubsectionsRead" value="" />
+          <KeyValue key="com.lhs.Contract.bscs_core.services.ContractTypesRead" value="" />
+          <KeyValue key="com.lhs.Contract.bscs_core.services.ContractDataExchangeWrite" value="" />
+          <KeyValue key="com.lhs.Contract.bscs_core.services.ContractDataExchangeRead" value="" />
+          <KeyValue key="com.lhs.Contract.bscs_core.services.ContractDataExchangeCheck" value="" />
+          <KeyValue key="com.lhs.Contract.bscs_core.services.ContractDataExchangeHistoryRead" value="" />
+
+          <KeyValue key="com.lhs.UsageData.bscs_core.services.CIBERValidationRulesRead" value="" />
+            <KeyValue key="com.lhs.UsageData.bscs_core.services.TAPValidationRulesRead" value="" />
+          <KeyValue key="com.lhs.UsageData.bscs_core.services.DataExchangeFormatsRead" value="" />
+          <KeyValue key="com.lhs.UsageData.bscs_core.services.TAPRecordTypesRead" value="" />
+          <KeyValue key="com.lhs.UsageData.bscs_core.services.UDSMembersRead" value="" />
+          <KeyValue key="com.lhs.Contract.bscs_core.services.RoamingAgreementGroupsRead" value="" />
+          <KeyValue key="com.lhs.Pricing.bscs_core.services.ServiceCategoriesRead" value=""/>
+
+            <KeyValue key="com.lhs.Accounting.bscs_core.services.GLAccountPackageRead" value="" />
+            <KeyValue key="com.lhs.Accounting.bscs_core.services.JobCostsRead" value=""/>
+            <KeyValue key="com.lhs.CommonDomain.bscs_core.services.UserContentProvidersRead" value=""/>
+          <KeyValue key="com.lhs.CommonDomain.bscs_core.services.ReasonsRead" value=""/>
+
+          <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.PartyRoleConfigurationRead" value="" />
+          <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.AssignedResourcesCheck" value="" />
+
+                <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.OutboundDialedDigitsRead" value=""/>
+                <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.TrunkRead" value=""/>
+                <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.PosconnectRead" value=""/>
+
+                <KeyValue key="com.lhs.Topology.bscs_core.services.BidGroupsRead" value=""/>
+                <KeyValue key="com.lhs.Topology.bscs_core.services.NetworksRead" value=""/>
+                <KeyValue key="com.lhs.Topology.bscs_core.services.NdcLogicalhlrRead" value=""/>
+
+                <KeyValue key="com.lhs.Promotions.bscs_core.services.PrepaidPromotionAssignmentCheck" value=""/>
+                <KeyValue key="com.lhs.UsageData.bscs_core.services.UsageTypeRead" value=""/>
+                <KeyValue key="com.lhs.CommonDomain.bscs_core.services.BalanceAdjustmentReasonRead" value=""/>
+          <KeyValue key="com.lhs.Resource.bscs_core.services.VirtualPrivateNetworksRead" value=""/>
+          <KeyValue key="com.lhs.Accounting.PaymentConfiguration.bscs_core.services.PaymentModeRead" value=""/>
+          <KeyValue key="com.lhs.Accounting.PaymentConfiguration.bscs_core.services.DocumentTypeRead" value=""/>
+          <KeyValue key="com.lhs.Accounting.PaymentConfiguration.bscs_core.services.PaymentTermsRead" value=""/>
+          <KeyValue key="com.lhs.Accounting.PaymentConfiguration.bscs_core.services.PaymentMethodsRead" value=""/>
+          <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.PaymentArrangementsRead" value=""/>
+          <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.PaymentArrangementWrite" value=""/>
+          <KeyValue key="com.lhs.Billing.bscs_core.services.PaymentArrangementAssignmentRead" value=""/>
+          <KeyValue key="com.lhs.Billing.bscs_core.services.PaymentArrangementAssignmentWrite" value=""/>
+          <KeyValue key="com.lhs.CommonDomain.bscs_core.services.TimeZonesRead" value=""/>
+              <KeyValue key="com.lhs.TaskManagement.bscs_core.services.GMDActionRead" value=""/>
+              <KeyValue key="com.lhs.TaskManagement.bscs_core.services.ConcurrentRequestSearch" value=""/>
+              <KeyValue key="com.lhs.TaskManagement.bscs_core.services.ConcurrentRequestCancel" value=""/>
+              <KeyValue key="com.lhs.Contract.bscs_core.services.ContractServiceHistoryRead" value=""/>
+                <KeyValue key="com.lhs.CommonDomain.Parameter.bscs_core.services.ContractServiceParametersHistoryRead" value=""/>
+                <KeyValue key="com.lhs.UsageData.bscs_core.services.ChargeRecordsRead" value=""/>
+
+                <KeyValue key="com.lhs.Topology.bscs_core.services.InstanceRead" value=""/>
+                <KeyValue key="com.lhs.TaskManagement.bscs_core.services.RequestsSearch" value=""/>
+                <KeyValue key="com.lhs.TaskManagement.bscs_core.services.RequestRead" value="" />
+
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractServiceResourcesWrite" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractTakeover" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractServicesWrite" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractServicesAdd" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ContractResourcesReplace" value=""/>
+                <KeyValue key="com.lhs.Contract.bscs_core.services.ProductChange" value=""/>
+
+                <KeyValue key="com.lhs.CommonDomain.Parameter.bscs_core.services.ContractServiceParametersWrite" value=""/>
+
+                <KeyValue key="com.lhs.Resource.bscs_core.services.PhoneNumberExport" value=""/>
+                <KeyValue key="com.lhs.Resource.bscs_core.services.PhoneNumberImport" value=""/>
+                <KeyValue key="com.lhs.Resource.bscs_core.services.PhoneNumberReimport" value=""/>
+                <KeyValue key="com.lhs.Resource.bscs_core.services.NumberingPlansSearch" value=""/>
+
+                <KeyValue key="com.lhs.TaskManagement.bscs_core.services.PortingRequestRemarkNew" value=""/>
+                <KeyValue key="com.lhs.TaskManagement.bscs_core.services.PortingRequestRead" value=""/>
+                <KeyValue key="com.lhs.TaskManagement.bscs_core.services.PortingRequestRemarkRead" value=""/>
+                <KeyValue key="com.lhs.TaskManagement.bscs_core.services.PortingRequestSearch" value=""/>
+                <KeyValue key="com.lhs.TaskManagement.bscs_core.services.PortingRequestHistoryRead" value=""/>
+                <KeyValue key="com.lhs.TaskManagement.bscs_core.services.PortingRequestTypesRead" value=""/>
+                <KeyValue key="com.lhs.TaskManagement.bscs_core.services.PortingRequestWrite" value=""/>
+                <KeyValue key="com.lhs.TaskManagement.bscs_core.services.PortingRequestStatesRead" value=""/>
+                <KeyValue key="com.lhs.TaskManagement.bscs_core.services.BalanceAdjustmentRequestWrite" value=""/>
+
+              <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.AddressConvert" value=""/>
+              <KeyValue key="com.lhs.Contract.bscs_core.services.ContractStatesRead" value=""/>
+
+              <KeyValue key="com.lhs.Resource.bscs_core.services.PhoneNumberValidate" value=""/>
+
+              <KeyValue key="com.lhs.Contract.bscs_core.services.CandidateForReratingMark" value=""/>
+              <KeyValue key="com.lhs.CommonDomain.bscs_core.services.ReratingReasonsRead" value=""/>
+              <KeyValue key="com.lhs.Accounting.BookingRequest.bscs_core.services.BookingRequestsSearch" value=""/>
+              <KeyValue key="com.lhs.Accounting.BookingRequest.bscs_core.services.BookingRequestWrite" value=""/>
+
+              <KeyValue key="com.lhs.Resource.bscs_core.services.DirectoryNumberTypesRead" value=""/>
+              <KeyValue key="com.lhs.Resource.bscs_core.services.ResourceStructureRead" value=""/>
+
+              <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.AddressWrite" value=""/>
+              <!--<KeyValue key="com.lhs.BusinessPartner.bscs_core.services.CustomerHierarchyWrite" value=""/>-->
+              <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.CustomerTaxExemptionsWrite" value=""/>
+
+              <KeyValue key="com.lhs.TaskManagement.bscs_core.services.RequestsCancel" value=""/>
+              <KeyValue key="com.lhs.TaskManagement.bscs_core.services.SwitchRequestNew" value=""/>
+              <KeyValue key="com.lhs.TaskManagement.bscs_core.services.RequestFinish" value=""/>
+              <KeyValue key="com.lhs.TaskManagement.bscs_core.services.BalanceAdjustmentRequestRead" value=""/>
+              <KeyValue key="com.lhs.TaskManagement.bscs_core.services.RequestResend" value=""/>
+             <KeyValue key="com.lhs.UsageData.bscs_core.services.BusinessScenariosRead" value=""/>
+                <KeyValue key="com.lhs.CostControl.bscs_core.services.VoucherUse" value=""/>
+                <KeyValue key="com.lhs.Product.bscs_core.services.ProductChangeServicesRead" value=""/>
+
+          <KeyValue key="com.lhs.UsageData.bscs_core.services.UDCLogicalQuantityRead" value="" />
+
+          <KeyValue key="com.lhs.inservices.PrepaidContract.services.ContractPrepaidDataDelete" value="" />
+          <KeyValue key="com.lhs.inservices.PrepaidContract.services.ContractPrepaidDataNew" value="" />
+          <KeyValue key="com.lhs.inservices.PrepaidContract.services.ContractPrepaidDataWrite" value="" />
+          <KeyValue key="com.lhs.inservices.PrepaidContract.services.ContractPrepaidDataHistoryRead" value="" />
+          <KeyValue key="com.lhs.inservices.PrepaidContract.services.ContractPrepaidDataHistorySearch" value="" />
+          <KeyValue key="com.lhs.inservices.PrepaidContract.services.PrepaidSubscriptionActivate" value="" />
+          <KeyValue key="com.lhs.inservices.ReferenceData.services.IvrLanguagesRead" value="" />
+          <KeyValue key="com.lhs.inservices.ReferenceData.services.PrepaidProfilesRead" value="" />
+          <KeyValue key="com.lhs.Lifecycle.services.LifecycleDefinitionsRead" value="" />
+          <KeyValue key="com.lhs.Lifecycle.services.LifecycleTransactionRead" value="" />
+          <KeyValue key="com.lhs.Lifecycle.services.LifecycleEventRead" value="" />
+          <KeyValue key="com.lhs.Lifecycle.services.LifecycleStateRead" value="" />
+          <KeyValue key="com.lhs.Lifecycle.services.LifecycleStateTransitionRead" value="" />
+          <KeyValue key="com.lhs.Lifecycle.services.LifecycleActionRead" value="" />
+
+            <KeyValue key="com.lhs.Contract.bscs_core.services.ContractFUARead" value=""/>
+            <!--  KeyValue key="com.lhs.UsageData.bscs_core.services.UsageDataRecordsExport" value=""/  -->
+            <KeyValue key="com.lhs.BusinessPartner.bscs_core.services.CustomerFlatWrite" value=""/>
+            <KeyValue key="com.lhs.Promotions.bscs_core.services.LAPromotionAssignmentsSearch" value=""/>
+            <KeyValue key="com.lhs.Contract.bscs_core.services.LAFreeUnitsAssignmentsSearch" value=""/>
+            <KeyValue key="com.lhs.Contract.bscs_core.services.ContractServiceAccessFeeHistoryRead" value=""/>
+            </Node>
+
+            <!-- This node contains class to subclass mappings. It can be used to customize an
+                 implementation class by subclassing. Each customized class needs a KeyValue
+                 entry here, mapping the parent class name of the core implementation to a
+                 customized class name. Per default this node is empty.
+            -->
+            <Node name="ClassLookupTable">
+            </Node>
+
+            <!-- TOPLink related settings, configuration of persistent domain objects-->
+            <Node name="Persistence">
+
+            <!--
+                Database table names for which an update query timeout should be applied.
+                -->
+                <Node name="UpdateQueryTimeoutRelevantTableNames">
+                    <KeyValue key="CUSTOMER_ALL"  value=""/>
+                    <KeyValue key="PROFILE_SERVICE" value="" />
+                </Node>
+
+          <KeyValue key="IsolatedClientSession" value="true" type="Boolean"/>
+
+          <Node name="OraConstraintViolation">
+            <Node name="OraCodes">
+              <KeyValue key="00001" value=""/>
+              <KeyValue key="02091" value=""/> <!--  in case a transaction is rolled back, that could have been caused by a constraint violation -->
+              <KeyValue key="02292" value=""/>
+              <KeyValue key="20001" value=""/>
+            </Node>
+            <!--  constraint violation that are translated in domain specific error codes. E.g. for a duplicate public key the constraint violation is
+                translated into a more meaningfull error message -->
+            <Node name="constraints">
+              <KeyValue key="UC_CUSTALL_CUSTNUM" value="CMS.BusinessPartner.DuplicatePublicKey"/>
+              <KeyValue key="UC_BILLING_ACCOUNT_NAME" value="CMS.BillingAccount.DescriptionNotUnique" />
+              <KeyValue key="PK_MKTPARUS" value="CMS.CommonDomain.Parameter.ValueNotUnique" />
+              <KeyValue key="CHECK_NETWORK_ELEMENT_ICCDRID" value="CMS.BusinessPartner.LECIdentificationDataCombination" />
+              <KeyValue key="CHECK_NETWORK_ELEMENT_EXCHANGE" value="CMS.BusinessPartner.UnidentifiableExchangeIdentifier" />
+              <KeyValue key="UC_PCI_NWELEM_ICCDRID" value="CMS.BusinessPartner.LECNotUniquelyIdentified" />
+              <KeyValue key="CHECK_ICNETID_CONTRACT" value="CMS.BusinessPartner.ICNETIDIsNotUniqueForLDCorLECVersion" />
+              <KeyValue key="IU_DEALER_INFO_FILENAME" value="CMS.Contract.DuplicateFileName" />
+              <KeyValue key="UX_TAXEXEMP_VALID_FROM" value="CMS.ActiveTaxExemptionAlreadyExists" />
+              <KeyValue key="UX_BATAXEXEMP_VALID_FROM" value="CMS.ActiveTaxExemptionAlreadyExists" />
+              <KeyValue key="UC_EXT_DVC_INVNTID" value="CMS.Device.ExtDeviceInventoryNotUnique" />
+              <!-- Nodes for parameter depending constraint violation messages do accept the following keys:
+                   - "errorCode" is mandatory. It is used for identifying the error message from the ErrorDictionary.
+                   - "privateKey", "publicKey" and "column" are optional. Their values are used for parameter lookup
+                     in related ORACLE constraint violation messages. The results of the lookups are available
+                     as error message parameter 0, 1 and 2. -->
+              <Node name="PK_BUNDLED_PRODUCT_HIERARCHY">
+                <KeyValue key="errorCode" value="CMS.ProductParentAssignment.MoreThanOneAction" />
+                <KeyValue key="privateKey" value="PRODUCT_ID" />
+                <KeyValue key="publicKey" value="HISTNO" />
+                <KeyValue key="column" value="PARENT_PRODUCT_ID" />
+              </Node>
+              <Node name="FK_RPBUSUNIT_BUSUNIT">
+                <KeyValue key="errorCode"  value="CMS.BusUnitDeleteChildRateplan" />
+                <KeyValue key="privateKey" value="BUSINESS_UNIT_ID" />
+              </Node>
+              <Node name="FKICSCOS">
+                <KeyValue key="errorCode"  value="CMS.CostCenterDeleteChildCustomer" />
+                <KeyValue key="privateKey" value="COST_ID" />
+              </Node>
+            </Node>
+          </Node>
+
+          <!-- Settings for the Java wrapper of NEXTFREE stored procedures. -->
+          <Node name="NEXTFREE">
+            <!--
+            Specifies fetch size for a particular sequence.
+            If a sequence is found in the list than NEXTFREE.GetNumValues / NEXTFREE.GetStringValues  with
+            array interface will be used with specified fetch size
+
+            If a sequence isn't found in the list than NEXTFREE.GetValue / NEXTFREE.GetStringValue
+            will be used (no array interface and caching)
+             -->
+            <Node name="FetchSizePerSequence">
+                  <KeyValue key="MAX_CONTRACT_ID" value="10" type="Integer"/>
+                  <KeyValue key="PR_SERV_TRANS_NO" value="10" type="Integer"/>
+                  <KeyValue key="MAX_CUSTOMER_ID" value="10" type="Integer"/>
+                  <KeyValue key="MAX_TL_CODE" value="10" type="Integer"/>
+                  <KeyValue key="MAX_REQUEST" value="10" type="Integer"/>
+                  <KeyValue key="MAX_PRM_VALUE_ID" value="10" type="Integer"/>
+                  <KeyValue key="MAX_TICKLER_NUMBER" value="20" type="Integer"/>
+                  <KeyValue key="MAX_RA_DN_ID" value="10" type="Integer"/>
+                  <KeyValue key="MAX_RA_SM_ID" value="10" type="Integer"/>
+                  <KeyValue key="MAX_RA_PORT_ID" value="10" type="Integer"/>
+                  <KeyValue key="MAX_OHXACT" value="10" type="Integer"/>
+                  <KeyValue key="MAX_BILLING_ACCOUNT_ID" value="10" type="Integer"/>
+                  <KeyValue key="PR_SERV_SPCODE_HISTNO" value="10" type="Integer"/>
+                  <KeyValue key="PR_SERV_STATUS_HISTNO" value="20" type="Integer"/>
+                  <KeyValue key="MAX_TRANSACTION_ID" value="10" type="Integer"/>
+                  <KeyValue key="MAX_PAYMENT_ID" value="10" type="Integer"/>
+                  <KeyValue key="MAX_PAY_ARR_CUST_ID" value="10" type="Integer"/>
+                  <KeyValue key="MAX_CO_PRO_ID" value="10" type="Integer"/>
+                  <KeyValue key="MAX_CO_CODE" value="10" type="Integer"/>
+                  <KeyValue key="MAX_CUST_NUM" value="10" type="Integer"/>
+                  <KeyValue key="MAX_DEALER_NUM" value="10" type="Integer"/>
+                  <KeyValue key="MAX_BILLING_ACCNT_CODE" value="10" type="Integer"/>
+                  <KeyValue key="PR_SERV_ATTR_HIST_NNP" value="20" type="Integer"/>
+                  <KeyValue key="MAX_LC_TRANSACTION_ID" value="50" type="Integer"/>
+                  <KeyValue key="PR_SERV_ATTRIB_HISTNO" value="20" type="Integer"/>
+                  <KeyValue key="MAX_PORTING_REQUEST_ID" value="10" type="Integer"/>
+                  <KeyValue key="MAX_CRH_REQUEST_ID" value="20" type="Integer"/>
+                  <KeyValue key="MAX_HA_ID_SEQ" value="10" type="Integer"/>
+                  <KeyValue key="MAX_EA_ID" value="10" type="Integer"/>
+                  <KeyValue key="MAX_CUST_DATA_RIGHT_ID" value="10" type="Integer"/>
+                  <KeyValue key="MAX_CAXACT" value="20" type="Integer"/>
+                  <KeyValue key="MAX_FU_ELMT_CSTM_ID" value="1" type="Integer"/>
+                  <KeyValue key="MAX_DEVICE_ID" value="10" type="Integer"/>
+                </Node>
+              </Node>
+
+
+                <!-- Contains KeyValue entries holding the package names of all packages with
+                     persistent classes. Each of the packages listed here is assumed to contain
+                     a class 'BOregister', which must add the descriptors of the package to the
+                     list of all application descriptors.
+                -->
+                <Node name="PackageNamesForBORegistry">
+                    <KeyValue key="com.lhs.Accounting.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.Accounting.BookingRequest.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.Accounting.PaymentConfiguration.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.APAuthentication.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.BusinessPartnerEventManagement.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.CommonDomain.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.CommonDomain.Parameter.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.Contract.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.CostControl.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.MarketSegment.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.Pricing.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.TaxManagement.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.Product.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.Promotions.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.Resource.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.RiskManagement.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.TaskManagement.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.Topology.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.UsageData.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.BusinessPartner.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.Billing.bscs_core" value=""/>
+                    <KeyValue key="com.lhs.Lifecycle" value="" />
+                    <KeyValue key="com.lhs.inservices.PrepaidContract" value="" />
+                    <KeyValue key="com.lhs.inservices.ReferenceData" value="" />
+                </Node>
+
+                <!--
+                Contains a list of reference data classes, that should be refreshed periodically.
+                 -->
+                <Node name="RefreshReferenceData">
+                    <!-- Concurrent request processing is disabled for a ECMS deployment -->
+                     <Node name="ConcurrentRequestReprocessing" >
+                       <KeyValue key="CLASS" value="com.lhs.Contract.bscs_core.ConcurrentRequestReprocessing" />
+                        <KeyValue key="ABSOLUTE" type="Boolean" value="true"/>
+
+                        <KeyValue key="PERIOD" type="Integer" value="20000"/>
+                        <KeyValue key="START" type="Integer" value="10" comment="Milliseconds on which a refresh is initiated. In case ABSOLUTE flag is set, the next refresh is set on next midnight plus this value, otherwise on server start plus this value."/>
+
+                        <KeyValue key="METHOD" value="reprocess" comment="This value specifies a method that is called on the class this node belongs to. The method must be static without parameter. Using this method it is possible to reset singleton from periodically, e.g. to reset local caches."/>
+                     </Node>
+                    <Node name="CompositeProductHandle" >
+                        <KeyValue key="CLASS" value="INTERNAL_RATE_PLAN" />
+
+                        <!-- refresh one second after midnight -->
+                        <KeyValue key="ABSOLUTE" type="Boolean" value="true"/>
+
+                        <!-- <KeyValue key="PERIOD" type="Integer" value="90000"/> -->
+                        <KeyValue key="START" type="Integer" value="1000" comment="Milliseconds on which a refresh is initiated. In case ABSOLUTE flag is set, the next refresh is set on next midnight plus this value, otherwise on server start plus this value."/>
+
+                        <KeyValue key="REPLACE_READALL" type="Boolean" value="true" comment="normally a readall query will initiate a refresh automatically, if this flag is that, it will not."/>
+                        <KeyValue key="SQL_SELECT" value="SELECT DISTINCT R.TMCODE, R.SHDES FROM RATEPLAN_VERSION M, RATEPLAN R WHERE M.TMCODE = R.TMCODE AND M.STATUS = &apos;P&apos; AND M.VSDATE = TRUNC(SYSDATE, &apos;DD&apos;)" comment="This value specifies a SQL statement, that is executed to refresh object of the specified type. This can be used to retrieve only changed reference data."/>
+                    </Node>
+                    <Node name="SimpleProductHandle">
+                        <KeyValue key="CLASS" value="com.lhs.Product.bscs_core.SimpleProductHandle" />
+
+                        <!-- refresh one second after midnight -->
+                        <KeyValue key="ABSOLUTE" type="Boolean" value="true"/>
+                        <!-- <KeyValue key="PERIOD" type="Integer" value="90000"/> -->
+                        <KeyValue key="START" type="Integer" value="1000" comment="Milliseconds on which a refresh is initiated. In case ABSOLUTE flag is set, the next refresh is set on next midnight plus this value, otherwise on server start plus this value."/>
+
+                        <KeyValue key="REPLACE_READALL" type="Boolean" value="true"/>
+                        <KeyValue key="SQL_SELECT" value="SELECT DISTINCT TMCODE, SPCODE FROM MPULKTMB WHERE STATUS = &apos;P&apos;  AND VSDATE = TRUNC(SYSDATE, &apos;DD&apos;)" comment="This value specifies a SQL statement, that is executed to refresh object of the specified type. This can be used to retrieve only changed reference data."/>
+                    </Node>
+                    <Node name="ProductElementHandle" >
+                        <KeyValue key="CLASS" value="com.lhs.Product.bscs_core.ProductElementHandle" />
+
+                        <!-- refresh one second after midnight -->
+                        <KeyValue key="ABSOLUTE" type="Boolean" value="true"/>
+                        <!-- <KeyValue key="PERIOD" type="Integer" value="90000"/> -->
+                        <KeyValue key="START" type="Integer" value="1000" comment="Milliseconds on which a refresh is initiated. In case ABSOLUTE flag is set, the next refresh is set on next midnight plus this value, otherwise on server start plus this value."/>
+
+                        <KeyValue key="REPLACE_READALL" type="Boolean" value="true"/>
+                        <KeyValue key="SQL_SELECT" value="SELECT DISTINCT TMCODE, SPCODE, SNCODE FROM MPULKTMB WHERE STATUS = &apos;P&apos; AND VSDATE = TRUNC(SYSDATE, &apos;DD&apos;)" comment="This value specifies a SQL statement, that is executed to refresh object of the specified type. This can be used to retrieve only changed reference data."/>
+                    </Node>
+
+
+                    <Node name="BusinessPartnerAdministrator" >
+                        <KeyValue key="CLASS" value="com.lhs.BusinessPartner.bscs_core.BusinessPartnerAdministrator" />
+
+                        <!-- refresh one second after midnight -->
+                        <KeyValue key="ABSOLUTE" type="Boolean" value="true"/>
+                        <!-- <KeyValue key="PERIOD" type="Integer" value="90000"/> -->
+                        <KeyValue key="START" type="Integer" value="1000" comment="Milliseconds on which a refresh is initiated. In case ABSOLUTE flag is set, the next refresh is set on next midnight plus this value, otherwise on server start plus this value."/>
+
+                        <KeyValue key="METHOD" value="resetStatusManager" comment="This value specifies a method that is called on the class this node belongs to. The method must be static without parameter. Using this method it is possible to reset singleton from periodically, e.g. to reset local caches."/>
+                    </Node>
+                    <Node name="CostControlPackage" >
+                        <KeyValue key="CLASS" value="com.lhs.Product.bscs_core.CostControlPackage" />
+
+                        <!-- refresh one second after midnight -->
+                        <KeyValue key="ABSOLUTE" type="Boolean" value="true"/>
+                        <!-- <KeyValue key="PERIOD" type="Integer" value="90000"/> -->
+                        <KeyValue key="START" type="Integer" value="1000" comment="Milliseconds on which a refresh is initiated. In case ABSOLUTE flag is set, the next refresh is set on next midnight plus this value, otherwise on server start plus this value."/>
+
+                        <KeyValue key="REPLACE_READALL" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="Reason" >
+                        <KeyValue key="CLASS" value="com.lhs.CommonDomain.bscs_core.Reason" />
+
+                        <!-- refresh one second after midnight -->
+                        <KeyValue key="ABSOLUTE" type="Boolean" value="true"/>
+               <!-- <KeyValue key="PERIOD" type="Integer" value="90000"/> -->
+                        <KeyValue key="START" type="Integer" value="1000" comment="Milliseconds on which a refresh is initiated. In case ABSOLUTE flag is set, the next refresh is set on next midnight plus this value, otherwise on server start plus this value."/>
+
+                        <KeyValue key="REPLACE_READALL" type="Boolean" value="true"/>
+                    </Node>
+                    <Node name="ContractStatus" >
+                        <KeyValue key="CLASS" value="com.lhs.Contract.bscs_core.ContractStatus" />
+
+                        <!-- refresh one second after midnight -->
+                        <KeyValue key="ABSOLUTE" type="Boolean" value="true"/>
+                        <!-- <KeyValue key="PERIOD" type="Integer" value="90000"/> -->
+                        <KeyValue key="START" type="Integer" value="1000" comment="Milliseconds on which a refresh is initiated. In case ABSOLUTE flag is set, the next refresh is set on next midnight plus this value, otherwise on server start plus this value."/>
+
+                        <KeyValue key="METHOD" value="resetStatusManager" comment="This value specifies a method that is called on the class this node belongs to. The method must be static without parameter. Using this method it is possible to reset singleton from periodically, e.g. to reset local caches."/>
+                    </Node>
+
+
+                    <Node name="CompositeProductTemplate">
+                        <KeyValue key="CLASS" value="com.lhs.Product.bscs_core.CompositeProductTemplate" />
+
+                        <!-- refresh one second after midnight -->
+                        <KeyValue key="ABSOLUTE" type="Boolean" value="true"/>
+                        <!-- <KeyValue key="PERIOD" type="Integer" value="90000"/> -->
+                        <KeyValue key="START" type="Integer" value="1000" comment="Milliseconds on which a refresh is initiated. In case ABSOLUTE flag is set, the next refresh is set on next midnight plus this value, otherwise on server start plus this value."/>
+
+                        <KeyValue key="REPLACE_READALL" type="Boolean" value="true"/>
+                        <!--KeyValue key="SQL_SELECT" value="SELECT STATUS, VSDATE, VSCODE, SHDES, PDE_RATEPLAN, DES, PRERATED_TAP_RP_IND, TMGLOBAL, TMCODE, CURRENCY FROM MPUTMTAB WHERE VSDATE = TRUNC(SYSDATE, &apos;DD&apos;)"
+                            comment="This value specifies a SQL statement, that is executed to refresh object of the specified type. This can be used to retrieve only changed reference data."/-->
+        </Node>
+        <Node name="PromotionPackage" >
+                        <KeyValue key="CLASS" value="PROM_PACK" />
+                        <!-- refresh one second after midnight -->
+                        <KeyValue key="ABSOLUTE" type="Boolean" value="true" />
+                        <!-- <KeyValue key="PERIOD" type="Integer" value="90000" comment=""/> -->
+                        <KeyValue key="START" type="Integer" value="1000" comment="Milliseconds on which a refresh is initiated. In case ABSOLUTE flag is set, the next refresh is set on next midnight plus this value, otherwise on server start plus this value."/>
+                        <KeyValue key="REPLACE_READALL" type="Boolean" value="true" />
+                    </Node>
+
+                    <!--
+                    <Node name="StaticDomainParameter" >
+                        <KeyValue key="CLASS" value="com.lhs.CommonDomain.Parameter.bscs_core.StaticDomainParameter" />
+                        <KeyValue key="ABSOLUTE" type="Boolean" value="true" />
+                        <KeyValue key="START" type="Integer" value="1000" comment="Milliseconds on which a refresh is initiated. In case ABSOLUTE flag is set, the next refresh is set on next midnight plus this value, otherwise on server start plus this value."/>
+                        <KeyValue key="REPLACE_READALL" type="Boolean" value="true" />
+                        <KeyValue key="SQL_SELECT"  value="SELECT t0.* FROM MKT_PARAMETER_VIEW t0 WHERE t0.PARAMETER_TYPE_CODE = 8192 and (exists (select * from MKT_PARAMETER_DOMAIN t1 where t1.sccode=t0.sccode and t1.parameter_id=t0.parameter_id and t1.MODIFY_DATE &gt;= TRUNC(SYSDATE-1,&apos;DD&apos;)))" comment="This value specifies a SQL statement, that is executed to refresh object of the specified type. This can be used to retrieve only changed reference data."/>
+                    </Node>
+                    -->
+        <!-- load all rate plan at startup time, for this the RECURRING attribute is used. The data is loaded at server startup time
+         <Node name="CompositeProductHandle" >
+                        <KeyValue key="CLASS" value="INTERNAL_RATE_PLAN" />
+
+                        <KeyValue key="ABSOLUTE" type="Boolean" value="false"/>
+
+                        <KeyValue key="START" type="Integer" value="2000" comment="Milliseconds on which a refresh is initiated. In case ABSOLUTE flag is set, the next refresh is set on next midnight plus this value, otherwise on server start plus this value."/>
+            <KeyValue key="RECURRING" type="Boolean" value="false"/>
+                       />
+                    </Node>
+        -->
+                </Node>
+            </Node>
+
+          <KeyValue key="SecurityArea" value="CustomerManagementServer"
+                comment="A top-element in the permission hierarchy, used to retrieve
+                permissions for this server. See 'PERMISSION' argument of
+                'USER_RIGHT.CHECK' command."
+             />
+        </Node><!-- FUNC_FRMWK_SRV -->
+
+
+        <Node name="CMS Settings">
+        <KeyValue key="Application" value="CMS" />
+            <KeyValue key="stringifiedTRUE" value="X"/>
+            <KeyValue key="checkForUniqueness" type="Boolean" value="true"/>
+
+      <Node name="Plugin Settings">
+            <KeyValue key="PluginAdministrator" value="com.lhs.FrameworkExtension.bscs_core.PluginAdministrator"/>
+            <KeyValue key="PluginsEnabled" type="Boolean" value="true"/>
+            <KeyValue key="Plugin descriptors directory" value="/Plugins/"/>
+            <KeyValue key="Plugin names" value="" comment="Parent node for all the plug-in adapters."/>
+      </Node>
+
+        </Node><!-- CMS Settings -->
+
+    </ComponentRegistry>

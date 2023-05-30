@@ -1,0 +1,63 @@
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: eric-bss-eb-job-workflows-copyworkflowfiles
+  labels:
+    app: eric-bss-eb-workflows
+    chart: {{ template "eric-bss-eb-workflows.chart" . }}
+    {{- include "eric-bss-eb-workflows.kubernetesIoInfo" . | nindent 4 }}
+    heritage: {{ .Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-workflows.productInfo" . | indent 4 }}
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "-10"
+    "helm.sh/hook-delete-policy": hook-succeeded, before-hook-creation
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      name: "{{ .Release.Name }}"
+      labels:
+        app: eric-bss-eb-job-workflows
+        chart: {{ template "eric-bss-eb-workflows.chart" . }}
+        {{- include "eric-bss-eb-workflows.kubernetesIoInfo" . | nindent 8 }}
+        heritage: {{ .Release.Service }}
+      annotations:
+      {{- include "eric-bss-eb-workflows.productInfo" . | indent 8 }}
+    spec:
+      securityContext:
+        {{- include "eric-bss-eb-workflows.checkPodUserLoginData" . | nindent 8 }}
+      restartPolicy: Never
+      {{- if .Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ .Chart.Name }}-sa
+      {{- end }}
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      containers:
+        - name: workflows-job
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "workflows-job" }}
+          image: "{{ template "eric-bss-eb-workflows.registryUrl" $templDict }}/{{ template "eric-bss-eb-workflows.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-workflows.pullPolicy" $templDict }}
+          resources:
+            limits:
+              memory: "{{ .Values.resources.limits.memory}}"
+              cpu: "{{ .Values.resources.limits.cpu}}"
+            requests:
+              memory: "{{ .Values.resources.requests.memory}}"
+              cpu: "{{ .Values.resources.requests.cpu}}"
+          command: ["/bin/bash"]
+          args: ["-c", "./scripts/copyWorkflowFiles.sh ./workflowfiles /workflows {{ .Values.workflowFiles.backupNoticeMessageEnable }} "]
+          volumeMounts:
+            - name: workflows-volume
+              mountPath: /workflows
+          env:
+            - name: TZ
+              value: "{{ .Values.global.timezone }}"
+      volumes:
+        - name: workflows-volume
+          persistentVolumeClaim:
+            claimName: eric-bss-eb-pvc-workflows

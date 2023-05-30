@@ -1,0 +1,251 @@
+apiVersion: v2
+appVersion: "1.0"
+description: The root Helm chart for Kubernetes
+name: eric-bss-eb
+version: 22.15.12+0
+
+dependencies:
+- name: eric-bss-eb-networkpolicies
+  version: 22.15.12+0
+  repository: file://./charts/networkpoliciesChart
+  condition: eric-bss-eb-networkpolicies.enabled
+
+- name: eric-bss-eb-rbac
+  version: 22.15.12+0
+  repository: file://./charts/rbacChart
+  condition: eric-bss-eb-rbac.enabled
+
+- name: eric-bss-eb-ns
+  version: 22.15.12+0
+  repository: file://./charts/nsChart
+  condition: eric-bss-eb-ns.enabled
+
+- name: eric-bss-eb-ff
+  version: 22.15.12+0
+  repository: file://./charts/ffChart
+  condition: eric-bss-eb-ff.enabled
+
+- name: eric-bss-eb-cms
+  version: 22.15.12+0
+  repository: file://./charts/cmsChart
+  condition: eric-bss-eb-cms.enabled
+
+- name: eric-bss-eb-pms
+  version: 22.15.12+0
+  repository: file://./charts/pmsChart
+  condition: eric-bss-eb-pms.enabled
+
+- name: eric-bss-eb-ax
+  version: 22.15.12+0
+  repository: file://./charts/axChart
+  condition: eric-bss-eb-ax.enabled
+
+- name: eric-bss-eb-admx
+  version: 22.15.12+0
+  repository: file://./charts/admxChart
+  condition: eric-bss-eb-admx.enabled
+
+- name: eric-bss-eb-cpx
+  version: 22.15.12+0
+  repository: file://./charts/cpxChart
+  condition: eric-bss-eb-cpx.enabled
+
+- name: eric-bss-eb-cx
+  version: 22.15.12+0
+  repository: file://./charts/cxChart
+  condition: eric-bss-eb-cx.enabled
+
+- name: eric-bss-eb-dcx
+  version: 22.15.12+0
+  repository: file://./charts/dcxChart
+  condition: eric-bss-eb-dcx.enabled
+
+- name: eric-bss-eb-bch
+  version: 22.15.12+0
+  repository: file://./charts/bchChart
+  condition: eric-bss-eb-bch.enabled
+
+- name: eric-bss-eb-bgh
+  version: 22.15.12+0
+  repository: file://./charts/bghChart
+  condition: eric-bss-eb-bgh.enabled
+
+- name: eric-bss-eb-bsh
+  version: 22.15.12+0
+  repository: file://./charts/bshChart
+  condition: eric-bss-eb-bsh.enabled
+
+- name: eric-bss-eb-bp
+  version: 22.15.12+0
+  repository: file://./charts/bpChart
+  condition: eric-bss-eb-bp.enabled
+
+- name: eric-bss-eb-dch
+  version: 22.15.12+0
+  repository: file://./charts/dchChart
+  condition: eric-bss-eb-dch.enabled
+
+- name: eric-bss-eb-eoh
+  version: 22.15.12+0
+  repository: file://./charts/eohChart
+  condition: eric-bss-eb-eoh.enabled
+
+- name: eric-bss-eb-evh
+  version: 22.15.12+0
+  repository: file://./charts/evhChart
+  condition: eric-bss-eb-evh.enabled
+
+- name: eric-bss-eb-foh
+  version: 22.15.12+0
+  repository: file://./charts/fohChart
+  condition: eric-bss-eb-foh.enabled
+
+- name: eric-bss-eb-data
+  version: 22.15.12+0
+  repository: file://./charts/dataChart
+  condition: eric-bss-eb-data.enabled
+
+- name: eric-bss-eb-wex
+  version: 22.15.12+0
+  repository: file://./charts/wexChart
+  condition: eric-bss-eb-wex.enabled
+
+- name: eric-bss-eb-fih
+  version: 22.15.12+0
+  repository: file://./charts/fihChart
+  condition: eric-bss-eb-fih.enabled
+
+- name: eric-bss-eb-cah
+  version: 22.15.12+0
+  repository: file://./charts/cahChart
+  condition: eric-bss-eb-cah.enabled
+
+- name: eric-bss-eb-crheva
+  version: 22.15.12+0
+  repository: file://./charts/crhevaChart
+  condition: eric-bss-eb-crheva.enabled
+
+- name: eric-bss-eb-crhgen
+  version: 22.15.12+0
+  repository: file://./charts/crhgenChart
+  condition: eric-bss-eb-crhgen.enabled
+
+- name: eric-bss-eb-dly
+  version: 22.15.12+0
+  repository: file://./charts/dlyChart
+  condition: eric-bss-eb-dly.enabled
+
+- name: eric-bss-eb-dih
+  version: 22.15.12+0
+  repository: file://./charts/dihChart
+  condition: eric-bss-eb-dih.enabled
+
+- name: eric-bss-eb-diuh
+  version: 22.15.12+0
+  repository: file://./charts/diuhChart
+  condition: eric-bss-eb-diuh.enabled
+
+- name: eric-bss-eb-aih
+  version: 22.15.12+0
+  repository: file://./charts/aihChart
+  condition: eric-bss-eb-aih.enabled
+
+- name: eric-bss-eb-rrm
+  version: 22.15.12+0
+  repository: file://./charts/rrmChart
+  condition: eric-bss-eb-rrm.enabled
+
+- name: eric-bss-eb-tools
+  version: 22.15.12+0
+  repository: file://./charts/toolsChart
+  condition: eric-bss-eb-tools.enabled
+
+- name: eric-bss-eb-teh
+  version: 22.15.12+0
+  repository: file://./charts/tehChart
+  condition: eric-bss-eb-teh.enabled
+
+- name: eric-bss-eb-prih
+  version: 22.15.12+0
+  repository: file://./charts/prihChart
+  condition: eric-bss-eb-prih.enabled
+
+- name: eric-bss-eb-rih
+  version: 22.15.12+0
+  repository: file://./charts/rihChart
+  condition: eric-bss-eb-rih.enabled
+
+- name: eric-bss-eb-cdh
+  version: 22.15.12+0
+  repository: file://./charts/cdhChart
+  condition: eric-bss-eb-cdh.enabled
+
+- name: eric-bss-eb-cch
+  version: 22.15.12+0
+  repository: file://./charts/cchChart
+  condition: eric-bss-eb-cch.enabled
+
+- name: eric-bss-eb-gmdrec
+  version: 22.15.12+0
+  repository: file://./charts/gmdrecChart
+  condition: eric-bss-eb-gmdrec.enabled
+
+- name: eric-bss-eb-gmdext
+  version: 22.15.12+0
+  repository: file://./charts/gmdextChart
+  condition: eric-bss-eb-gmdext.enabled
+
+- name: eric-bss-eb-gmdlrd
+  version: 22.15.12+0
+  repository: file://./charts/gmdlrdChart
+  condition: eric-bss-eb-gmdlrd.enabled
+
+- name: eric-bss-eb-gmdcom
+  version: 22.15.12+0
+  repository: file://./charts/gmdcomChart
+  condition: eric-bss-eb-gmdcom.enabled
+
+- name: eric-bss-eb-vmdrep
+  version: 22.15.12+0
+  repository: file://./charts/vmdrepChart
+  condition: eric-bss-eb-vmdrep.enabled
+
+- name: eric-bss-eb-gmdrrs
+  version: 22.15.12+0
+  repository: file://./charts/gmdrrsChart
+  condition: eric-bss-eb-gmdrrs.enabled
+
+- name: eric-bss-eb-gmdres
+  version: 22.15.12+0
+  repository: file://./charts/gmdresChart
+  condition: eric-bss-eb-gmdres.enabled
+
+- name: eric-bss-eb-gmdresdata
+  version: 22.15.12+0
+  repository: file://./charts/gmdresdataChart
+  condition: eric-bss-eb-gmdresdata.enabled
+
+- name: eric-bss-eb-rlh
+  version: 22.15.12+0
+  repository: file://./charts/rlhChart
+  condition: eric-bss-eb-rlh.enabled
+
+- name: eric-bss-eb-dmfjob
+  version: 22.15.12+0
+  repository: file://./charts/dmfChart
+  condition: eric-bss-eb-dmfjob.enabled
+
+- name: eric-bss-eb-sms
+  version: 22.15.12+0
+  repository: file://./charts/smsChart
+  condition: eric-bss-eb-sms.enabled
+
+- name: eric-bss-eb-wfmssupporttool
+  version: 22.15.12+0
+  repository: file://./charts/wfmssupporttoolChart
+  condition: eric-bss-eb-wfmssupporttool.enabled
+
+- name: eric-bss-eb-dah
+  version: 22.15.12+0
+  repository: file://./charts/dahChart
+  condition: eric-bss-eb-dah.enabled

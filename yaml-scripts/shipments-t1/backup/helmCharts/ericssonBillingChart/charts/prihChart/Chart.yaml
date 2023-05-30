@@ -1,0 +1,5 @@
+apiVersion: v2
+appVersion: "1.0"
+description: A Helm chart for pre-Rating Input Handler (PRIH)
+name: eric-bss-eb-prih
+version: 22.15.12+0

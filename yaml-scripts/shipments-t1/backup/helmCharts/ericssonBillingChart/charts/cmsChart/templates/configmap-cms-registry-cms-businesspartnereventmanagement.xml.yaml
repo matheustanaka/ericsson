@@ -1,0 +1,1001 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-cms-businesspartnereventmanagement.xml
+data:
+  Registry_CMS_BusinessPartnerEventManagement.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+
+    <ComponentRegistry>
+
+        <Node name="CMS Settings">
+
+            <Node name="BusinessPartnerEventManagement">
+                <KeyValue key="closedStatus"  value="CLOSED"/>
+                <KeyValue key="openStatus"  value="OPEN"/>
+                <KeyValue key="systemType"  value="SYSTEM"/>
+                <KeyValue key="addAdditionalInformationToRemark" type="Boolean" value="false" comment="If the value is set to true, then an additional information including the user and the date is added, when the user adds a remark to a tickler"/>
+                <KeyValue key="createSystemEventMessages" type="Boolean" value="true" comment="If the value is set to true, then system ticklers will be created"/>
+                <KeyValue key="ExternalTroubleTicketSystemSupported" type="Boolean" value="false" comment="If the value is set to true, then an interface to a corba based TTS is supported"/>
+                <KeyValue key="ExternalTroubleTicketSystemName"  value="" comment="The Name of the corba based external TTS, if one is used"/>
+                <KeyValue key="ExternalTroubleTicketSystemUser"  value="" comment="The user name with which the actions invoked from the external TTS are executed"/>
+
+           </Node>
+
+            <!-- ==================================== -->
+            <!-- Settings for the EventMessage Search -->
+            <!-- ==================================== -->
+            <!-- Attributes within the Attributes section can be used as criteria -->
+            <!-- if they have a ConditionWhereClause.                             -->
+            <!-- Attributes within the Attributes section can be used as output   -->
+            <!-- (and order) if they have a SelectClause.                         -->
+            <Node name="EventMessage Search">
+                <KeyValue key="MaxResultSetSize"    type="Integer"    value="500"/>
+                <KeyValue key="DefaultResultSetSize" type="Integer" value="50"    />
+                <KeyValue key="DefaultOutput" value="BusinessUnitId, EventMessageId, Type, Status, Priority, FollowUpCode, FollowUpDate, FollowUpUser, CreationDate, CreationUser, ShortDescription, LongDescription, ContractId, CoCode, CustomerId, XCoordinate,YCoordinate,MSG_DATE,MSG_USER,DISTRIBUTION_USER1,DISTRIBUTION_USER2,DISTRIBUTION_USER3,MODIFIED_BY,MODIFIED_DATE,CustomerCode,CS_ID_PUB, BILLING_ACCOUNT_CODE"/>
+                <KeyValue key="BaseTable"  value="TICKLER_RECORDS" />
+                <KeyValue key="BaseTableAlias" value="TR" />
+                <KeyValue key="DefaultNumberOfCharactersBeforeWildcard" type="Integer" value="5"    />
+                <!-- One of the following combinations must be included within the criteria -->
+                <Node name="MandatoryCriteriaCombinations">
+                    <Node name="ContractId">
+                        <KeyValue key="ContractId" value=""    />
+                    </Node>
+                    <Node name="BILLING_ACCOUNT_CODE">
+                        <KeyValue key="BILLING_ACCOUNT_CODE" value=""    />
+                    </Node>
+                    <Node name="CustomerCode">
+                        <KeyValue key="CustomerCode" value=""    />
+                    </Node>
+
+                    <Node name="FollowUpUser">
+                        <KeyValue key="FollowUpUser" value=""    />
+                    </Node>
+
+                    <Node name="CustomerId">
+                        <KeyValue key="CustomerId" value=""    />
+                    </Node>
+                    <Node name="ParentId">
+                        <KeyValue key="ParentId" value=""  />
+                    </Node>
+                    <Node name="ParentIdPub">
+                        <KeyValue key="ParentIdPub" value=""  />
+                    </Node>
+                    <Node name="ADR_NAME">
+                        <KeyValue key="ADR_NAME" value=""    />
+                    </Node>
+                    <Node name="ADR_FNAME">
+                        <KeyValue key="ADR_FNAME" value=""    />
+                    </Node>
+                    <Node name="ADR_LNAME">
+                        <KeyValue key="ADR_LNAME" value=""    />
+                    </Node>
+                    <Node name="CoCode">
+                        <KeyValue key="CoCode" value=""    />
+                    </Node>
+                    <Node name="CS_ID_PUB">
+                        <KeyValue key="CS_ID_PUB" value=""    />
+                    </Node>
+                    <Node name="DealerId">
+                        <KeyValue key="DealerId" value=""    />
+                    </Node>
+                     <Node name="CS_LEVEL_CODE">
+                        <KeyValue key="CS_LEVEL_CODE" value=""    />
+                    </Node>
+                    <Node name="NOT_CS_LEVEL_CODE">
+                        <KeyValue key="NOT_CS_LEVEL_CODE" value=""    />
+                    </Node>
+                    <Node name="TicklerProblemTypeId">
+                        <KeyValue key="TicklerProblemTypeId" value=""    />
+                    </Node>
+                    <Node name="TicklerTrackingMode">
+                        <KeyValue key="TicklerTrackingMode" value=""    />
+                    </Node>
+                    <Node name="FollowUpCode">
+                        <KeyValue key="FollowUpCode"  value=""    />
+                    </Node>
+
+                    <Node name="Priority">
+                        <KeyValue key="Priority"  value=""    />
+                    </Node>
+
+                    <Node name="Status">
+                        <KeyValue key="Status"  value=""    />
+                    </Node>
+
+                    <Node name="Type">
+                        <KeyValue key="Type"  value=""    />
+                    </Node>
+                    <Node name="ShortDescription">
+                        <KeyValue key="ShortDescription"  value=""    />
+                    </Node>
+
+                    <Node name="TICK_SHDES_LIST">
+                        <KeyValue key="TICK_SHDES_LIST"  value=""    />
+                    </Node>
+                    <Node name="LongDescription">
+                        <KeyValue key="LongDescription"  value=""    />
+                    </Node>
+
+
+                    <Node name="MODIFIED_DATE">
+                        <KeyValue key="MODIFIED_DATE"  value=""    />
+                    </Node>
+
+                    <Node name="MODIFIED_BY">
+                        <KeyValue key="MODIFIED_BY"  value=""    />
+                    </Node>
+
+                    <Node name="DIST_USER">
+                        <KeyValue key="DIST_USER"  value=""    />
+                   </Node>
+                    <Node name="CreationUser">
+                        <KeyValue key="CreationUser"  value=""    />
+                    </Node>
+
+                    <Node name="FromFollowUpDate">
+                        <KeyValue key="FromFollowUpDate" value=""/>
+                    </Node>
+
+                    <Node name="ToFollowUpDate">
+                        <KeyValue key="ToFollowUpDate" value=""/>
+                  </Node>
+
+                    <Node name="FromCreationDate">
+                        <KeyValue key="FromCreationDate" value=""/>
+                  </Node>
+
+                    <Node name="ToCreationDate">
+                        <KeyValue key="ToCreationDate" value=""/>
+                 </Node>
+
+                    <Node name="TypeNot">
+                        <KeyValue key="TypeNot" value=""/>
+                    </Node>
+
+                    <Node name="PartyType">
+                        <KeyValue key="PartyType" value=""/>
+                    </Node>
+                    <Node name="PartyRoleId">
+                        <KeyValue key="PartyRoleId" value=""/>
+                    </Node>
+                </Node>
+
+                <Node name="Attributes">
+                    <Node name="ContractId">
+                        <KeyValue key="SelectClause"  value="TR.CO_ID"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.CO_ID"/>
+                    </Node>
+
+                    <Node name="CoCode">
+                        <KeyValue key="SelectClause"  value="CO.CO_CODE"    />
+
+                        <Node name="FromClauses">
+                            <KeyValue key="CONTRACT_ALL CO" value=""    />
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="TR.CO_ID=CO.CO_ID(+)" value=""    />
+                            </Node>
+                        </Node>
+                         <KeyValue key="ConditionWhereClause" value="CO.CO_CODE"/>
+                        <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                    </Node>
+
+                    <Node name="CustomerId">
+                        <KeyValue key="SelectClause"  value="TR.CUSTOMER_ID"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.CUSTOMER_ID"/>
+                    </Node>
+                    <Node name="CS_ID_PUB">
+                        <KeyValue key="SelectClause"  value="CU.CUSTNUM"    />
+                        <Node name="FromClauses">
+                            <KeyValue key="CUSTOMER_ALL CU" value=""    />
+                        </Node>
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="TR.CUSTOMER_ID=CU.CUSTOMER_ID" value=""    />
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="CU.CUSTNUM"/>
+                        <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                    </Node>
+
+                    <Node name="CustomerCode">
+                        <KeyValue key="SelectClause"  value="CU.CUSTCODE"    />
+
+                        <Node name="FromClauses">
+                            <KeyValue key="CUSTOMER_ALL CU" value=""    />
+                          </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="TR.CUSTOMER_ID=CU.CUSTOMER_ID" value=""    />
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="CU.CUSTCODE"/>
+                        <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                    </Node>
+
+                    <Node name="BusinessUnitId">
+                        <KeyValue key="SelectClause"  value="CU.BUSINESS_UNIT_ID"    />
+                        <Node name="FromClauses">
+                            <KeyValue key="CUSTOMER_ALL CU" value=""    />
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="TR.CUSTOMER_ID=CU.CUSTOMER_ID" value="" />
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="CU.BUSINESS_UNIT_ID"/>
+                    </Node>
+                    <Node name="BU_USER">
+                         <KeyValue key="Operator" value="IN" />
+                         <KeyValue key="ConditionWhereClause" value="CU.BUSINESS_UNIT_ID" />
+                   </Node>
+                     <Node name="DealerId">
+                            <Node name="FromClauses">
+                                <KeyValue key="CUSTOMER_ALL CU" value=""    />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="TR.CUSTOMER_ID=CU.CUSTOMER_ID" value=""    />
+                                </Node>
+                            </Node>
+                            <KeyValue key="ConditionWhereClause" value="CU.DEALER_ID"/>
+                            <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="false"/>
+                    </Node>
+
+                    <Node name="CS_LEVEL_CODE">
+                            <KeyValue key="SelectClause" value="CU.CSLEVEL"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.CSLEVEL"/>
+                    </Node>
+                    <Node name="NOT_CS_LEVEL_CODE">
+                        <KeyValue key="ConditionWhereClause" value="CU.CSLEVEL"/>
+                        <KeyValue key="Operator" value="&lt;&gt;" />
+                    </Node>
+
+                    <Node name="TicklerProblemTypeId">
+
+                        <Node name="FromClauses">
+                            <KeyValue key="TICKLER_TRACKING TK" value=""    />
+                          </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="TR.CUSTOMER_ID=TK.CUSTOMER_ID" value=""    />
+                                <KeyValue key="TR.TICKLER_NUMBER=TK.TICKLER_NUMBER" value=""    />
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="TK.TR_ID"/>
+                    </Node>
+                    <Node name="TicklerTrackingMode">
+                        <Node name="FromClauses">
+                            <KeyValue key="TICKLER_TRACKING TK" value=""    />
+                            <KeyValue key="TICKLER_TRACKING_REF TT" value=""    />
+                          </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="TR.CUSTOMER_ID=TK.CUSTOMER_ID" value=""    />
+                                <KeyValue key="TR.TICKLER_NUMBER=TK.TICKLER_NUMBER" value=""    />
+                                <KeyValue key="TK.TR_ID=TT.TR_ID" value=""    />
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="TT.TR_MODE"/>
+                    </Node>
+
+                     <Node name="BusinessUnit">
+                        <Node name="FromClauses">
+                            <KeyValue key="CUSTOMER_ALL CU" value=""    />
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="TR.CUSTOMER_ID=CU.CUSTOMER_ID" value="" />
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="CU.BUSINESS_UNIT_ID"/>
+                    </Node>
+
+                    <Node name="FollowUpUser">
+                        <KeyValue key="SelectClause"  value="TR.FOLLOW_UP_USER"    />
+                        <KeyValue key="ConditionWhereClause" value="FOLLOW_UP_USER"/>
+                    </Node>
+
+                    <Node name="FollowUpCode">
+                        <KeyValue key="SelectClause"  value="TR.FOLLOW_UP_CODE"    />
+                        <KeyValue key="ConditionWhereClause" value="FOLLOW_UP_CODE"/>
+                    </Node>
+
+                    <Node name="FollowUpDate">
+                        <KeyValue key="SelectClause"  value="TR.FOLLOW_UP_DATE"    />
+                    </Node>
+
+                    <Node name="BILLING_ACCOUNT_CODE">
+                        <KeyValue key="SelectClause"  value="TR.BILLING_ACCOUNT_CODE" />
+                        <KeyValue key="ConditionWhereClause" value="TR.BILLING_ACCOUNT_CODE"/>
+                    </Node>
+
+                    <Node name="Priority">
+                        <KeyValue key="SelectClause"  value="TR.PRIORITY"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.PRIORITY"/>
+                    </Node>
+
+                    <Node name="Status">
+                        <KeyValue key="SelectClause"  value="TR.TICKLER_STATUS"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.TICKLER_STATUS"/>
+                    </Node>
+
+                    <Node name="Type">
+                        <KeyValue key="SelectClause"  value="TR.TICKLER_CODE"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.TICKLER_CODE"/>
+                    </Node>
+
+                    <Node name="XCoordinate">
+                        <KeyValue key="SelectClause"  value="TR.X_COORDINATE"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.X_COORDINATE"/>
+                        <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                    </Node>
+
+                    <Node name="YCoordinate">
+                        <KeyValue key="SelectClause"  value="TR.Y_COORDINATE"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.Y_COORDINATE"/>
+                        <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                    </Node>
+
+                    <Node name="ShortDescription">
+                        <KeyValue key="SelectClause"  value="TR.SHORT_DESCRIPTION"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.SHORT_DESCRIPTION"/>
+                        <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="3"    />
+                    </Node>
+
+                    <Node name="TICK_SHDES_LIST">
+                        <KeyValue key="SelectClause"  value="TR.SHORT_DESCRIPTION"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.SHORT_DESCRIPTION"/>
+                        <KeyValue key="Operator"    value="IN"/>
+                    </Node>
+                    <Node name="LongDescription">
+                        <KeyValue key="SelectClause"  value="TR.LONG_DESCRIPTION"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.LONG_DESCRIPTION"/>
+                        <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                    </Node>
+
+                    <Node name="EventMessageId">
+                        <KeyValue key="SelectClause"  value="TR.TICKLER_NUMBER"    />
+                    </Node>
+
+                    <Node name="MSG_DATE">
+                        <KeyValue key="SelectClause"  value="TR.MSG_DATE"    />
+                    </Node>
+
+                    <Node name="MSG_USER">
+                        <KeyValue key="SelectClause"  value="TR.MSG_USER"    />
+                    </Node>
+
+                    <Node name="MODIFIED_DATE">
+                        <KeyValue key="SelectClause"  value="TR.MODIFIED_DATE"    />
+                        <KeyValue key="ConditionWhereClause"  value="TR.MODIFIED_DATE"/>
+                    </Node>
+
+                    <Node name="MODIFIED_BY">
+                        <KeyValue key="SelectClause"  value="TR.MODIFIED_BY"    />
+                        <KeyValue key="ConditionWhereClause"  value="TR.MODIFIED_BY"/>
+                    </Node>
+
+                    <Node name="DISTRIBUTION_USER1">
+                        <KeyValue key="SelectClause"  value="TR.DISTRIBUTION_USER1"    />
+                    </Node>
+
+                    <Node name="DISTRIBUTION_USER2">
+                        <KeyValue key="SelectClause"  value="TR.DISTRIBUTION_USER2"    />
+                    </Node>
+
+                    <Node name="DISTRIBUTION_USER3">
+                        <KeyValue key="SelectClause"  value="TR.DISTRIBUTION_USER3"    />
+                    </Node>
+
+                    <Node name="DIST_USER">
+                         <KeyValue key="Operator" value="NOP" />
+                         <KeyValue key="ConditionWhereClause" value="TR.DISTRIBUTION_USER1=#DIST_USER OR  TR.DISTRIBUTION_USER2=#DIST_USER OR TR.DISTRIBUTION_USER3=#DIST_USER"/>
+                   </Node>
+
+
+                    <Node name="CreationDate">
+                        <KeyValue key="SelectClause"  value="TR.CREATED_DATE"    />
+                    </Node>
+
+                    <Node name="CreationUser">
+                        <KeyValue key="SelectClause"  value="TR.CREATED_BY"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.CREATED_BY"/>
+                    </Node>
+
+
+                    <Node name="FromFollowUpDate">
+                        <KeyValue key="ConditionWhereClause" value="FOLLOW_UP_DATE"/>
+                        <KeyValue key="Operator" value="&gt;="/>
+                    </Node>
+
+                    <Node name="ToFollowUpDate">
+                        <KeyValue key="ConditionWhereClause" value="FOLLOW_UP_DATE"/>
+                        <KeyValue key="Operator" value="&lt;="/>
+                     </Node>
+
+                    <Node name="FromCreationDate">
+                        <KeyValue key="ConditionWhereClause" value="CREATED_DATE"/>
+                        <KeyValue key="Operator" value="&gt;="/>
+                  </Node>
+
+                    <Node name="ToCreationDate">
+                        <KeyValue key="ConditionWhereClause" value="CREATED_DATE"/>
+                        <KeyValue key="Operator" value="&lt;="/>
+                  </Node>
+
+                    <Node name="TypeNot">
+                        <KeyValue key="ConditionWhereClause" value="TR.TICKLER_CODE"/>
+                        <KeyValue key="Operator" value="!="/>
+                    </Node>
+
+                    <Node name="PartyType">
+                        <KeyValue key="ConditionWhereClause" value="CU.PARTY_TYPE_ID"/>
+                    </Node>
+
+                    <Node name="PartyRoleId">
+                        <Node name="FromClauses">
+                            <KeyValue key="CUSTOMER_ROLE CR" value="" />
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CR.CUSTOMER_ID=CU.CUSTOMER_ID" value="" />
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="CR.PARTY_ROLE_ID"/>
+                    </Node>
+
+                    <Node name="ADR_NAME">
+                        <Node name="FromClauses">
+                            <KeyValue key="CCONTACT_ALL CC" value=""    />
+                        </Node>
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CC.CUSTOMER_ID=CU.CUSTOMER_ID" value="" />
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCNAME"/>
+                    </Node>
+
+                    <Node name="ADR_FNAME">
+                        <Node name="FromClauses">
+                            <KeyValue key="CCONTACT_ALL CC" value=""    />
+                        </Node>
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CC.CUSTOMER_ID=CU.CUSTOMER_ID" value="" />
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCFNAME"/>
+                    </Node>
+
+                    <Node name="ADR_LNAME">
+                        <Node name="FromClauses">
+                            <KeyValue key="CCONTACT_ALL CC" value=""    />
+                        </Node>
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CC.CUSTOMER_ID=CU.CUSTOMER_ID" value="" />
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCLNAME"/>
+                    </Node>
+
+                    <Node name="ResultSize">
+                        <KeyValue key="ConditionWhereClause" value="ROWNUM"    />
+                        <KeyValue key="Operator" value="&lt;"/>
+                    </Node>
+                    <Node name="ParentId">
+                        <KeyValue key="Operator" value="NOP" />
+                        <KeyValue key="ConditionWhereClause" value="TR.CUSTOMER_ID IN (SELECT CUST_TREE.CUSTOMER_ID FROM CUSTOMER_ALL CUST_TREE START WITH CUST_TREE.CUSTOMER_ID = #ParentId CONNECT BY PRIOR CUST_TREE.CUSTOMER_ID = CUST_TREE.CUSTOMER_ID_HIGH)"/>
+                    </Node>
+                    <Node name="ParentIdPub">
+                        <KeyValue key="Operator" value="NOP" />
+                        <KeyValue key="ConditionWhereClause" value="TR.CUSTOMER_ID IN (SELECT CUST_TREE.CUSTOMER_ID FROM CUSTOMER_ALL CUST_TREE START WITH CUST_TREE.CUSTNUM = #ParentIdPub CONNECT BY PRIOR CUST_TREE.CUSTOMER_ID = CUST_TREE.CUSTOMER_ID_HIGH)"/>
+                    </Node>
+                </Node>
+            </Node>
+
+            <!-- ==================================== -->
+            <!-- Settings for the EventMessage Search -->
+            <!-- ==================================== -->
+            <!-- Attributes within the Attributes section can be used as criteria -->
+            <!-- if they have a ConditionWhereClause.                             -->
+            <!-- Attributes within the Attributes section can be used as output   -->
+            <!-- (and order) if they have a SelectClause.                         -->
+            <Node name="EventMessageSearchWithDN">
+                <KeyValue key="MaxResultSetSize"    type="Integer"    value="500"/>
+                <KeyValue key="DefaultResultSetSize" type="Integer" value="50"    />
+                <KeyValue key="DefaultOutput" value="BusinessUnitId, EventMessageId, Type, Status, Priority, FollowUpCode, FollowUpDate, FollowUpUser, CreationDate, CreationUser, ShortDescription, LongDescription, ContractId, CoCode, CustomerId, XCoordinate,YCoordinate,MSG_DATE,MSG_USER,DISTRIBUTION_USER1,DISTRIBUTION_USER2,DISTRIBUTION_USER3,MODIFIED_BY,MODIFIED_DATE,CustomerCode,CS_ID_PUB, DIRNUM, BILLING_ACCOUNT_CODE"/>
+                <KeyValue key="BaseTable"  value="TICKLER_RECORDS" />
+                <KeyValue key="BaseTableAlias" value="TR" />
+                <KeyValue key="DefaultNumberOfCharactersBeforeWildcard" type="Integer" value="5"    />
+                <!-- One of the following combinations must be included within the criteria -->
+                <Node name="MandatoryCriteriaCombinations">
+                    <Node name="Combination1">
+                        <KeyValue key="DIRNUM" value=""    />
+                    </Node>
+
+                    <Node name="ContractId">
+                        <KeyValue key="ContractId" value=""    />
+                    </Node>
+
+                    <Node name="BILLING_ACCOUNT_CODE">
+                        <KeyValue key="BILLING_ACCOUNT_CODE" value=""    />
+                    </Node>
+
+                    <Node name="CustomerCode">
+                        <KeyValue key="CustomerCode" value=""    />
+                    </Node>
+
+                    <Node name="FollowUpUser">
+                        <KeyValue key="FollowUpUser" value=""    />
+                    </Node>
+
+                    <Node name="CustomerId">
+                        <KeyValue key="CustomerId" value=""    />
+                    </Node>
+
+                    <Node name="ADR_NAME">
+                        <KeyValue key="ADR_NAME" value=""    />
+                    </Node>
+                    <Node name="ADR_FNAME">
+                        <KeyValue key="ADR_FNAME" value=""    />
+                    </Node>
+                    <Node name="ADR_LNAME">
+                        <KeyValue key="ADR_LNAME" value=""    />
+                    </Node>
+                    <Node name="CoCode">
+                        <KeyValue key="CoCode" value=""    />
+                    </Node>
+                    <Node name="CS_ID_PUB">
+                        <KeyValue key="CS_ID_PUB" value=""    />
+                    </Node>
+                    <Node name="DealerId">
+                        <KeyValue key="DealerId" value=""    />
+                    </Node>
+                     <Node name="CS_LEVEL_CODE">
+                        <KeyValue key="CS_LEVEL_CODE" value=""    />
+                    </Node>
+                    <Node name="NOT_CS_LEVEL_CODE">
+                        <KeyValue key="NOT_CS_LEVEL_CODE" value=""    />
+                    </Node>
+                    <Node name="TicklerProblemTypeId">
+                        <KeyValue key="TicklerProblemTypeId" value=""    />
+                    </Node>
+                    <Node name="TicklerTrackingMode">
+                        <KeyValue key="TicklerTrackingMode" value=""    />
+                    </Node>
+                    <Node name="FollowUpCode">
+                        <KeyValue key="FollowUpCode"  value=""    />
+                    </Node>
+
+                    <Node name="Priority">
+                        <KeyValue key="Priority"  value=""    />
+                    </Node>
+
+                    <Node name="Status">
+                        <KeyValue key="Status"  value=""    />
+                    </Node>
+
+                    <Node name="Type">
+                        <KeyValue key="Type"  value=""    />
+                    </Node>
+                    <Node name="ShortDescription">
+                        <KeyValue key="ShortDescription"  value=""    />
+                    </Node>
+
+                    <Node name="TICK_SHDES_LIST">
+                        <KeyValue key="TICK_SHDES_LIST"  value=""    />
+                    </Node>
+                    <Node name="LongDescription">
+                        <KeyValue key="LongDescription"  value=""    />
+                    </Node>
+
+
+                    <Node name="MODIFIED_DATE">
+                        <KeyValue key="MODIFIED_DATE"  value=""    />
+                    </Node>
+
+                    <Node name="MODIFIED_BY">
+                        <KeyValue key="MODIFIED_BY"  value=""    />
+                    </Node>
+
+                    <Node name="DIST_USER">
+                        <KeyValue key="DIST_USER"  value=""    />
+                   </Node>
+                    <Node name="CreationUser">
+                        <KeyValue key="CreationUser"  value=""    />
+                    </Node>
+
+                    <Node name="FromFollowUpDate">
+                        <KeyValue key="FromFollowUpDate" value=""/>
+                    </Node>
+
+                    <Node name="ToFollowUpDate">
+                        <KeyValue key="ToFollowUpDate" value=""/>
+                  </Node>
+
+                    <Node name="FromCreationDate">
+                        <KeyValue key="FromCreationDate" value=""/>
+                  </Node>
+
+                    <Node name="ToCreationDate">
+                        <KeyValue key="ToCreationDate" value=""/>
+                 </Node>
+
+                    <Node name="TypeNot">
+                        <KeyValue key="TypeNot" value=""/>
+                    </Node>
+
+                    <Node name="PartyType">
+                        <KeyValue key="PartyType" value=""/>
+                    </Node>
+                    <Node name="PartyRoleId">
+                        <KeyValue key="PartyRoleId" value=""/>
+                    </Node>
+                </Node>
+
+                <Node name="Attributes">
+                    <Node name="ContractId">
+                        <KeyValue key="SelectClause"  value="TR.CO_ID"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.CO_ID"/>
+                    </Node>
+
+                    <Node name="CoCode">
+                        <KeyValue key="SelectClause"  value="CO.CO_CODE"    />
+
+                        <Node name="FromClauses">
+                            <KeyValue key="CONTRACT_ALL CO" value=""    />
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="TR.CO_ID=CO.CO_ID(+)" value=""    />
+                            </Node>
+                        </Node>
+                         <KeyValue key="ConditionWhereClause" value="CO.CO_CODE"/>
+                        <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                    </Node>
+
+                    <Node name="CustomerId">
+                        <KeyValue key="SelectClause"  value="TR.CUSTOMER_ID"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.CUSTOMER_ID"/>
+                    </Node>
+                    <Node name="CS_ID_PUB">
+                        <KeyValue key="SelectClause"  value="CU.CUSTNUM"    />
+                        <Node name="FromClauses">
+                            <KeyValue key="CUSTOMER_ALL CU" value=""    />
+                        </Node>
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="TR.CUSTOMER_ID=CU.CUSTOMER_ID" value=""    />
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="CU.CUSTNUM"/>
+                        <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                    </Node>
+
+                    <Node name="CustomerCode">
+                        <KeyValue key="SelectClause"  value="CU.CUSTCODE"    />
+
+                        <Node name="FromClauses">
+                            <KeyValue key="CUSTOMER_ALL CU" value=""    />
+                          </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="TR.CUSTOMER_ID=CU.CUSTOMER_ID" value=""    />
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="CU.CUSTCODE"/>
+                        <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                    </Node>
+
+                    <Node name="BusinessUnitId">
+                        <KeyValue key="SelectClause"  value="CU.BUSINESS_UNIT_ID"    />
+                        <Node name="FromClauses">
+                            <KeyValue key="CUSTOMER_ALL CU" value=""    />
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="TR.CUSTOMER_ID=CU.CUSTOMER_ID" value="" />
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="CU.BUSINESS_UNIT_ID"/>
+                    </Node>
+                    <Node name="BU_USER">
+                         <KeyValue key="Operator" value="IN" />
+                         <KeyValue key="ConditionWhereClause" value="CU.BUSINESS_UNIT_ID" />
+                   </Node>
+                     <Node name="DealerId">
+                            <Node name="FromClauses">
+                                <KeyValue key="CUSTOMER_ALL CU" value=""    />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="InputAttributes">
+                                    <KeyValue key="TR.CUSTOMER_ID=CU.CUSTOMER_ID" value=""    />
+                                </Node>
+                            </Node>
+                            <KeyValue key="ConditionWhereClause" value="CU.DEALER_ID"/>
+                            <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="false"/>
+                    </Node>
+
+                    <Node name="TicklerProblemTypeId">
+
+                        <Node name="FromClauses">
+                            <KeyValue key="TICKLER_TRACKING TK" value=""    />
+                          </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="TR.CUSTOMER_ID=TK.CUSTOMER_ID" value=""    />
+                                <KeyValue key="TR.TICKLER_NUMBER=TK.TICKLER_NUMBER" value=""    />
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="TK.TR_ID"/>
+                    </Node>
+                    <Node name="TicklerTrackingMode">
+                        <Node name="FromClauses">
+                            <KeyValue key="TICKLER_TRACKING TK" value=""    />
+                            <KeyValue key="TICKLER_TRACKING_REF TT" value=""    />
+                          </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="TR.CUSTOMER_ID=TK.CUSTOMER_ID" value=""    />
+                                <KeyValue key="TR.TICKLER_NUMBER=TK.TICKLER_NUMBER" value=""    />
+                                <KeyValue key="TK.TR_ID=TT.TR_ID" value=""    />
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="TT.TR_MODE"/>
+                    </Node>
+
+                     <Node name="BusinessUnit">
+                        <Node name="FromClauses">
+                            <KeyValue key="CUSTOMER_ALL CU" value=""    />
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="TR.CUSTOMER_ID=CU.CUSTOMER_ID" value="" />
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="CU.BUSINESS_UNIT_ID"/>
+                    </Node>
+
+                    <Node name="FollowUpUser">
+                        <KeyValue key="SelectClause"  value="TR.FOLLOW_UP_USER"    />
+                        <KeyValue key="ConditionWhereClause" value="FOLLOW_UP_USER"/>
+                    </Node>
+
+                    <Node name="FollowUpCode">
+                        <KeyValue key="SelectClause"  value="TR.FOLLOW_UP_CODE"    />
+                        <KeyValue key="ConditionWhereClause" value="FOLLOW_UP_CODE"/>
+                    </Node>
+
+                    <Node name="FollowUpDate">
+                        <KeyValue key="SelectClause"  value="TR.FOLLOW_UP_DATE"    />
+                    </Node>
+
+                    <Node name="BILLING_ACCOUNT_CODE">
+                        <KeyValue key="SelectClause"  value="TR.BILLING_ACCOUNT_CODE"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.BILLING_ACCOUNT_CODE"/>
+                    </Node>
+
+                    <Node name="Priority">
+                        <KeyValue key="SelectClause"  value="TR.PRIORITY"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.PRIORITY"/>
+                    </Node>
+
+                    <Node name="Status">
+                        <KeyValue key="SelectClause"  value="TR.TICKLER_STATUS"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.TICKLER_STATUS"/>
+                    </Node>
+
+                    <Node name="Type">
+                        <KeyValue key="SelectClause"  value="TR.TICKLER_CODE"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.TICKLER_CODE"/>
+                    </Node>
+
+                    <Node name="XCoordinate">
+                        <KeyValue key="SelectClause"  value="TR.X_COORDINATE"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.X_COORDINATE"/>
+                        <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                    </Node>
+
+                    <Node name="YCoordinate">
+                        <KeyValue key="SelectClause"  value="TR.Y_COORDINATE"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.Y_COORDINATE"/>
+                        <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                    </Node>
+
+                    <Node name="ShortDescription">
+                        <KeyValue key="SelectClause"  value="TR.SHORT_DESCRIPTION"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.SHORT_DESCRIPTION"/>
+                        <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="3"    />
+                    </Node>
+
+                    <Node name="TICK_SHDES_LIST">
+                        <KeyValue key="SelectClause"  value="TR.SHORT_DESCRIPTION"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.SHORT_DESCRIPTION"/>
+                        <KeyValue key="Operator"    value="IN"/>
+                    </Node>
+                    <Node name="LongDescription">
+                        <KeyValue key="SelectClause"  value="TR.LONG_DESCRIPTION"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.LONG_DESCRIPTION"/>
+                        <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                    </Node>
+
+                    <Node name="EventMessageId">
+                        <KeyValue key="SelectClause"  value="TR.TICKLER_NUMBER"    />
+                    </Node>
+
+                    <Node name="MSG_DATE">
+                        <KeyValue key="SelectClause"  value="TR.MSG_DATE"    />
+                    </Node>
+
+                    <Node name="MSG_USER">
+                        <KeyValue key="SelectClause"  value="TR.MSG_USER"    />
+                    </Node>
+
+                    <Node name="MODIFIED_DATE">
+                        <KeyValue key="SelectClause"  value="TR.MODIFIED_DATE"    />
+                        <KeyValue key="ConditionWhereClause"  value="TR.MODIFIED_DATE"/>
+                    </Node>
+
+                    <Node name="MODIFIED_BY">
+                        <KeyValue key="SelectClause"  value="TR.MODIFIED_BY"    />
+                        <KeyValue key="ConditionWhereClause"  value="TR.MODIFIED_BY"/>
+                    </Node>
+
+                    <Node name="DISTRIBUTION_USER1">
+                        <KeyValue key="SelectClause"  value="TR.DISTRIBUTION_USER1"    />
+                    </Node>
+
+                    <Node name="DISTRIBUTION_USER2">
+                        <KeyValue key="SelectClause"  value="TR.DISTRIBUTION_USER2"    />
+                    </Node>
+
+                    <Node name="DISTRIBUTION_USER3">
+                        <KeyValue key="SelectClause"  value="TR.DISTRIBUTION_USER3"    />
+                    </Node>
+
+                    <Node name="DIST_USER">
+                         <KeyValue key="Operator" value="NOP" />
+                         <KeyValue key="ConditionWhereClause" value="TR.DISTRIBUTION_USER1=#DIST_USER OR  TR.DISTRIBUTION_USER2=#DIST_USER OR TR.DISTRIBUTION_USER3=#DIST_USER"/>
+                   </Node>
+                    <Node name="CreationDate">
+                        <KeyValue key="SelectClause"  value="TR.CREATED_DATE"    />
+                    </Node>
+
+                    <Node name="CreationUser">
+                        <KeyValue key="SelectClause"  value="TR.CREATED_BY"    />
+                        <KeyValue key="ConditionWhereClause" value="TR.CREATED_BY"/>
+                    </Node>
+
+                    <Node name="FromFollowUpDate">
+                        <KeyValue key="ConditionWhereClause" value="FOLLOW_UP_DATE"/>
+                        <KeyValue key="Operator" value="&gt;="/>
+
+                    </Node>
+
+                    <Node name="ToFollowUpDate">
+                        <KeyValue key="ConditionWhereClause" value="FOLLOW_UP_DATE"/>
+                        <KeyValue key="Operator" value="&lt;="/>
+                       </Node>
+
+                    <Node name="FromCreationDate">
+                        <KeyValue key="ConditionWhereClause" value="CREATED_DATE"/>
+                        <KeyValue key="Operator" value="&gt;="/>
+                    </Node>
+
+                    <Node name="ToCreationDate">
+                        <KeyValue key="ConditionWhereClause" value="CREATED_DATE"/>
+                        <KeyValue key="Operator" value="&lt;="/>
+                   </Node>
+
+                    <Node name="TypeNot">
+                        <KeyValue key="ConditionWhereClause" value="TR.TICKLER_CODE"/>
+                        <KeyValue key="Operator" value="!="/>
+                    </Node>
+
+                    <Node name="PartyType">
+                        <KeyValue key="ConditionWhereClause" value="CU.PARTY_TYPE_ID"/>
+                    </Node>
+
+                    <Node name="PartyRoleId">
+                        <Node name="FromClauses">
+                            <KeyValue key="CUSTOMER_ROLE CR" value="" />
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CR.CUSTOMER_ID=CU.CUSTOMER_ID" value="" />
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="CR.PARTY_ROLE_ID"/>
+                    </Node>
+
+                    <Node name="ADR_NAME">
+                        <Node name="FromClauses">
+                            <KeyValue key="CCONTACT_ALL CC" value=""    />
+                        </Node>
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CC.CUSTOMER_ID=CU.CUSTOMER_ID" value="" />
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCNAME"/>
+                    </Node>
+
+                    <Node name="ADR_FNAME">
+                        <Node name="FromClauses">
+                            <KeyValue key="CCONTACT_ALL CC" value=""    />
+                        </Node>
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CC.CUSTOMER_ID=CU.CUSTOMER_ID" value="" />
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCFNAME"/>
+                    </Node>
+
+                    <Node name="ADR_LNAME">
+                        <Node name="FromClauses">
+                            <KeyValue key="CCONTACT_ALL CC" value=""    />
+                        </Node>
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CC.CUSTOMER_ID=CU.CUSTOMER_ID" value="" />
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCLNAME"/>
+                    </Node>
+
+                    <Node name="ResultSize">
+                        <KeyValue key="ConditionWhereClause" value="ROWNUM"    />
+                        <KeyValue key="Operator" value="&lt;"/>
+                    </Node>
+
+                    <Node name="DIRNUM">
+                        <KeyValue key="SelectClause" value="DN.DN_NUM"/>
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER DN, CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="DN.DN_NUM"/>
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CAP.CO_ID(+) = TR.CO_ID" value="" />
+                                <KeyValue key="CAP.DN_ID = DN.DN_ID(+)" value="" />
+                            </Node>
+                        </Node>
+                    </Node>
+
+                </Node>
+            </Node> <!-- End EventMessageSearchWithMSISDN -->
+
+        </Node><!-- CMS Settings -->
+
+    </ComponentRegistry>

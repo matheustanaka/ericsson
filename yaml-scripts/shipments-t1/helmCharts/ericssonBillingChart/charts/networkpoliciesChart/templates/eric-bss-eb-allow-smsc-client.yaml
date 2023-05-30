@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: eric-bss-eb-allow-smsc-client
+spec:
+  podSelector:
+    matchLabels:
+      eric-bss-eb-network-smsc-client: 'true'
+  policyTypes:
+    - Egress
+  egress:
+    - ports:
+        - protocol: TCP
+          port: {{ .Values.global.sms.smscPort }}
+        - protocol: UDP
+          port: {{ .Values.global.sms.smscPort }}

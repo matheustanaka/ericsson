@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-bgh-rac-setup.xml
+data:
+  RAC_Setup.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC "ComponentRegistry.dtd" "ComponentRegistry.dtd">
+    <!-- This file is provided as config map -->
+    <ComponentRegistry>
+        <Node name="RAC_Setup">
+            <!-- error codes are listed in FUNC_FRMWK_SRV_DB_Registry.xml -->
+            <KeyValue key="WaitTime" type="Integer" value={{ .Values.bghRacSetup.waitTime | quote }} comment="after connection failure the process has to sleep WaitTime ms before reconnect"/>
+            <KeyValue key="TotalWaitTime" type="Integer" value={{ .Values.bghRacSetup.totalWaitTime | quote }} comment="the process will try to reconnect till TotalWaitTime s has been reached"/>
+            <KeyValue key="NumAttempts" type="Integer" value={{ .Values.bghRacSetup.numAttempts | quote }} comment="the process will try to reconnect at most NumAttemps time"/>
+        </Node>
+    </ComponentRegistry>

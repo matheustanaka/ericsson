@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: eric-bss-eb-allow-soi-ns
+spec:
+  podSelector:
+    matchLabels:
+      eric-bss-eb-network-soi-ns: 'true'
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-soi-server: 'true'
+      ports:
+        - protocol: TCP
+          port: 2010
+        - protocol: TCP
+          port: 1049
+    - from:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-soi-client: 'true'
+      ports:
+        - protocol: TCP
+          port: 2010
+        - protocol: TCP
+          port: 1049
+    - from:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-soi-fedfactory: 'true'
+      ports:
+        - protocol: TCP
+          port: 2010
+        - protocol: TCP
+          port: 1049

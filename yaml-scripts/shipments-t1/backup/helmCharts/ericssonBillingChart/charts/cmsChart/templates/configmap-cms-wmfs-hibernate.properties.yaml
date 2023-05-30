@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-wfms-hibernate.properties
+data:
+  hibernate.properties: |
+    ####################################
+    # Hibernate Configuration for JBPM #
+    ####################################
+
+    hibernate.dialect org.hibernate.dialect.Oracle10gDialect
+
+
+    #################################
+    ### Datasource configuration  ###
+    #################################
+
+    hibernate.jndi.class com.lhs.ccb.sfw.application.naming.ApplicationInitialContextFactory
+    hibernate.connection.datasource jdbc/lhsdbwma
+
+    #################################
+    ### Performance configuration ###
+    #################################
+
+{{ .Values.debtColl.jbpmCfg.hibernateProperties | indent 4 }}

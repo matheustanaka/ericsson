@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-soi-sec
+data:
+  security_3.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE SOI PUBLIC "SOIDefinition.dtd" "SOIDefinition.dtd">
+    <SOI soiName="SECURITY" soiVersion="3">
+        <COMMAND cmdName="USER_RIGHT.CHECK" cmdVersion="CMD_2_0" deprecated="no" webService="yes" restService="yes" />
+        <COMMAND cmdName="USER.READ"         cmdVersion="CMD_2_0" deprecated="no" webService="yes" restService="yes" />
+        <COMMAND cmdName="USER.WRITE"         cmdVersion="CMD_1_0" deprecated="no" webService="yes"/>
+        <COMMAND cmdName="USER.CREATE"         cmdVersion="CMD_1_0" deprecated="no" webService="yes"/>
+        <COMMAND cmdName="USER.SEARCH"         cmdVersion="CMD_2_0" deprecated="no" webService="yes" />
+
+        <COMMAND cmdName="PASSWORD.CHANGE"     cmdVersion="CMD_1_0" deprecated="no" webService="yes" />
+        <COMMAND cmdName="PASSWORD_SETTINGS.READ"     cmdVersion="CMD_1_0" deprecated="no" />
+
+        <!-- SSO: still needed?
+        <COMMAND cmdName="REFRESH"             cmdVersion="CMD_1_0" deprecated="no"/>
+        -->
+        <COMMAND cmdName="LICENSE.CHECK"    cmdVersion="CMD_1_0" deprecated="no" webService="yes" restService="yes"/>
+
+        <COMMAND cmdName="ROLE.CREATE" cmdVersion="CMD_1_0" deprecated="no"/>
+        <COMMAND cmdName="ROLES.READ" cmdVersion="CMD_1_0" deprecated="no" webService="yes" />
+        <COMMAND cmdName="ROLE.WRITE" cmdVersion="CMD_1_0" deprecated="no"/>
+        <COMMAND cmdName="ROLE.DELETE" cmdVersion="CMD_1_0" deprecated="no"/>
+
+        <COMMAND cmdName="ACCESS_RIGHT.READ" cmdVersion="CMD_1_0" deprecated="no" webService="yes" />
+        <COMMAND cmdName="ACCESS_RIGHT_GROUP.CREATE" cmdVersion="CMD_1_0" deprecated="no"/>
+        <COMMAND cmdName="ACCESS_RIGHT_GROUP.WRITE" cmdVersion="CMD_1_0" deprecated="no"/>
+        <COMMAND cmdName="ACCESS_RIGHT_GROUP.DELETE" cmdVersion="CMD_1_0" deprecated="no"/>
+
+        <COMMAND cmdName="ROLE_ACCESS_RIGHT.READ" cmdVersion="CMD_1_0" deprecated="no" webService="yes" />
+        <COMMAND cmdName="ROLE_ACCESS_RIGHT.WRITE" cmdVersion="CMD_1_0" deprecated="no"/>
+        <COMMAND cmdName="ROLE_ASSIGNMENT.WRITE" cmdVersion="CMD_1_0" deprecated="no"/>
+
+        <COMMAND cmdName="ROLE_DEFINITION.EXPORT" cmdVersion="CMD_1_0" deprecated="no"/>
+
+        <COMMAND cmdName="DATABASE_PROPERTIES.READ" cmdVersion="CMD_1_0" deprecated="no" webService="yes" />
+    </SOI>

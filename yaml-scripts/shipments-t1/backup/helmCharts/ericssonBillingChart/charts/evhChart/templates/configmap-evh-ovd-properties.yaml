@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-evh-ovd.properties
+data:
+  evh_ovd.properties: |
+    ###########################################################
+    # Defaul logging configuration file
+    #
+    # You can use a differnt file by specifying a filename
+    # with the java.util.logging.config.file system property
+    # For example java -Djava.util.logging.config.file=myfile
+    ###########################################################
+
+    ###########################################################
+    #
+    # Global properties
+    #
+    ###########################################################
+    stream file
+    #  Log Level Choices: SEVERE, WARNING, INFO, CONFIG, FINE, FINER, and FINEST.
+    level INFO
+    # Count: specifies how many output files to cycle through
+    count 2

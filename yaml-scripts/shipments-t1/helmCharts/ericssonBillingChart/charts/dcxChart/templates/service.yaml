@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: eric-bss-eb-dcx-http
+  labels:
+    run: eric-bss-eb-dcx-http
+    app: eb-java-dcx
+    chart: {{ template "eric-bss-eb-dcx.chart" . }}
+    {{- include "eric-bss-eb-dcx.kubernetesIoInfo" . | nindent 4 }}
+    heritage: {{ .Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-dcx.productInfo" . | indent 4 }}
+    {{ if .Values.tomcat.secretName }}
+    projectcontour.io/upstream-protocol.tls: "8443,dcx-http"
+    {{ end }}
+    projectcontour.io/max-connections: "{{ .Values.ingress.max_connections }}"
+    projectcontour.io/max-pending-requests: "{{ .Values.ingress.max_pending_requests }}"
+    projectcontour.io/max-requests: "{{ .Values.ingress.max_requests }}"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8443
+      targetPort: http-dcx
+      protocol: TCP
+      name: dcx-http
+  selector:
+    app: eb-java-dcx
+    app.kubernetes.io/instance: {{ .Release.Name }}
+

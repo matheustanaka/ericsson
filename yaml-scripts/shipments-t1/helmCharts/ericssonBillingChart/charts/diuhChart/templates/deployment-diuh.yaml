@@ -1,0 +1,285 @@
+{{- range $diuhDeployment := .Values.diuhDeployments }}
+{{- $startParameters := $diuhDeployment.startParameters -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "eric-bss-eb-diuh-{{ $diuhDeployment.name }}"
+  labels:
+    app: eric-bss-eb-diuh
+    chart: {{ template "eric-bss-eb-diuh.chart" $ }}
+    {{- include "eric-bss-eb-diuh.kubernetesIoInfo" $ | nindent 4 }}
+    heritage: {{ $.Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-diuh.productInfo" $ | indent 4 }}
+spec:
+  {{ if gt (int $.Values.replicaCount) 1 }}
+  replicas: 1
+  {{ else }}
+  replicas: {{ $.Values.replicaCount | default 1 }}
+  {{ end }}
+  selector:
+    matchLabels:
+      app: eric-bss-eb-diuh
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: eric-bss-eb-diuh
+        {{- include "eric-bss-eb-diuh.kubernetesIoInfo" $ | nindent 8 }}
+        eric-bss-eb-network-database-client: 'true'
+        eric-bss-eb-network-data-client: 'true'
+        eric-bss-eb-network-lem-client: 'true'
+        eric-bss-eb-network-vault-client: 'true'
+      annotations:
+      {{- include "eric-bss-eb-diuh.productInfo" $ | indent 8 }}
+    spec:
+      terminationGracePeriodSeconds: {{ $.Values.terminationGracePeriodSeconds }}
+      securityContext:
+        {{- include "eric-bss-eb-diuh.checkPodUserLoginData" $ | nindent 8 }}
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      initContainers:
+        - name: init-wait-for-data
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "init-wait-for-data" }}
+          image: "{{ template "eric-bss-eb-diuh.registryUrl" $templDict }}/{{ template "eric-bss-eb-diuh.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-diuh.pullPolicy" $templDict }}
+          command: ["/bin/bash"]
+          args: ["-c", "./waitForCondition.sh dmh {{ $.Values.global.conditionCheckInterval }} "]
+          env:
+          {{ if $.Values.global.dataHighAvailability.enable }}
+          - name: DATA_CONNECT_NAME
+            value: "{{ $.Values.global.dataServerName }}"
+          - name: DATA_CONNECT_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }},T:eric-bss-eb-data1-service:{{ $.Values.global.dataClusterPort }}"
+          - name: DATA_CONNECT_MODE
+            value: "0"
+          {{ else }}
+          - name: DATA_SERVER_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }}"
+          {{ end }}
+          - name: TZ
+            value: "{{ $.Values.global.timezone }}"
+          - name: BSCS_LOG_FULL
+            value: "/log/diuh"
+          volumeMounts:
+          {{ if $.Values.global.securityTls.enable }}
+          - name: tls-volume
+            mountPath: "/tls/connect"
+            readOnly: true
+          {{ end }}
+          - mountPath: /log
+            name: logs-volume
+        - name: init-wait-for-xrefs
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "init-wait-for-xrefs" }}
+          image: "{{ template "eric-bss-eb-diuh.registryUrl" $templDict }}/{{ template "eric-bss-eb-diuh.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-diuh.pullPolicy" $templDict }}
+          command: ["/bin/bash"]
+          args: ["-c", "./waitForCondition.sh checkXref {{ $.Values.global.conditionCheckInterval }} -U "]
+          env:
+          - name: TZ
+            value: "{{ $.Values.global.timezone }}"
+          - name: BSCS_LOG_FULL
+            value: "/log/diuh"
+          volumeMounts:
+          - mountPath: /workdir/XREF
+            name: xref-volume
+          - mountPath: /log
+            name: logs-volume
+      {{- if $.Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ $.Chart.Name }}-sa
+      {{- end }}
+      containers:
+        - name: eric-bss-eb-diuh
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "eric-bss-eb-diuh" }}
+          image: "{{ template "eric-bss-eb-diuh.registryUrl" $templDict }}/{{ template "eric-bss-eb-diuh.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-diuh.pullPolicy" $templDict }}
+          resources:
+            limits:
+              memory: "{{ $.Values.resources.limits.memory}}"
+              cpu: "{{ $.Values.resources.limits.cpu}}"
+            requests:
+              memory: "{{ $.Values.resources.requests.memory}}"
+              cpu: "{{ $.Values.resources.requests.cpu}}"
+          env:
+          - name: K8S_ENV
+            value: "true"
+          - name: NLS_LANG
+            value: "{{ $.Values.global.nlsLang }}"
+          {{ if $.Values.global.dataHighAvailability.enable }}
+          - name: DATA_CONNECT_NAME
+            value: "{{ $.Values.global.dataServerName }}"
+          - name: DATA_CONNECT_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }},T:eric-bss-eb-data1-service:{{ $.Values.global.dataClusterPort }}"
+          - name: DATA_CONNECT_MODE
+            value: "0"
+          {{ else }}
+          - name: DATA_SERVER_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }}"
+          {{ end }}
+          - name: DATABASE_SERVER_NAME
+            value: "{{ $.Values.global.databaseServerName }}"
+          - name: DATABASE_SERVER_PORT
+            value: "{{ $.Values.global.databaseServerPort }}"
+          - name: TZ
+            value: "{{ $.Values.global.timezone }}"
+          {{ if $.Values.global.databaseTls.enable }}
+          - name: ORA_SEC_WLT
+            value: "/oratns/secret"
+          {{ end }}
+          - name: MP_LOG_SIZE
+            value: "{{ $.Values.global.tracingAndLogging.mpLogParameters.mpLogSize }}"
+          - name: MP_LOG_INTERVAL
+            value: "{{ $.Values.global.tracingAndLogging.mpLogParameters.mpLogInterval }}"
+          - name: DXL_CONTINUE_AFTER_CORRUPT
+            value: "{{ $.Values.global.tracingAndLogging.dxlContinueAfterCorrupt }}"
+          {{ if $.Values.global.securityTls.enable }}
+          - name: DATA_SSL_CONNECT
+            value: "1"
+          - name: DATA_CIPHER_LIST
+            value: "{{ $.Values.global.securityTls.cipherList }}"
+          {{ end }}
+          {{ if $diuhDeployment.tracingAndLogging }}
+          {{ if $diuhDeployment.tracingAndLogging.bscsErrorTimestamp }}
+          - name: BSCS_ERROR_TIMESTAMP
+            value: "{{ $diuhDeployment.tracingAndLogging.bscsErrorTimestamp }}"
+          {{ end }}
+          {{ if $diuhDeployment.tracingAndLogging.dtaTracefile }}
+          - name: DTA_TRACEFILE
+            value: "{{ $diuhDeployment.tracingAndLogging.dtaTracefile }}"
+          {{ end }}
+          {{ if $diuhDeployment.tracingAndLogging.dxlTracefile }}
+          - name: DXL_TRACEFILE
+            value: "{{ $diuhDeployment.tracingAndLogging.dxlTracefile }}"
+          {{ end }}
+          {{ if $diuhDeployment.tracingAndLogging.udrTracefile }}
+          - name: UDR_TRACEFILE
+            value: "{{ $diuhDeployment.tracingAndLogging.udrTracefile }}"
+          {{ end }}
+          {{ end }}
+          - name: DATA_RETRY_TIME
+            value: "{{ $.Values.dataRetry.dataRetryTime }}"
+          - name: DATA_RETRY_TIME_MAX
+            value: "{{ $.Values.dataRetry.dataRetryTimeMax }}"
+          {{ if not $.Values.global.secretManager.enable }}
+          - name: NO_SECRET_MANAGER
+            value: "true"
+          {{ end }}
+          command: ["/bin/bash"]
+          args: ["-c", "ulimit -c unlimited && mkdir -p {{ $.Values.global.coredumpDirectory }} && \
+                  ./diuh -mP -b{{ $diuhDeployment.startParameters.businessUnitId }} \
+                  -t{{ $diuhDeployment.startParameters.traceModeLevel }} \
+                  {{ if $diuhDeployment.startParameters.familyGroupId }} \
+                  -f{{ $diuhDeployment.startParameters.familyGroupId }} {{ end }}"]
+          volumeMounts:
+          - name: ctrl-volume
+            mountPath: /workdir/CTRL
+          - name: xref-volume
+            mountPath: /workdir/XREF
+          - name: pwdmgr-security-volume
+            mountPath: /workdir/PWDMGR_SECURITY
+          - name: logs-volume
+            mountPath: /log
+          - name: coredump-volume
+            mountPath: "{{ $.Values.global.coredumpDirectory }}"
+          - name: tnsnames-ora-volume
+            mountPath: /oratns/tnsnames.ora
+            subPath: tnsnames.ora
+          - name: sqlnet-ora-volume
+            mountPath: /oratns/sqlnet.ora
+            subPath: sqlnet.ora
+          {{ if $.Values.global.securityTls.enable }}
+          - name: tls-volume
+            mountPath: "/tls/connect"
+            readOnly: true
+          {{ end }}
+          {{ if $.Values.global.databaseTls.enable }}
+          - name: wallet-volume
+            mountPath: /oratns/secret
+          {{ end }}
+          {{ if and ($.Values.global.secretManager.enable) ($.Values.global.secretManager.vault.caSecretName) }}
+          - name: secretmanager-tls-volume
+            mountPath: "/tls/secretManager/vault"
+            readOnly: true
+          {{ end }}
+          - name: vault-clientcfg-xml-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.xml
+            subPath: vault-clientcfg.xml
+          - name: vault-clientcfg-dtd-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.dtd
+            subPath: vault-clientcfg.dtd
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/bash", "-c", "rm -f /workdir/CTRL/DIUH*"]
+      {{- if $.Values.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.nodeSelector | nindent 8 }}
+      {{- else if $.Values.global.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if $.Values.affinity }}
+      affinity: {{ toYaml $.Values.affinity | nindent 8 }}
+      {{- else if $.Values.global.affinity }}
+      affinity: {{ toYaml $.Values.global.affinity | nindent 8 }}
+      {{- end }}
+      restartPolicy: Always
+      # Teste Matheus Tanaka
+      tolerations:
+      - key: "nodepool"
+          operator: "Equal"
+          value: "sfppdev"
+          effect: "NoSchedule"
+      volumes:
+      - name: ctrl-volume
+        emptyDir: {}
+      - name: xref-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-xref
+      - name: pwdmgr-security-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-pwdmgr-security
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-logs
+      - name: coredump-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-coredump
+      - name: tnsnames-ora-volume
+        configMap:
+          name: eric-bss-eb-diuh-tnsnames.ora
+      - name: sqlnet-ora-volume
+        configMap:
+          name: eric-bss-eb-diuh-sqlnet.ora
+      - name: vault-clientcfg-xml-volume
+        configMap:
+          name: eric-bss-eb-diuh-vault-clientcfg.xml
+      - name: vault-clientcfg-dtd-volume
+        configMap:
+          name: eric-bss-eb-diuh-vault-clientcfg.dtd
+      {{ if and ($.Values.global.secretManager.enable) ($.Values.global.secretManager.vault.caSecretName) }}
+      - name: secretmanager-tls-volume
+        secret:
+          secretName: "{{ $.Values.global.secretManager.vault.caSecretName }}"
+          items:
+          - key: {{ $.Values.global.secretManager.vault.caCertificate }}
+            path: ca.pem
+      {{ end }}
+      {{ if $.Values.global.securityTls.enable }}
+      - name: tls-volume
+        secret:
+          secretName: "{{ $.Values.global.securityTls.clientSecretName }}"
+          items:
+          - key: {{ $.Values.global.securityTls.trustedCertificateKey }}
+            path: certificate.pem
+      {{ end }}
+      {{ if $.Values.global.databaseTls.enable }}
+      - name: wallet-volume
+        secret:
+          secretName: "{{ $.Values.global.databaseTls.clientSecretName }}"
+      {{ end }}
+---
+{{- end }}

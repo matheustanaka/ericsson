@@ -1,0 +1,839 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-cms-promotions-searcher.xml
+data:
+  Registry_CMS_Promotions_Searcher.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+
+    <ComponentRegistry>
+
+        <Node name="CMS Settings">
+
+                <!-- ============================================================================================== -->
+                <!--                                PROMOTION_ASSIGNMENTS_SEARCHER                                  -->
+                <!-- ============================================================================================== -->
+
+                <Node name="LA_PROMOTION_ASSIGNMENTS_SEARCHER">
+                <KeyValue key="MaxResultSetSize" type="Integer" value="50"/>
+                <KeyValue key="DefaultResultSetSize" type="Integer" value="20"/>
+                <KeyValue key="DefaultNumberOfCharactersBeforeWildcard" type="Integer" value="0"/>
+                <KeyValue key="DefaultOutput" value="IN_CS_ID, IN_CUSTCODE,OWNER_CS_ID,OWNER_CUSTCODE,PROMOTION_PACKAGE_ID,DESCRIPTION,LEVEL,SCOPE"/>
+                <KeyValue key="BaseTable" value="PROMO_ASSIGN"/>
+                <KeyValue key="BaseTableAlias" value="PA"/>
+                <KeyValue key="FromClauseOrder" value="CUSTOMER_ALL CA, PROMO_ASSIGN PA, PROMO_PACK PP, RULE_PACK RP, PROMO_ASSIGN_METHOD PAM, PROMO_ASSIGN_STATE PAS" />
+
+                <Node name="DefaultClauses">
+                    <Node name="FromClauses">
+                        <KeyValue key="PROMO_ASSIGN PA" value=""/>
+                        <KeyValue key="CUSTOMER_ALL CA" value=""/>
+                        <KeyValue key="PROMO_ASSIGN_METHOD PAM" value=""/>
+                        <KeyValue key="RULE_PACK RP" value=""/>
+                        <KeyValue key="PROMO_PACK PP" value=""/>
+                        <KeyValue key="CUSTOMER_ALL CA3" value=""/>
+                        <KeyValue key="PROMO_ASSIGN_STATE PAS" value=""/>
+                        <KeyValue key="(select period_base_id  from  PROMO_PERIOD_BASE  where period_base_code='D') day" value=""/>
+                        <KeyValue key="(select period_base_id  from  PROMO_PERIOD_BASE  where period_base_code='M') month" value=""/>
+                    </Node>
+                     <Node name="WhereClauses">
+                        <KeyValue key="CA.CUSTOMER_ID=PA.CUSTOMER_ID" value="" />
+                        <KeyValue key="PAM.ASSIGN_METHOD_ID=PP.ASSIGN_METHOD_ID" value="" />
+                        <KeyValue key="PAM.ASSIGN_METHOD_CODE='E'" value="" />
+                        <KeyValue key="RP.RULE_PACK_ID=PP.PACK_ID" value="" />
+                        <KeyValue key="PP.PACK_ID=PA.PACK_ID" value="" />
+                        <KeyValue key="PP.SCOPE IN ('PR','PA')" value=""/>
+                        <KeyValue key="PP.LEVEL_PARAMETER IN ('CU','CO')" value=""/>
+                        <KeyValue key="PA.ASSIGN_SEQ in (SELECT PA2.ASSIGN_SEQ FROM PROMO_ASSIGN PA2 WHERE PA2.CUSTOMER_ID = PA.CUSTOMER_ID AND PA.PACK_ID = PA2.PACK_ID)" value="" />
+                        <KeyValue key="PAS.CUSTOMER_ID=PA.CUSTOMER_ID" value=""/>
+                        <KeyValue key="PAS.PACK_ID=PA.PACK_ID" value=""/>
+                        <KeyValue key="PAS.ASSIGN_SEQ=PA.ASSIGN_SEQ" value=""/>
+                        <KeyValue key="PAS.WORK_STATE='A'" value=""/>
+                        <KeyValue key="last_in_de_active.CUSTOMER_ID(+)=PA.CUSTOMER_ID" value=""/>
+                        <KeyValue key="last_in_de_active.PACK_ID(+)=PA.PACK_ID" value=""/>
+                        <KeyValue key="last_in_de_active.ASSIGN_SEQ(+)=PA.ASSIGN_SEQ" value=""/>
+                        <KeyValue key="last_in_de_active.CUSTOMER_ID is null" value=""/>
+                        <KeyValue key="last_in_de_active.PACK_ID is null" value=""/>
+                        <KeyValue key="last_in_de_active.ASSIGN_SEQ is null" value=""/>
+                    </Node>
+                </Node>
+
+                <Node name="LA_PROMOTION_RESTRICTED_CONTRACT">
+                <KeyValue key="DefaultResultSetSize" type="Integer" value="50"/>
+                </Node>
+
+                <Node name="Attributes">
+                    <Node name="IN_CS_ID">
+                        <KeyValue key="SelectClause" value="CA3.CUSTOMER_ID AS IN_CS_ID"/>
+                    </Node>
+
+                    <Node name="IN_CUSTCODE">
+                        <KeyValue key="SelectClause" value="CA3.CUSTCODE AS IN_CUSTCODE"/>
+                    </Node>
+
+                    <Node name="OWNER_CS_ID">
+                        <KeyValue key="SelectClause" value="PA.CUSTOMER_ID"/>
+                    </Node>
+
+                    <Node name="OWNER_CUSTCODE">
+                        <KeyValue key="SelectClause" value="CA.CUSTCODE"/>
+                    </Node>
+
+                    <Node name="PROMOTION_PACKAGE_ID">
+                        <KeyValue key="SelectClause" value="PA.PACK_ID"/>
+                    </Node>
+
+                    <Node name="DESCRIPTION">
+                        <KeyValue key="SelectClause" value="RP.DESCRIPTION"/>
+                    </Node>
+
+                    <Node name="SCOPE">
+                        <KeyValue key="SelectClause" value="PP.SCOPE"/>
+                        <KeyValue key="ConditionWhereClause" value="PP.SCOPE"/>
+                    </Node>
+
+                    <Node name="LEVEL">
+                        <KeyValue key="SelectClause" value="PP.LEVEL_PARAMETER"/>
+                        <KeyValue key="ConditionWhereClause" value="PP.LEVEL_PARAMETER"/>
+                    </Node>
+
+                    <!-- this is mandatory; not listed as default in order for the #CUSTOMER_ID to be processed from buildSpecialClause -->
+                    <Node name="ALL_HIERARCHY">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="PA.CUSTOMER_ID IN (select CUSTOMER_ID from CUSTOMER_ALL CA2 start with CA2.CUSTOMER_ID=#CUSTOMER_ID connect by prior CA2.CUSTOMER_ID_HIGH=CA2.CUSTOMER_ID UNION SELECT CUSTOMER_ID FROM CUSTOMER_ALL CA2 START WITH CA2.CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CA2.CUSTOMER_ID = CA2.CUSTOMER_ID_HIGH AND #BILLCYCLE_RESTRICTION_IND = 'true')" value=""/>                        </Node>
+                        </Node>
+                    </Node>
+
+
+                    <!-- this is mandatory; not listed as default in order for the #CUSTOMER_ID to be processed from buildSpecialClause -->
+                    <Node name="IN_CUSTCODE">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="
+                                    (#BILLCYCLE_RESTRICTION_IND = 'true'
+                                        AND (CA3.CUSTOMER_ID IN
+                                        (SELECT CAD.CUSTOMER_ID
+                                    FROM CUSTOMER_ALL CAD
+                                        START WITH CAD.CUSTOMER_ID = #CUSTOMER_ID
+                                        CONNECT BY PRIOR CAD.CUSTOMER_ID = CAD.CUSTOMER_ID_HIGH)
+                                    AND(SELECT COUNT(DISTINCT BAH.BILLCYCLE)
+                                    FROM BILLCYCLE_ASSIGNMENT_HISTORY BAH
+                                    WHERE BAH.CUSTOMER_ID IN(CA3.CUSTOMER_ID,PA.CUSTOMER_ID)
+                                    AND (BAH.SEQNO = (SELECT MAX(SEQNO)
+                                            FROM BILLCYCLE_ASSIGNMENT_HISTORY
+                                            WHERE CUSTOMER_ID = BAH.CUSTOMER_ID))
+                                        ) > 1 )
+                                        AND PA.CUSTOMER_ID IN (SELECT CAD.CUSTOMER_ID
+                                            FROM CUSTOMER_ALL CAD
+                                            START WITH CAD.CUSTOMER_ID = CA3.CUSTOMER_ID
+                                            CONNECT BY PRIOR CAD.CUSTOMER_ID_HIGH = CAD.CUSTOMER_ID)
+                                    ) OR (#BILLCYCLE_RESTRICTION_IND = 'false'
+                                    AND CA3.CUSTOMER_ID = #CUSTOMER_ID)"
+                                    value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+                    <!-- ========================================================================================================= -->
+                    <!-- this is mandatory;  will filter out deleted assignments -->
+                    <!-- Depending on if the input start and end search dates are provided, one of the following 2 clauses is used -->
+                    <!-- ========================================================================================================= -->
+                    <Node name="DELETED_ASSIGNMENTS_DATE_RESTRICTED">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="NOT (PA.DELETE_DATE &lt;= #START_DATE) OR (PA.DELETE_DATE IS NULL)" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+                    <Node name="DELETED_ASSIGNMENTS_NO_DATE_RESTRICTED">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="NOT (PA.DELETE_DATE &lt;= CA3.LBC_DATE) OR (PA.DELETE_DATE IS NULL)" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+
+                    <!-- ========================================================================================================= -->
+                    <!-- Search date criteria used in the top-level query for filtering in assignments, valid between a period of  -->
+                    <!-- time or assignments, of which the validity period has not ended                                           -->
+                    <!-- Depending on if the input start and end search dates are provided, one of the following 4 clauses is used -->
+                    <!-- ========================================================================================================= -->
+                    <!-- (1) used when start and  end date are provided-->
+                    <Node name="START_END_DATE_RESTRICTED">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="((PA.ASSIGN_DATE &lt;= #START_DATE) and ((PA.DELETE_DATE &gt;= #START_DATE)
+                                                    or ( DECODE(pp.period_base_id,day.period_base_id,pa.assign_date+pp.assign_period,month.period_base_id,ADD_MONTHS(pa.assign_date,pp.assign_period)) &gt;= #START_DATE))) or
+                                               ((PA.ASSIGN_DATE &gt;= #START_DATE) and ((PA.DELETE_DATE &lt;= #END_DATE)
+                                                    or ( DECODE(pp.period_base_id,day.period_base_id,pa.assign_date+pp.assign_period,month.period_base_id,ADD_MONTHS(pa.assign_date,pp.assign_period)) &lt;= #END_DATE)))   or
+                                               ((PA.ASSIGN_DATE &lt;= #END_DATE) and ((PA.DELETE_DATE &gt;= #END_DATE)
+                                                    or ( DECODE(pp.period_base_id,day.period_base_id,pa.assign_date+pp.assign_period,month.period_base_id,ADD_MONTHS(pa.assign_date,pp.assign_period)) &gt;= #END_DATE)))"
+                                value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+                    <!-- (2) used when only start date is provided-->
+                     <Node name="START_DATE_RESTRICTED">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="((PA.ASSIGN_DATE &lt;= #START_DATE) and ((PA.DELETE_DATE &gt;= #START_DATE)
+                                                    or ( DECODE(pp.period_base_id,day.period_base_id,pa.assign_date+pp.assign_period,month.period_base_id,ADD_MONTHS(pa.assign_date,pp.assign_period)) &gt;= #START_DATE))) or
+                                               ((PA.ASSIGN_DATE &gt;= #START_DATE) and ((PA.DELETE_DATE &lt;= SYSDATE)
+                                                    or ( DECODE(pp.period_base_id,day.period_base_id,pa.assign_date+pp.assign_period,month.period_base_id,ADD_MONTHS(pa.assign_date,pp.assign_period)) &lt;= SYSDATE))) or
+                                               ((PA.ASSIGN_DATE &lt;= SYSDATE) and ((PA.DELETE_DATE &gt;= SYSDATE)
+                                                    or ( DECODE(pp.period_base_id,day.period_base_id,pa.assign_date+pp.assign_period,month.period_base_id,ADD_MONTHS(pa.assign_date,pp.assign_period)) &gt;= SYSDATE)))"
+                                value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+                    <!-- (3) used when only an end date is provided-->
+                    <Node name="END_DATE_RESTRICTED">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="((PA.ASSIGN_DATE &lt;= CA3.LBC_DATE) and ((PA.DELETE_DATE &gt;= CA3.LBC_DATE)
+                                                    or ( DECODE(pp.period_base_id,day.period_base_id,pa.assign_date+pp.assign_period,month.period_base_id,ADD_MONTHS(pa.assign_date,pp.assign_period)) &gt;= CA3.LBC_DATE)))    or
+                                               ((PA.ASSIGN_DATE &gt;= CA3.LBC_DATE) and ((PA.DELETE_DATE &lt;= #END_DATE)
+                                                    or ( DECODE(pp.period_base_id,day.period_base_id,pa.assign_date+pp.assign_period,month.period_base_id,ADD_MONTHS(pa.assign_date,pp.assign_period)) &lt;= #END_DATE)))   or
+                                               ((PA.ASSIGN_DATE &lt;= #END_DATE) and ((PA.DELETE_DATE &gt;= #END_DATE)
+                                                    or ( DECODE(pp.period_base_id,day.period_base_id,pa.assign_date+pp.assign_period,month.period_base_id,ADD_MONTHS(pa.assign_date,pp.assign_period)) &gt;= #END_DATE)))"
+                                value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+                    <!-- (4) used when no input date is provided-->
+                    <Node name="NO_DATE_RESTRICTED">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="((PA.ASSIGN_DATE &lt;= CA3.LBC_DATE) and ((PA.DELETE_DATE &gt;= CA3.LBC_DATE)
+                                                    or ( DECODE(pp.period_base_id,day.period_base_id,pa.assign_date+pp.assign_period,month.period_base_id,ADD_MONTHS(pa.assign_date,pp.assign_period)) &gt;= CA3.LBC_DATE)))    or
+                                               ((PA.ASSIGN_DATE &gt;= CA3.LBC_DATE) and ((PA.DELETE_DATE &lt;= SYSDATE)
+                                                    or ( DECODE(pp.period_base_id,day.period_base_id,pa.assign_date+pp.assign_period,month.period_base_id,ADD_MONTHS(pa.assign_date,pp.assign_period)) &lt;= SYSDATE))) or
+                                               ((PA.ASSIGN_DATE &lt;= SYSDATE) and ((PA.DELETE_DATE &gt;= SYSDATE)
+                                                    or ( DECODE(pp.period_base_id,day.period_base_id,pa.assign_date+pp.assign_period,month.period_base_id,ADD_MONTHS(pa.assign_date,pp.assign_period)) &gt;= SYSDATE)))"
+                                value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+
+                    <!-- ================================================================================================================= -->
+                    <!-- Filter out subquery; filters out service assignments  for which a in/deactivation request (before time of         -->
+                    <!-- the provided input search date) has been found                                                                    -->
+                    <!-- Depending on if the input start date is provided, one of the following 2 clauses is used                          -->
+                    <!-- ================================================================================================================= -->
+                    <!-- (1) start date is provided -->
+                    <Node name="LAST_IN_DE_ACTIVE_START_DATE_RESTRICTED">
+                      <Node name="FromClauses">
+                                <KeyValue key="(SELECT
+                                            LAST_VALUE(PA.CUSTOMER_ID) OVER (PARTITION BY PAS.WORK_STATE, PP.SCOPE,PP.LEVEL_PARAMETER,PA.PACK_ID,CA.CUSTCODE, PA.CUSTOMER_ID ORDER BY PAS.STATE_DATE DESC) as CUSTOMER_ID,
+                                            LAST_VALUE(PA.PACK_ID) OVER (PARTITION BY PAS.WORK_STATE, PP.SCOPE,PP.LEVEL_PARAMETER,PA.PACK_ID,CA.CUSTCODE, PA.CUSTOMER_ID ORDER BY PAS.STATE_DATE DESC) AS PACK_ID,
+                                            LAST_VALUE(PA.ASSIGN_SEQ) OVER (PARTITION BY PAS.WORK_STATE, PP.SCOPE,PP.LEVEL_PARAMETER,PA.PACK_ID,CA.CUSTCODE, PA.CUSTOMER_ID ORDER BY PAS.STATE_DATE DESC) AS ASSIGN_SEQ
+                                              FROM CUSTOMER_ALL CA,
+                                                   PROMO_ASSIGN PA,
+                                                   PROMO_PACK PP,
+                                                   RULE_PACK RP,
+                                                   PROMO_ASSIGN_METHOD PAM,
+                                                   PROMO_ASSIGN_STATE PAS,
+                                                   CUSTOMER_ALL CA3
+                                             WHERE
+                                             (PP.LEVEL_PARAMETER IN ('CU', 'CO')) AND (PAM.ASSIGN_METHOD_CODE = 'E')
+                                                    AND PA.CUSTOMER_ID IN ((SELECT CUSTOMER_ID
+                                                                           FROM CUSTOMER_ALL CA2
+                                                            START WITH CA2.CUSTOMER_ID = #CUSTOMER_ID
+                                                            CONNECT BY PRIOR CA2.CUSTOMER_ID_HIGH = CA2.CUSTOMER_ID)
+                                                            UNION
+                                                            (SELECT CUSTOMER_ID
+                                                            FROM CUSTOMER_ALL CA2 START WITH CA2.CUSTOMER_ID = #CUSTOMER_ID CONNECT BY
+                                                            PRIOR CA2.CUSTOMER_ID = CA2.CUSTOMER_ID_HIGH AND #BILLCYCLE_RESTRICTION_IND = 'true'))
+                                                    AND (PAS.CUSTOMER_ID = PA.CUSTOMER_ID)
+                                                    AND (CA.CUSTOMER_ID = PA.CUSTOMER_ID)
+                                                    AND (RP.RULE_PACK_ID = PP.PACK_ID)
+                                                    AND (PP.PACK_ID = PA.PACK_ID)
+                                                    AND (PAS.STATE_DATE &lt;=  #START_DATE)
+                                                    AND (PP.SCOPE IN ('PR', 'PA'))
+                                                    AND (PAS.PACK_ID = PA.PACK_ID)
+                                                    AND ((PAS.WORK_STATE='I') OR  (PAS.WORK_STATE='D'))
+                                                    AND (PAM.ASSIGN_METHOD_ID = PP.ASSIGN_METHOD_ID)
+                                                    AND (PAS.ASSIGN_SEQ = PA.ASSIGN_SEQ)
+                                                    AND (PA.ASSIGN_SEQ IN
+                                                            (SELECT PA2.ASSIGN_SEQ
+                                                                FROM PROMO_ASSIGN PA2
+                                                                WHERE PA2.CUSTOMER_ID = PA.CUSTOMER_ID
+                                                                AND PA.PACK_ID = PA2.PACK_ID))) last_in_de_active"
+                            value=""/>
+                      </Node>
+                      <KeyValue key="Operator" value="NOOP"/>
+                    </Node>
+
+                    <!-- (2) start date is not provided -->
+                    <Node name="LAST_IN_DE_ACTIVE_NO_START_DATE_RESTRICTED">
+                      <Node name="FromClauses">
+                                <KeyValue key="(SELECT
+                                            LAST_VALUE(PA.CUSTOMER_ID) OVER (PARTITION BY PAS.WORK_STATE, PP.SCOPE,PP.LEVEL_PARAMETER,PA.PACK_ID,CA.CUSTCODE, PA.CUSTOMER_ID ORDER BY PAS.STATE_DATE DESC) as CUSTOMER_ID,
+                                            LAST_VALUE( PA.PACK_ID) OVER (PARTITION BY PAS.WORK_STATE, PP.SCOPE,PP.LEVEL_PARAMETER,PA.PACK_ID,CA.CUSTCODE, PA.CUSTOMER_ID ORDER BY PAS.STATE_DATE DESC) AS PACK_ID,
+                                            LAST_VALUE(PA.ASSIGN_SEQ) OVER (PARTITION BY PAS.WORK_STATE, PP.SCOPE,PP.LEVEL_PARAMETER,PA.PACK_ID,CA.CUSTCODE, PA.CUSTOMER_ID ORDER BY PAS.STATE_DATE DESC) AS ASSIGN_SEQ
+                                              FROM CUSTOMER_ALL CA,
+                                                   PROMO_ASSIGN PA,
+                                                   PROMO_PACK PP,
+                                                   RULE_PACK RP,
+                                                   PROMO_ASSIGN_METHOD PAM,
+                                                   PROMO_ASSIGN_STATE PAS,
+                                                   CUSTOMER_ALL CA3
+                                             WHERE
+                                             (PP.LEVEL_PARAMETER IN ('CU', 'CO')) AND (PAM.ASSIGN_METHOD_CODE = 'E')
+                                                    AND PA.CUSTOMER_ID IN ((SELECT CUSTOMER_ID
+                                                                           FROM CUSTOMER_ALL CA2
+                                                            START WITH CA2.CUSTOMER_ID = #CUSTOMER_ID
+                                                            CONNECT BY PRIOR CA2.CUSTOMER_ID_HIGH = CA2.CUSTOMER_ID)
+                                                            UNION
+                                                            (SELECT CUSTOMER_ID
+                                                            FROM CUSTOMER_ALL CA2 START WITH CA2.CUSTOMER_ID = #CUSTOMER_ID CONNECT BY
+                                                            PRIOR CA2.CUSTOMER_ID = CA2.CUSTOMER_ID_HIGH AND #BILLCYCLE_RESTRICTION_IND = 'true'))
+                                                    AND ((#BILLCYCLE_RESTRICTION_IND = 'true' AND
+                                                             (CA3.CUSTOMER_ID IN (SELECT CAD.CUSTOMER_ID
+                                                                                      FROM CUSTOMER_ALL CAD START WITH CAD.CUSTOMER_ID = #CUSTOMER_ID CONNECT BY
+                                                                                      PRIOR CAD.CUSTOMER_ID = CAD.CUSTOMER_ID_HIGH) AND CA3.CUSTOMER_ID != #CUSTOMER_ID))
+                                                             OR (CA3.CUSTOMER_ID = #CUSTOMER_ID))
+                                                   AND (PAS.CUSTOMER_ID = PA.CUSTOMER_ID)
+                                                   AND (CA.CUSTOMER_ID = PA.CUSTOMER_ID)
+                                                   AND (RP.RULE_PACK_ID = PP.PACK_ID)
+                                                   AND (PP.PACK_ID = PA.PACK_ID)
+                                                   AND ( PAS.STATE_DATE &lt;=  CA3.LBC_DATE)
+                                                   AND (PP.SCOPE IN ('PR', 'PA'))
+                                                   AND (PAS.PACK_ID = PA.PACK_ID)
+                                                   AND ((PAS.WORK_STATE='I') OR  (PAS.WORK_STATE='D'))
+                                                   AND (PAM.ASSIGN_METHOD_ID = PP.ASSIGN_METHOD_ID)
+                                                   AND (PAS.ASSIGN_SEQ = PA.ASSIGN_SEQ)
+                                                   AND (PA.ASSIGN_SEQ IN
+                                                           (SELECT PA2.ASSIGN_SEQ
+                                                              FROM PROMO_ASSIGN PA2
+                                                             WHERE PA2.CUSTOMER_ID = PA.CUSTOMER_ID
+                                                                   AND PA.PACK_ID = PA2.PACK_ID))  ) last_in_de_active"
+                            value=""/>
+                      </Node>
+                      <KeyValue key="Operator" value="NOOP"/>
+                    </Node>
+                </Node><!-- Attributes -->
+
+            </Node>
+
+                <!-- ============================================================================================== -->
+                <!--                                    FU_ASSIGNMENTS_SEARCHER                                     -->
+                <!-- ============================================================================================== -->
+
+                <Node name="FU_ASSIGNMENTS_SEARCHER">
+                <KeyValue key="MaxResultSetSize" type="Integer" value="50"/>
+                <KeyValue key="DefaultResultSetSize" type="Integer" value="20"/>
+                <KeyValue key="DefaultNumberOfCharactersBeforeWildcard" type="Integer" value="0"/>
+                <KeyValue key="DefaultOutput" value="IN_CS_ID,IN_CUSTCODE,OWNER_CS_ID,OWNER_CUSTCODE,FREE_UNITS_PACKAGE_ID,SHORT_DESCRIPTION,DESCRIPTION,ASSIGNMENT_LEVEL,APPLICATION_METHOD"/>
+                <!-- <KeyValue key="BaseTable" value="FU_PACK"/>
+                <KeyValue key="BaseTableAlias" value="FUP"/> -->
+                <KeyValue key="BaseTable" value="CUSTOMER_ALL"/>
+                <KeyValue key="BaseTableAlias" value="CA"/>
+                <KeyValue key="FromClauseOrder" value="CONTRACT_ALL CO, PROFILE_SERVICE PS, PARAMETER_VALUE PV, FU_PACK FUP" />
+
+
+                <Node name="DefaultClauses">
+                    <Node name="FromClauses">
+                        <KeyValue key="CUSTOMER_ALL CA" value=""/>
+                        <KeyValue key="CUSTOMER_ALL CA3" value=""/>
+                        <KeyValue key="CONTRACT_ALL CO" value=""/>
+                        <KeyValue key="PROFILE_SERVICE PS" value=""/>
+                        <KeyValue key="PARAMETER_VALUE PV" value=""/>
+                        <KeyValue key="FU_PACK FUP" value=""/>
+                        <KeyValue key="PR_SERV_STATUS_HIST PR" value=""/>
+                    </Node>
+                     <Node name="WhereClauses">
+                        <KeyValue key="CO.CUSTOMER_ID=CA.CUSTOMER_ID" value="" />
+                        <KeyValue key="PS.CO_ID=CO.CO_ID" value="" />
+                        <KeyValue key="PS.PRM_VALUE_ID=PV.PRM_VALUE_ID" value="" />
+                        <KeyValue key="PV.PRM_VALUE_NUMBER=FUP.FU_PACK_ID" value="" />
+                        <KeyValue key="FUP.ASSIGNMENT_LEVEL in ('C','P','L')" value="" />
+                        <KeyValue key="FUP.APPL_METHOD in ('B','M','R')" value=""/>
+                        <KeyValue key="PR.CO_ID=CO.CO_ID" value=""/>
+                        <KeyValue key="PR.SNCODE=PS.SNCODE" value=""/>
+                        <KeyValue key="PR.PROFILE_ID=PS.PROFILE_ID" value=""/>
+                        <KeyValue key="PR.STATUS='A'" value=""/>
+                        <KeyValue key="deact_serv_ass_before_search.PROFILE_ID is  null" value=""/>
+                        <KeyValue key="deact_serv_ass_before_search.CO_ID is  null" value=""/>
+                        <KeyValue key="deact_serv_ass_before_search.SNCODE is  null" value=""/>
+                        <KeyValue key="PR.PROFILE_ID = deact_serv_ass_before_search.PROFILE_ID (+)" value=""/>
+                        <KeyValue key="PR.CO_ID = deact_serv_ass_before_search.CO_ID (+)" value=""/>
+                        <KeyValue key="PR.SNCODE = deact_serv_ass_before_search.SNCODE  (+)" value=""/>
+                        <KeyValue key="FUP.FU_PACK_ID =fups_replacements.PRM_VALUE_NUMBER" value=""/>
+                        <KeyValue key="PR.PROFILE_ID = fups_replacements.PROFILE_ID" value=""/>
+                        <KeyValue key="PR.CO_ID = fups_replacements.CO_ID" value=""/>
+                        <KeyValue key="PR.SNCODE = fups_replacements.SNCODE" value=""/>
+                    </Node>
+                </Node>
+
+
+                <Node name="Attributes">
+                    <Node name="IN_CS_ID">
+                        <KeyValue key="SelectClause" value="CA3.CUSTOMER_ID AS IN_CS_ID"/>
+                    </Node>
+
+                    <Node name="IN_CUSTCODE">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(CA3.CUSTCODE) OVER ( PARTITION BY CA3.CUSTOMER_ID,CO.CO_ID,PS.SNCODE,TRUNC(PV.PRM_VALID_FROM,'DDD') ORDER BY PV.PRM_VALID_FROM DESC)"/>
+                    </Node>
+
+                    <Node name="OWNER_CS_ID">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(CA.CUSTOMER_ID) OVER ( PARTITION BY CA.CUSTOMER_ID,CO.CO_ID,PS.SNCODE,TRUNC(PV.PRM_VALID_FROM,'DDD') ORDER BY PV.PRM_VALID_FROM DESC)"/>
+                    </Node>
+
+                    <Node name="OWNER_CUSTCODE">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(CA.CUSTCODE) OVER ( PARTITION BY CA.CUSTOMER_ID,CO.CO_ID,PS.SNCODE,TRUNC(PV.PRM_VALID_FROM,'DDD') ORDER BY PV.PRM_VALID_FROM DESC)"/>
+                    </Node>
+
+                    <Node name="FREE_UNITS_PACKAGE_ID">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(FUP.FU_PACK_ID) OVER ( PARTITION BY CA.CUSTOMER_ID,CO.CO_ID,PS.SNCODE,TRUNC(PV.PRM_VALID_FROM,'DDD') ORDER BY PV.PRM_VALID_FROM DESC)"/>
+                    </Node>
+
+                    <Node name="SHORT_DESCRIPTION">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(FUP.SHORT_NAME) OVER ( PARTITION BY CA.CUSTOMER_ID,CO.CO_ID,PS.SNCODE,TRUNC(PV.PRM_VALID_FROM,'DDD') ORDER BY PV.PRM_VALID_FROM DESC)"/>
+                    </Node>
+
+                    <Node name="DESCRIPTION">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(FUP.LONG_NAME) OVER ( PARTITION BY CA.CUSTOMER_ID,CO.CO_ID,PS.SNCODE,TRUNC(PV.PRM_VALID_FROM,'DDD') ORDER BY PV.PRM_VALID_FROM DESC)"/>
+                    </Node>
+
+
+                    <Node name="ASSIGNMENT_LEVEL">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(FUP.ASSIGNMENT_LEVEL) OVER ( PARTITION BY CA.CUSTOMER_ID,CO.CO_ID,PS.SNCODE,TRUNC(PV.PRM_VALID_FROM,'DDD') ORDER BY PV.PRM_VALID_FROM DESC)"/>
+                        <KeyValue key="ConditionWhereClause" value="FUP.ASSIGNMENT_LEVEL"/>
+                        <KeyValue key="Operator" value="IN"/>
+                    </Node>
+
+
+                    <Node name="APPLICATION_METHOD">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(FUP.APPL_METHOD) OVER ( PARTITION BY CA.CUSTOMER_ID,CO.CO_ID,PS.SNCODE,TRUNC(PV.PRM_VALID_FROM,'DDD') ORDER BY PV.PRM_VALID_FROM DESC)"/>
+                        <KeyValue key="ConditionWhereClause" value="FUP.APPL_METHOD"/>
+                        <KeyValue key="Operator" value="IN"/>
+                    </Node>
+
+
+                    <!-- this is mandatory; not listed as default in order for the #CUSTOMER_ID to be processed from buildSpecialClause -->
+                    <Node name="ALL_HIERARCHY">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CA.CUSTOMER_ID IN (select CA2.CUSTOMER_ID from CUSTOMER_ALL CA2 start with CA2.CUSTOMER_ID=#CUSTOMER_ID connect by prior CA2.CUSTOMER_ID_HIGH=CA2.CUSTOMER_ID
+                                UNION
+                                SELECT CUSTOMER_ID FROM CUSTOMER_ALL CA2 START WITH CA2.CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CA2.CUSTOMER_ID = CA2.CUSTOMER_ID_HIGH AND #BILLCYCLE_RESTRICTION_IND = 'true')" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+                    <!-- this is mandatory; not listed as default in order for the #CUSTOMER_ID to be processed from buildSpecialClause -->
+                    <Node name="IN_CUSTCODE">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="(#BILLCYCLE_RESTRICTION_IND = 'true'
+                                                 AND (CA3.CUSTOMER_ID            IN
+                                                   (SELECT CAD.CUSTOMER_ID
+                                                 FROM CUSTOMER_ALL CAD
+                                                  START WITH CAD.CUSTOMER_ID = #CUSTOMER_ID
+                                                  CONNECT BY PRIOR CAD.CUSTOMER_ID = CAD.CUSTOMER_ID_HIGH)
+                                                AND(SELECT COUNT(DISTINCT BAH.BILLCYCLE)
+                                                    FROM BILLCYCLE_ASSIGNMENT_HISTORY BAH
+                                                    WHERE BAH.CUSTOMER_ID IN(CA3.CUSTOMER_ID,CA.CUSTOMER_ID)
+                                                AND (BAH.SEQNO         = (SELECT MAX(SEQNO)
+                                                                          FROM BILLCYCLE_ASSIGNMENT_HISTORY
+                                                                          WHERE CUSTOMER_ID     = BAH.CUSTOMER_ID
+                                                  )))                   > 1 )
+                                                  AND CA.CUSTOMER_ID IN (SELECT CAD.CUSTOMER_ID
+                                                                        FROM CUSTOMER_ALL CAD
+                                                                          START WITH CAD.CUSTOMER_ID = CA3.CUSTOMER_ID
+                                                                          CONNECT BY PRIOR CAD.CUSTOMER_ID_HIGH = CAD.CUSTOMER_ID))
+                                                  OR (#BILLCYCLE_RESTRICTION_IND = 'false' AND CA3.CUSTOMER_ID = #CUSTOMER_ID)" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+                    <!-- ========================================================================================================= -->
+                    <!-- Search date criteria used in the top-level query for filtering in assignments, for which an               -->
+                    <!-- activation request has been found.                                                                        -->
+                    <!-- Depending on if the input start and end search dates are provided, one of the following 4 clauses is used -->
+                    <!-- ========================================================================================================= -->
+                    <!-- (1) used when a start and an end date are provided-->
+                    <Node name="START_END_DATE_RESTRICTED">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="((PR.VALID_FROM_DATE &lt;= #START_DATE) and
+                                                    ((  DECODE(fup.appl_period_type,'D',pr.valid_from_date+fup.appl_period_length,'M',ADD_MONTHS(pr.valid_from_date,fup.appl_period_length)) &gt;= #START_DATE)) OR (fup.appl_period_length  is null))  or
+                                               ((PR.VALID_FROM_DATE &gt;= #START_DATE) and
+                                                    ((  DECODE(fup.appl_period_type,'D',pr.valid_from_date+fup.appl_period_length,'M',ADD_MONTHS(pr.valid_from_date,fup.appl_period_length)) &lt;= #END_DATE))  OR (fup.appl_period_length  is null)) or
+                                               ((PR.VALID_FROM_DATE &lt;= #END_DATE) and
+                                                    ((  DECODE(fup.appl_period_type,'D',pr.valid_from_date+fup.appl_period_length,'M',ADD_MONTHS(pr.valid_from_date,fup.appl_period_length)) &gt;= #END_DATE)) OR (fup.appl_period_length  is null))"
+                                value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+                    <!-- (2) used when only a start is provided-->
+                     <Node name="START_DATE_RESTRICTED">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="((PR.VALID_FROM_DATE &lt;= #START_DATE) and
+                                                    ((  DECODE(fup.appl_period_type,'D',pr.valid_from_date+fup.appl_period_length,'M',ADD_MONTHS(pr.valid_from_date,fup.appl_period_length)) &gt;= #START_DATE)) OR (fup.appl_period_length  is null))  or
+                                               ((PR.VALID_FROM_DATE &gt;= #START_DATE) and
+                                                    ((  DECODE(fup.appl_period_type,'D',pr.valid_from_date+fup.appl_period_length,'M',ADD_MONTHS(pr.valid_from_date,fup.appl_period_length)) &lt;= SYSDATE)) OR (fup.appl_period_length  is null))  or
+                                               ((PR.VALID_FROM_DATE &lt;= SYSDATE) and
+                                                    ((  DECODE(fup.appl_period_type,'D',pr.valid_from_date+fup.appl_period_length,'M',ADD_MONTHS(pr.valid_from_date,fup.appl_period_length)) &gt;= SYSDATE)) OR (fup.appl_period_length  is null))"
+                                value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+                    <!-- (3) used when no input date is  provided-->
+                     <Node name="NO_DATE_RESTRICTED">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="((PR.VALID_FROM_DATE &lt;= CA3.LBC_DATE) and
+                                                    ((  DECODE(fup.appl_period_type,'D',pr.valid_from_date+fup.appl_period_length,'M',ADD_MONTHS(pr.valid_from_date,fup.appl_period_length)) &gt;= CA3.LBC_DATE)) OR (fup.appl_period_length  is null)) or
+                                               ((PR.VALID_FROM_DATE &gt;= CA3.LBC_DATE) and
+                                                    ((  DECODE(fup.appl_period_type,'D',pr.valid_from_date+fup.appl_period_length,'M',ADD_MONTHS(pr.valid_from_date,fup.appl_period_length)) &lt;= SYSDATE)) OR (fup.appl_period_length  is null))  or
+                                               ((PR.VALID_FROM_DATE &lt;= SYSDATE) and
+                                                    ((  DECODE(fup.appl_period_type,'D',pr.valid_from_date+fup.appl_period_length,'M',ADD_MONTHS(pr.valid_from_date,fup.appl_period_length)) &gt;= SYSDATE)) OR (fup.appl_period_length  is null))"
+                                value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+                    <!-- (4) used when only an end date is provided-->
+                     <Node name="END_DATE_RESTRICTED">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="((PR.VALID_FROM_DATE &lt;= CA3.LBC_DATE) and
+                                                    ((  DECODE(fup.appl_period_type,'D',pr.valid_from_date+fup.appl_period_length,'M',ADD_MONTHS(pr.valid_from_date,fup.appl_period_length)) &gt;= CA3.LBC_DATE)) OR (fup.appl_period_length  is null)) or
+                                               ((PR.VALID_FROM_DATE &gt;= CA3.LBC_DATE) and
+                                                    ((  DECODE(fup.appl_period_type,'D',pr.valid_from_date+fup.appl_period_length,'M',ADD_MONTHS(pr.valid_from_date,fup.appl_period_length)) &lt;= #END_DATE)) OR (fup.appl_period_length  is null))    or
+                                               ((PR.VALID_FROM_DATE &lt;= #END_DATE) and
+                                                    ((  DECODE(fup.appl_period_type,'D',pr.valid_from_date+fup.appl_period_length,'M',ADD_MONTHS(pr.valid_from_date,fup.appl_period_length)) &gt;= #END_DATE)) OR (fup.appl_period_length  is null))"
+                                value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+
+                    <!-- ================================================================================================================= -->
+                    <!-- Filter out subquery; filters out service assignments  for which a deactivation request (before time of            -->
+                    <!-- the provided input search date) has been found                                                                    -->
+                    <!-- Depending on if the input start date is provided, one of the following 2 clauses is used                          -->
+                    <!-- ================================================================================================================= -->
+                    <!-- (1) start_date is provided -->
+                    <Node name="ALREADY_DEACTIVATED_FILTER_DATE_RESTRICTED">
+                      <Node name="FromClauses">
+                            <KeyValue key="(SELECT DISTINCT #CUSTOMER_ID AS IN_CS_ID,
+                                        PR.HISTNO,
+                                        PR.PROFILE_ID, PR.CO_ID, PR.SNCODE, PR.STATUS,
+                                        CA3.CUSTCODE AS IN_CUSTCODE,
+                                        CA.CUSTOMER_ID,
+                                        CA.CUSTCODE,
+                                        FUP.FU_PACK_ID,
+                                        FUP.SHORT_NAME,
+                                        FUP.LONG_NAME,
+                                        FUP.ASSIGNMENT_LEVEL,
+                                        FUP.APPL_METHOD
+                                     FROM CUSTOMER_ALL CA,
+                                           CONTRACT_ALL CO,
+                                           PROFILE_SERVICE PS,
+                                           PARAMETER_VALUE PV,
+                                           PR_SERV_STATUS_HIST PR,
+                                           FU_PACK FUP,
+                                           CUSTOMER_ALL CA3
+                                     WHERE
+                                            (PR.STATUS = 'D') AND
+                                            (CA3.CUSTOMER_ID = #CUSTOMER_ID)
+                                           AND (PR.SNCODE = PS.SNCODE)
+                                           AND   (PR.VALID_FROM_DATE &lt;=  #START_DATE)
+                                           AND (CA.CUSTOMER_ID IN (SELECT CUSTOMER_ID FROM CUSTOMER_ALL  START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID_HIGH = CUSTOMER_ID
+                                           UNION
+                                           SELECT CUSTOMER_ID
+                                                            FROM CUSTOMER_ALL CA2 START WITH CA2.CUSTOMER_ID = #CUSTOMER_ID CONNECT BY
+                                                            PRIOR CA2.CUSTOMER_ID = CA2.CUSTOMER_ID_HIGH AND #BILLCYCLE_RESTRICTION_IND = 'true'))
+                                           AND (FUP.ASSIGNMENT_LEVEL IN ('C', 'P','L'))
+                                           AND (PV.PRM_VALUE_NUMBER = FUP.FU_PACK_ID)
+                                           AND (CO.CUSTOMER_ID = CA.CUSTOMER_ID)
+                                           AND (PR.CO_ID = CO.CO_ID)
+                                           AND (PS.PRM_VALUE_ID = PV.PRM_VALUE_ID)
+                                           AND (FUP.APPL_METHOD IN ('B', 'M', 'R'))
+                                           AND (PS.CO_ID = CO.CO_ID)
+                                           AND (PR.PROFILE_ID = PS.PROFILE_ID)
+                                           AND PR.HISTNO=(select max(PR2.histno) from PR_SERV_STATUS_HIST  PR2 where PR2.CO_ID=CO.CO_ID and PR2.PROFILE_ID=PS.PROFILE_ID and PR2.SNCODE=PS.SNCODE) ) deact_serv_ass_before_search"
+                            value=""/>
+                      </Node>
+                      <KeyValue key="Operator" value="NOOP"/>
+                    </Node>
+
+                    <!-- (2) no start_date is provided -->
+                    <Node name="ALREADY_DEACTIVATED_FILTER_NO_DATE_RESTRICTED">
+                      <Node name="FromClauses">
+                            <KeyValue key="(SELECT DISTINCT #CUSTOMER_ID AS IN_CS_ID,
+                                        PR.HISTNO,
+                                        PR.PROFILE_ID, PR.CO_ID, PR.SNCODE, PR.STATUS,
+                                        CA3.CUSTCODE AS IN_CUSTCODE,
+                                        CA.CUSTOMER_ID,
+                                        CA.CUSTCODE,
+                                        FUP.FU_PACK_ID,
+                                        FUP.SHORT_NAME,
+                                        FUP.LONG_NAME,
+                                        FUP.ASSIGNMENT_LEVEL,
+                                        FUP.APPL_METHOD
+                                     FROM CUSTOMER_ALL CA,
+                                           CONTRACT_ALL CO,
+                                           PROFILE_SERVICE PS,
+                                           PARAMETER_VALUE PV,
+                                           PR_SERV_STATUS_HIST PR,
+                                           FU_PACK FUP,
+                                           CUSTOMER_ALL CA3
+                                     WHERE
+                                            (PR.STATUS = 'D') AND
+                                            (CA3.CUSTOMER_ID = #CUSTOMER_ID)
+                                           AND (PR.SNCODE = PS.SNCODE)
+                                           AND   (PR.VALID_FROM_DATE &lt;=  CA3.LBC_DATE)
+                                           AND (CA.CUSTOMER_ID IN (SELECT CUSTOMER_ID FROM CUSTOMER_ALL  START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID_HIGH = CUSTOMER_ID
+                                           UNION
+                                           SELECT CUSTOMER_ID FROM CUSTOMER_ALL START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID = CUSTOMER_ID_HIGH AND #BILLCYCLE_RESTRICTION_IND = 'true'))
+                                           AND (FUP.ASSIGNMENT_LEVEL IN ('C', 'P','L'))
+                                           AND (PV.PRM_VALUE_NUMBER = FUP.FU_PACK_ID)
+                                           AND (CO.CUSTOMER_ID = CA.CUSTOMER_ID)
+                                           AND (PR.CO_ID = CO.CO_ID)
+                                           AND (PS.PRM_VALUE_ID = PV.PRM_VALUE_ID)
+                                           AND (FUP.APPL_METHOD IN ('B', 'M', 'R'))
+                                           AND (PS.CO_ID = CO.CO_ID)
+                                           AND (PR.PROFILE_ID = PS.PROFILE_ID)
+                                           AND PR.HISTNO=(select max(PR2.histno) from PR_SERV_STATUS_HIST  PR2 where PR2.CO_ID=CO.CO_ID and PR2.PROFILE_ID=PS.PROFILE_ID and PR2.SNCODE=PS.SNCODE) ) deact_serv_ass_before_search"
+                            value=""/>
+                      </Node>
+                      <KeyValue key="Operator" value="NOOP"/>
+                    </Node>
+
+                    <!-- ================================================================================================================= -->
+                    <!-- Filter in subquery; processes the                                                                                             -->
+                    <!-- Depending on if the input start date is provided, one of the following 4 clauses is used                          -->
+                    <!-- ================================================================================================================= -->
+                    <!-- (1) start_date and end_date is provided -->
+                    <Node name="NO_FUP_CHANGE_DUPLICATES_START_END_DATE_RESTRICTED">
+                      <Node name="FromClauses">
+                                <KeyValue key="((SELECT PV.CO_ID, PV.PRM_VALUE_ID, PV.PRM_VALUE_NUMBER, PV.PROFILE_ID, PV.PRM_VALID_FROM, PV.PRM_DESCRIPTION, PV.SNCODE
+                                                FROM CUSTOMER_ALL CA,
+                                                   CONTRACT_ALL CO,
+                                                   PROFILE_SERVICE PS,
+                                                   PARAMETER_VALUE PV
+                                                WHERE ca.customer_id = co.customer_id
+                                                and ( (    #START_DATE &lt;= PV.PRM_VALID_FROM)   AND  (PV.PRM_VALID_FROM &lt;=   #END_DATE))
+                                                AND (ps.PRM_VALUE_ID = pv.PRM_VALUE_ID)
+                                                AND (CA.CUSTOMER_ID IN (SELECT CUSTOMER_ID FROM CUSTOMER_ALL  START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID_HIGH = CUSTOMER_ID UNION SELECT CUSTOMER_ID FROM CUSTOMER_ALL START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID = CUSTOMER_ID_HIGH AND #BILLCYCLE_RESTRICTION_IND = 'true'))
+                                                AND (PV.CO_ID = CO.CO_ID)
+                                                AND (PV.PARAMETER_ID=40))
+                                                UNION
+                                                (SELECT PV.CO_ID, PV.PRM_VALUE_ID, PV.PRM_VALUE_NUMBER, PV.PROFILE_ID, PV.PRM_VALID_FROM, PV.PRM_DESCRIPTION, PV.SNCODE
+                                                        FROM CUSTOMER_ALL CA,
+                                                           CONTRACT_ALL CO,
+                                                           PROFILE_SERVICE PS,
+                                                           PARAMETER_VALUE PV,
+                                                            (SELECT MAX (PV.PRM_SEQNO) AS PRM_SEQNO, PV.PRM_VALUE_ID
+                                                                FROM CUSTOMER_ALL CA,
+                                                                     CONTRACT_ALL CO,
+                                                                     PROFILE_SERVICE PS,
+                                                                     PARAMETER_VALUE PV
+                                                               WHERE     ca.customer_id = co.customer_id
+                                                                     AND ( (PV.PRM_VALID_FROM &lt;= #START_DATE))
+                                                                     AND ps.PRM_VALUE_ID = pv.PRM_VALUE_ID
+                                                                     AND (CA.CUSTOMER_ID IN
+                                                                             (    SELECT CUSTOMER_ID
+                                                                                    FROM CUSTOMER_ALL
+                                                                              START WITH CUSTOMER_ID = #CUSTOMER_ID
+                                                                              CONNECT BY PRIOR CUSTOMER_ID_HIGH = CUSTOMER_ID
+                                                                               UNION
+                                                                               SELECT CUSTOMER_ID
+                                                                               FROM CUSTOMER_ALL
+                                                                               START WITH CUSTOMER_ID = #CUSTOMER_ID
+                                                                               CONNECT BY PRIOR CUSTOMER_ID = CUSTOMER_ID_HIGH AND #BILLCYCLE_RESTRICTION_IND = 'true'))
+                                                                     AND (PV.CO_ID = CO.CO_ID)
+                                                                     AND (PV.PARAMETER_ID = 40)
+                                                            GROUP BY pv.prm_value_id) fups_replaced_before_search
+                                                WHERE ca.customer_id = co.customer_id
+                                                and ((PV.PRM_SEQNO=fups_replaced_before_search.PRM_SEQNO) AND(PV.PRM_VALUE_ID=fups_replaced_before_search.PRM_VALUE_ID))
+                                                AND (ps.PRM_VALUE_ID = pv.PRM_VALUE_ID)
+                                                AND (CA.CUSTOMER_ID IN (SELECT CUSTOMER_ID FROM CUSTOMER_ALL  START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID_HIGH = CUSTOMER_ID UNION SELECT CUSTOMER_ID FROM CUSTOMER_ALL START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID = CUSTOMER_ID_HIGH AND #BILLCYCLE_RESTRICTION_IND = 'true'))
+                                                AND (PV.CO_ID = CO.CO_ID)
+                                                AND (PV.PARAMETER_ID=40))) fups_replacements"
+                            value=""/>
+                      </Node>
+                      <KeyValue key="Operator" value="NOOP"/>
+                    </Node>
+
+
+                    <!-- (2) no date is provided -->
+                    <Node name="NO_FUP_CHANGE_DUPLICATES_NO_DATE_RESTRICTED">
+                      <Node name="FromClauses">
+                                <KeyValue key="((SELECT PV.CO_ID, PV.PRM_VALUE_ID, PV.PRM_VALUE_NUMBER, PV.PROFILE_ID, PV.PRM_VALID_FROM, PV.PRM_DESCRIPTION, PV.SNCODE
+                                                FROM CUSTOMER_ALL CA,
+                                                   CONTRACT_ALL CO,
+                                                   PROFILE_SERVICE PS,
+                                                   PARAMETER_VALUE PV
+                                                WHERE ca.customer_id = co.customer_id
+                                                and ( (    CA.LBC_DATE &lt;= PV.PRM_VALID_FROM OR CA.LBC_DATE IS NULL)   AND  (PV.PRM_VALID_FROM &lt;=  SYSDATE))
+                                                AND (ps.PRM_VALUE_ID = pv.PRM_VALUE_ID)
+                                                AND (CA.CUSTOMER_ID IN (SELECT CUSTOMER_ID FROM CUSTOMER_ALL  START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID_HIGH = CUSTOMER_ID UNION SELECT CUSTOMER_ID FROM CUSTOMER_ALL START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID = CUSTOMER_ID_HIGH AND #BILLCYCLE_RESTRICTION_IND = 'true'))
+                                                AND (PV.CO_ID = CO.CO_ID)
+                                                AND (PV.PARAMETER_ID=40))
+                                                UNION
+                                                (SELECT PV.CO_ID, PV.PRM_VALUE_ID, PV.PRM_VALUE_NUMBER, PV.PROFILE_ID, PV.PRM_VALID_FROM, PV.PRM_DESCRIPTION, PV.SNCODE
+                                                        FROM CUSTOMER_ALL CA,
+                                                           CONTRACT_ALL CO,
+                                                           PROFILE_SERVICE PS,
+                                                           PARAMETER_VALUE PV,
+                                                            (SELECT MAX (PV.PRM_SEQNO) AS PRM_SEQNO, PV.PRM_VALUE_ID
+                                                                FROM CUSTOMER_ALL CA,
+                                                                     CONTRACT_ALL CO,
+                                                                     PROFILE_SERVICE PS,
+                                                                     PARAMETER_VALUE PV
+                                                               WHERE     ca.customer_id = co.customer_id
+                                                                     AND ( (PV.PRM_VALID_FROM &lt;= CA.LBC_DATE))
+                                                                     AND ps.PRM_VALUE_ID = pv.PRM_VALUE_ID
+                                                                     AND (CA.CUSTOMER_ID IN
+                                                                             (    SELECT CUSTOMER_ID
+                                                                                    FROM CUSTOMER_ALL
+                                                                              START WITH CUSTOMER_ID = #CUSTOMER_ID
+                                                                              CONNECT BY PRIOR CUSTOMER_ID_HIGH = CUSTOMER_ID
+                                                                               UNION
+                                                                               SELECT CUSTOMER_ID
+                                                                               FROM CUSTOMER_ALL
+                                                                               START WITH CUSTOMER_ID = #CUSTOMER_ID
+                                                                               CONNECT BY PRIOR CUSTOMER_ID = CUSTOMER_ID_HIGH AND #BILLCYCLE_RESTRICTION_IND = 'true'))
+                                                                     AND (PV.CO_ID = CO.CO_ID)
+                                                                     AND (PV.PARAMETER_ID = 40)
+                                                            GROUP BY pv.prm_value_id) fups_replaced_before_search
+                                                WHERE ca.customer_id = co.customer_id
+                                                and ((PV.PRM_SEQNO=fups_replaced_before_search.PRM_SEQNO) AND(PV.PRM_VALUE_ID=fups_replaced_before_search.PRM_VALUE_ID))
+                                                AND (ps.PRM_VALUE_ID = pv.PRM_VALUE_ID)
+                                                AND (CA.CUSTOMER_ID IN (SELECT CUSTOMER_ID FROM CUSTOMER_ALL  START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID_HIGH = CUSTOMER_ID UNION SELECT CUSTOMER_ID FROM CUSTOMER_ALL START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID = CUSTOMER_ID_HIGH AND #BILLCYCLE_RESTRICTION_IND = 'true'))
+                                                AND (PV.CO_ID = CO.CO_ID)
+                                                AND (PV.PARAMETER_ID=40))) fups_replacements"
+                            value=""/>
+                      </Node>
+                      <KeyValue key="Operator" value="NOOP"/>
+                    </Node>
+
+
+                    <!-- (3) only start_date is provided -->
+                    <Node name="NO_FUP_CHANGE_DUPLICATES_START_DATE_RESTRICTED">
+                      <Node name="FromClauses">
+                                <KeyValue key="((SELECT PV.CO_ID, PV.PRM_VALUE_ID, PV.PRM_VALUE_NUMBER, PV.PROFILE_ID, PV.PRM_VALID_FROM, PV.PRM_DESCRIPTION, PV.SNCODE
+                                                FROM CUSTOMER_ALL CA,
+                                                   CONTRACT_ALL CO,
+                                                   PROFILE_SERVICE PS,
+                                                   PARAMETER_VALUE PV
+                                                WHERE ca.customer_id = co.customer_id
+                                                and ( (    #START_DATE &lt;= PV.PRM_VALID_FROM)   AND  (PV.PRM_VALID_FROM &lt;=  SYSDATE))
+                                                AND (ps.PRM_VALUE_ID = pv.PRM_VALUE_ID)
+                                                AND (CA.CUSTOMER_ID IN (SELECT CUSTOMER_ID FROM CUSTOMER_ALL  START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID_HIGH = CUSTOMER_ID UNION SELECT CUSTOMER_ID FROM CUSTOMER_ALL START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID = CUSTOMER_ID_HIGH AND #BILLCYCLE_RESTRICTION_IND = 'true'))
+                                                AND (PV.CO_ID = CO.CO_ID)
+                                                AND (PV.PARAMETER_ID=40))
+                                                UNION
+                                                (SELECT PV.CO_ID, PV.PRM_VALUE_ID, PV.PRM_VALUE_NUMBER, PV.PROFILE_ID, PV.PRM_VALID_FROM, PV.PRM_DESCRIPTION, PV.SNCODE
+                                                        FROM CUSTOMER_ALL CA,
+                                                           CONTRACT_ALL CO,
+                                                           PROFILE_SERVICE PS,
+                                                           PARAMETER_VALUE PV,
+                                                            (SELECT MAX (PV.PRM_SEQNO) AS PRM_SEQNO, PV.PRM_VALUE_ID
+                                                                FROM CUSTOMER_ALL CA,
+                                                                     CONTRACT_ALL CO,
+                                                                     PROFILE_SERVICE PS,
+                                                                     PARAMETER_VALUE PV
+                                                               WHERE     ca.customer_id = co.customer_id
+                                                                     AND ( (PV.PRM_VALID_FROM &lt;= #START_DATE))
+                                                                     AND ps.PRM_VALUE_ID = pv.PRM_VALUE_ID
+                                                                     AND (CA.CUSTOMER_ID IN
+                                                                             (    SELECT CUSTOMER_ID
+                                                                                    FROM CUSTOMER_ALL
+                                                                              START WITH CUSTOMER_ID = #CUSTOMER_ID
+                                                                              CONNECT BY PRIOR CUSTOMER_ID_HIGH = CUSTOMER_ID
+                                                                               UNION
+                                                                               SELECT CUSTOMER_ID
+                                                                               FROM CUSTOMER_ALL
+                                                                               START WITH CUSTOMER_ID = #CUSTOMER_ID
+                                                                               CONNECT BY PRIOR CUSTOMER_ID = CUSTOMER_ID_HIGH AND #BILLCYCLE_RESTRICTION_IND = 'true'))
+                                                                     AND (PV.CO_ID = CO.CO_ID)
+                                                                     AND (PV.PARAMETER_ID = 40)
+                                                            GROUP BY pv.prm_value_id) fups_replaced_before_search
+                                                WHERE ca.customer_id = co.customer_id
+                                                and ((PV.PRM_SEQNO=fups_replaced_before_search.PRM_SEQNO) AND(PV.PRM_VALUE_ID=fups_replaced_before_search.PRM_VALUE_ID))
+                                                AND (ps.PRM_VALUE_ID = pv.PRM_VALUE_ID)
+                                                AND (CA.CUSTOMER_ID IN (SELECT CUSTOMER_ID FROM CUSTOMER_ALL  START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID_HIGH = CUSTOMER_ID UNION SELECT CUSTOMER_ID FROM CUSTOMER_ALL START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID = CUSTOMER_ID_HIGH AND #BILLCYCLE_RESTRICTION_IND = 'true'))
+                                                AND (PV.CO_ID = CO.CO_ID)
+                                                AND (PV.PARAMETER_ID=40))) fups_replacements"
+                            value=""/>
+                      </Node>
+                      <KeyValue key="Operator" value="NOOP"/>
+                    </Node>
+
+
+
+                    <!-- (4) only end_date is provided -->
+                    <Node name="NO_FUP_CHANGE_DUPLICATES_END_DATE_RESTRICTED">
+                      <Node name="FromClauses">
+                                <KeyValue key="((SELECT PV.CO_ID, PV.PRM_VALUE_ID, PV.PRM_VALUE_NUMBER, PV.PROFILE_ID, PV.PRM_VALID_FROM, PV.PRM_DESCRIPTION, PV.SNCODE
+                                                FROM CUSTOMER_ALL CA,
+                                                   CONTRACT_ALL CO,
+                                                   PROFILE_SERVICE PS,
+                                                   PARAMETER_VALUE PV
+                                                WHERE ca.customer_id = co.customer_id
+                                                and ( (CA.LBC_DATE &lt;= PV.PRM_VALID_FROM OR CA.LBC_DATE IS NULL)   AND  (PV.PRM_VALID_FROM &lt;=  #END_DATE))
+                                                AND (ps.PRM_VALUE_ID = pv.PRM_VALUE_ID)
+                                                AND (CA.CUSTOMER_ID IN (SELECT CUSTOMER_ID FROM CUSTOMER_ALL  START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID_HIGH = CUSTOMER_ID UNION SELECT CUSTOMER_ID FROM CUSTOMER_ALL START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID = CUSTOMER_ID_HIGH AND #BILLCYCLE_RESTRICTION_IND = 'true'))
+                                                AND (PV.CO_ID = CO.CO_ID)
+                                                AND (PV.PARAMETER_ID=40))
+                                                UNION
+                                                (SELECT PV.CO_ID, PV.PRM_VALUE_ID, PV.PRM_VALUE_NUMBER, PV.PROFILE_ID, PV.PRM_VALID_FROM, PV.PRM_DESCRIPTION, PV.SNCODE
+                                                        FROM CUSTOMER_ALL CA,
+                                                           CONTRACT_ALL CO,
+                                                           PROFILE_SERVICE PS,
+                                                           PARAMETER_VALUE PV,
+                                                            (SELECT MAX (PV.PRM_SEQNO) AS PRM_SEQNO, PV.PRM_VALUE_ID
+                                                                FROM CUSTOMER_ALL CA,
+                                                                     CONTRACT_ALL CO,
+                                                                     PROFILE_SERVICE PS,
+                                                                     PARAMETER_VALUE PV
+                                                               WHERE     ca.customer_id = co.customer_id
+                                                                     AND ( (PV.PRM_VALID_FROM &lt;= CA.LBC_DATE))
+                                                                     AND ps.PRM_VALUE_ID = pv.PRM_VALUE_ID
+                                                                     AND (CA.CUSTOMER_ID IN
+                                                                             (    SELECT CUSTOMER_ID
+                                                                                    FROM CUSTOMER_ALL
+                                                                              START WITH CUSTOMER_ID = #CUSTOMER_ID
+                                                                              CONNECT BY PRIOR CUSTOMER_ID_HIGH = CUSTOMER_ID
+                                                                               UNION
+                                                                               SELECT CUSTOMER_ID
+                                                                               FROM CUSTOMER_ALL
+                                                                               START WITH CUSTOMER_ID = #CUSTOMER_ID
+                                                                               CONNECT BY PRIOR CUSTOMER_ID = CUSTOMER_ID_HIGH AND #BILLCYCLE_RESTRICTION_IND = 'true'))
+                                                                     AND (PV.CO_ID = CO.CO_ID)
+                                                                     AND (PV.PARAMETER_ID = 40)
+                                                            GROUP BY pv.prm_value_id) fups_replaced_before_search
+                                                WHERE ca.customer_id = co.customer_id
+                                                and ((PV.PRM_SEQNO=fups_replaced_before_search.PRM_SEQNO) AND(PV.PRM_VALUE_ID=fups_replaced_before_search.PRM_VALUE_ID))
+                                                AND (ps.PRM_VALUE_ID = pv.PRM_VALUE_ID)
+                                                AND (CA.CUSTOMER_ID IN (SELECT CUSTOMER_ID FROM CUSTOMER_ALL  START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID_HIGH = CUSTOMER_ID UNION SELECT CUSTOMER_ID FROM CUSTOMER_ALL START WITH CUSTOMER_ID = #CUSTOMER_ID CONNECT BY PRIOR CUSTOMER_ID = CUSTOMER_ID_HIGH AND #BILLCYCLE_RESTRICTION_IND = 'true'))
+                                                AND (PV.CO_ID = CO.CO_ID)
+                                                AND (PV.PARAMETER_ID=40))) fups_replacements"
+                            value=""/>
+                      </Node>
+                      <KeyValue key="Operator" value="NOOP"/>
+                    </Node>
+
+                </Node><!-- Attributes -->
+
+            </Node>
+
+        </Node>
+    </ComponentRegistry>
+

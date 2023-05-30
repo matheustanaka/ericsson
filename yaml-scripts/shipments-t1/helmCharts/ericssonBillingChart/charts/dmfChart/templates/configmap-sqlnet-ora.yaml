@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-dmfjob-sqlnet.ora
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-1020"
+    "helm.sh/hook-delete-policy": before-hook-creation
+data:
+  sqlnet.ora: |-
+{{ tpl .Values.sqlnet.ora . | indent 4 }}

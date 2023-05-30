@@ -1,0 +1,148 @@
+# Default values for fihChart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+imageCredentials:
+  eric-bss-eb-fih:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  eric-bss-eb-rdh-udmap:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  init-wait-for-data:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  init-wait-for-xrefs:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+
+images:
+  eric-bss-eb-fih:
+    name: "eric-bss-eb-fih"
+    tag: "22.15.12"
+  eric-bss-eb-rdh-udmap:
+    name: "eric-bss-eb-rdh"
+    tag: "22.15.12"
+  init-wait-for-data:
+    name: "eric-bss-eb-wait-for-condition"
+    tag: "22.15.12"
+  init-wait-for-xrefs:
+    name: "eric-bss-eb-wait-for-condition"
+    tag: "22.15.12"
+
+# Customizable start parameters for FIH
+fihDeployments:
+  - name: "all"
+    replicaCount: 1
+    startParameters:
+    # To generate trace files, it is necessary to set the trace file names in the variables below.
+    # These files will be stored in the log PVC.
+    tracingAndLogging:
+      bscsErrorTimestamp: ""
+      # dtaTracefile: "dta.fih-all.trc"
+      dtaTracefile: ""
+      # dxlTracefile: "dxl.fih-all.trc"
+      dxlTracefile: ""
+      # udrTracefile: "udr.fih-all.trc"
+      udrTracefile: ""
+  - name: "rap"
+    replicaCount: 1
+    startParameters: "-p"
+    tracingAndLogging:
+      bscsErrorTimestamp: ""
+      # dtaTracefile: "dta.fih-rap.trc"
+      dtaTracefile: ""
+      # dxlTracefile: "dxl.fih-rap.trc"
+      dxlTracefile: ""
+      # udrTracefile: "udr.fih-rap.trc"
+      udrTracefile: ""
+
+fihIni:
+  logFilterLevel: 0
+
+# Grace period for pod termination, which is used to shut down FIH gracefully.
+# By default, k8s allows a graceful application shutdown within 30s
+terminationGracePeriodSeconds: 300
+
+#DATA_RETRY_TIME, DATA_RETRY_TIME_MAX
+#By default, there is no definition for a time interval in which applications try to reconnect to DaTA.
+#If you set the environment variable, the value represents the time interval an application waits
+#until it tries to reconnect to DaTA.
+#Subsequent connection retries are performed under the following conditions:
+# - A double time interval has elapsed and has exceeded a maximum of 60 seconds.
+# - A double time interval has elapsed and the value specified by DATA_RETRY_TIME_MAX has been exceeded.
+dataRetry:
+  dataRetryTime:
+  dataRetryTimeMax:
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 4Gi
+  requests:
+    cpu: 100m
+    memory: 512Mi
+
+rdhUdmap:
+  traceLevel: 0
+  useSlave: "-useSlave 1"
+  dataTimeout: "-w -1"
+  optionalParameters: ""
+  envVariables:
+    shmMaxEnvironments: "20"
+    shmMaxSectors: "10"
+    shmMaxSegments: "1000"
+    shmMinSegmentSize: "65536"
+  resources:
+    limits:
+      cpu: 1
+      memory: 5Gi
+    requests:
+      cpu: 100m
+      memory: 64Mi
+  tracingAndLogging:
+    # dtaTracefile: "dta.rdh-udmap.trc"
+    dtaTracefile: ""
+    # dxlTracefile: "dxl.rdh-udmap.trc"
+    dxlTracefile: ""
+    # udrTracefile: "udr.rdh-udmap.trc"
+    udrTracefile: ""
+
+#A local nodeSelector definition has priority over the global definition above.
+#nodeSelector: {}
+
+# A local affinity definition has priority over the global definition.
+# affinity: {}
+# Example:
+# affinity:
+#   nodeAffinity:
+#     preferredDuringSchedulingIgnoredDuringExecution:
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1a
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1b
+
+tnsnames:
+  bscsdb: '{{ tpl .Values.global.tnsnames.bscsdb . }}'
+  rtxdb: '{{ tpl .Values.global.tnsnames.rtxdb . }}'
+
+sqlnet:
+  ora: '{{ tpl .Values.global.sqlnet.ora . }}'

@@ -1,0 +1,127 @@
+# A deployment is launched for each of the items in the tuple below.
+# Every occurance of namingservice variable is replaced during each range loop by the current item.
+{{- range $namingservice := (split " " (include "eric-bss-eb-ns.namingservicelist" .)) }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $namingservice }}
+  labels:
+    app: {{ $namingservice }}
+    chart: {{ template "eric-bss-eb-ns.chart" $ }}
+    {{- include "eric-bss-eb-ns.kubernetesIoInfo" $ | nindent 4 }}
+    heritage: {{ $.Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-ns.productInfo" $ | indent 4 }}
+spec:
+  {{ if gt (int $.Values.replicaCount) 1 }}
+  replicas: 1
+  {{ else }}
+  replicas: {{ $.Values.replicaCount | default 1}}
+  {{ end }}
+  selector:
+    matchLabels:
+      app: {{ $namingservice }}
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $namingservice }}
+        appGroup: naming-service
+        eric-bss-eb-network-soi-ns: 'true'
+        {{- include "eric-bss-eb-ns.kubernetesIoInfo" $ | nindent 8 }}
+      annotations:
+      {{- include "eric-bss-eb-ns.productInfo" $ | indent 8 }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: appGroup
+                  operator: In
+                  values:
+                  - naming-service
+              topologyKey: kubernetes.io/hostname
+      securityContext:
+        {{- include "eric-bss-eb-ns.checkPodUserLoginData" $ | nindent 8 }}
+      {{- if $.Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ $.Chart.Name }}-sa
+      {{- end }}
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      containers:
+        - name: {{ $namingservice }}
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "namingservice" }}
+          image: "{{ template "eric-bss-eb-ns.registryUrl" $templDict }}/{{ template "eric-bss-eb-ns.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-ns.pullPolicy" $templDict }}
+          resources:
+            limits:
+              memory: "{{ $.Values.resources.limits.memory}}"
+              cpu: "{{ $.Values.resources.limits.cpu}}"
+            requests:
+              memory: "{{ $.Values.resources.requests.memory}}"
+              cpu: "{{ $.Values.resources.requests.cpu}}"
+          command: ["/bin/bash"]
+          args: ["-c","sed s/{HOSTNAME}/$HOSTNAME/g /ericssonbilling/resource/jacorb.properties >> /ericssonbilling/resource/ns/jacorb.properties && \
+                       mkdir -p /log/ns -m 750 && \
+                       ${JAVA_HOME}/bin/java \
+                       -cp ${BSCS_RESOURCE}/ns:\
+                        ${BSCS_3PP_JAR}/jacorb-3.9.jar:\
+                        ${BSCS_3PP_JAR}/jacorb-omgapi-3.9.jar:\
+                        ${BSCS_3PP_JAR}/jboss-rmi-api_1.0_spec-1.0.6.Final.jar:\
+                        ${BSCS_3PP_JAR}/slf4j-api-1.7.30.jar:\
+                        ${BSCS_3PP_JAR}/slf4j-jdk14-1.7.30.jar \
+                       -Djava.io.tmpdir=/log/ns \
+                       -Dorg.omg.CORBA.ORBClass=org.jacorb.orb.ORB \
+                       -DOAPort=${SOISRV_PORT} \
+                       -Dorg.omg.CORBA.ORBSingletonClass=org.jacorb.orb.ORBSingleton \
+                       -Djacorb.ior_proxy_host={{ $namingservice }} \
+                       -Djacorb.ior_proxy_port={{ int $.Values.containerPorts.nsContainerPort }} \
+                       org.jacorb.naming.NameServer"]
+          env:
+          - name: SOISRV_PORT
+            value: "{{ $.Values.containerPorts.nsContainerPort }}"
+          - name: TZ
+            value: "{{ $.Values.global.timezone }}"
+          ports:
+            - name: {{ $namingservice }}
+              containerPort: {{ int $.Values.containerPorts.nsContainerPort }}
+          volumeMounts:
+          - name: naming-service-volume
+            mountPath: "/workdir/NS_Share"
+          - name: init-jacorb-properties-volume
+            mountPath: /ericssonbilling/resource
+          - name: ns-jacorb-properties-volume
+            mountPath: /ericssonbilling/resource/ns
+      {{- if index $.Values.nodeSelector (printf "%s" (split "-" $namingservice)._1) }}
+      nodeSelector: {{ toYaml (index $.Values.nodeSelector (printf "%s" (split "-" $namingservice)._1)) | nindent 8 }}
+      {{- else if $.Values.global.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if $.Values.affinity }}
+      affinity: {{ toYaml $.Values.affinity | nindent 8 }}
+      {{- else if $.Values.global.affinity }}
+      affinity: {{ toYaml $.Values.global.affinity | nindent 8 }}
+      {{- end }}
+      # Teste Matheus Tanaka
+      tolerations:
+      - key: "nodepool"
+          operator: "Equal"
+          value: "sfppdev"
+          effect: "NoSchedule"
+      volumes:
+      - name: naming-service-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-ns-share
+      - name: init-jacorb-properties-volume
+        configMap:
+          name: eric-bss-eb-ns-jacorb.properties
+      - name: ns-jacorb-properties-volume
+        emptyDir: {}
+---
+{{- end }}

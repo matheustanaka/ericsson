@@ -1,0 +1,126 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-soi-fmi
+data:
+  FMI_4.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE SOI PUBLIC "SOIDefinition.dtd" "SOIDefinition.dtd">
+    <SOI soiName="CMI" soiVersion="6">
+
+     <COMMAND cmdVersion="CMD_1" cmdName="ASSOCIATED_FINANCIAL_TRANSACTIONS.READ"/>
+     <COMMAND cmdVersion="CMD_1" cmdName="BATCH_NUMBER.CREATE"/>
+     <COMMAND cmdVersion="CMD_1" cmdName="CASH_DISCOUNT.CALCULATE"/>
+     <COMMAND cmdVersion="CMD_1" cmdName="COMPLAINT_REASON.READ"/>
+     <COMMAND cmdVersion="CMD_1" cmdName="CUSTOMER_PAYMENT_STATUS.READ"/>
+     <COMMAND cmdVersion="CMD_2" cmdName="FINANCIAL_DOCUMENT.READ"/>
+     <COMMAND cmdVersion="CMD_3" cmdName="FINANCIAL_DOCUMENT.SEARCH"  webService="yes" />
+     <COMMAND cmdVersion="CMD_2" cmdName="FINANCIAL_DOCUMENT.WRITE"/>
+     <COMMAND cmdVersion="CMD_1" cmdName="FINANCIAL_DOCUMENT.DELETE"/>
+     <COMMAND cmdVersion="CMD_2" cmdName="FINANCIAL_DOCUMENT_DETAIL.READ"/>
+     <COMMAND cmdVersion="CMD_1" cmdName="FINANCIAL_DOCUMENT_ITEM_DETAIL.READ"/>
+     <COMMAND cmdVersion="CMD_1" cmdName="FINANCIAL_DOCUMENT_SERVICES.SEARCH" webService="yes"/>
+     <COMMAND cmdVersion="CMD_2" cmdName="FINANCIAL_SETTING.READ"/>
+     <COMMAND cmdVersion="CMD_2" cmdName="FINANCIAL_TRANSACTION.READ" webService="yes"/>
+     <COMMAND cmdVersion="CMD_1" cmdName="FINANCIAL_TRANSACTION.SEARCH" webService="yes"/>
+     <COMMAND cmdVersion="CMD_2" cmdName="FINANCIAL_TRANSACTION.WRITE"  webService="yes"/>
+     <COMMAND cmdVersion="CMD_2" cmdName="FINANCIAL_TRANSACTION_DETAIL.READ"/>
+     <COMMAND cmdVersion="CMD_1" cmdName="FINANCIAL_TRANSACTION_TYPE.READ"/>
+     <COMMAND cmdVersion="CMD_2" cmdName="FINANCIAL_USE_CASE_TRANSACTION.READ"/>
+     <COMMAND cmdVersion="CMD_1" cmdName="HANDLING_REASONS.READ" />
+     <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_INSTRUCTION.READ" />
+     <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_INSTRUCTION.SEARCH" />
+     <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_INSTRUCTION.WRITE" />
+     <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_INSTRUCTION.DELETE" />
+     <COMMAND cmdVersion="CMD_1" cmdName="PROCESS_STATE.READ" />
+     <COMMAND cmdVersion="CMD_1" cmdName="TAX_CATEGORY.READ"/>
+     <COMMAND cmdVersion="CMD_1" cmdName="TAXATION.CALCULATE"/>
+
+     <COMMAND cmdVersion="CMD_1_0" cmdName="COLLECTIBLE_HISTORY.READ" webService="yes" />
+     <COMMAND cmdVersion="CMD_1_0" cmdName="COLLECTIBLE.DELETE" webService="yes" />
+     <COMMAND cmdVersion="CMD_1_0" cmdName="COLLECTIBLE.WRITE" webService="yes" />
+     <COMMAND cmdVersion="CMD_1_0" cmdName="DOCUMENT.CREATE" webService="yes" />
+     <COMMAND cmdVersion="CMD_1_0" cmdName="CUSTOMER_COLLECTIONIND.READ" webService="yes" />
+     <COMMAND cmdVersion="CMD_1_0" cmdName="BUSINESS_TRANSACTION.WRITE" webService="yes" />
+     <COMMAND cmdVersion="CMD_1_0" cmdName="BUSINESS_TRANSACTION.READ" webService="yes" />
+     <COMMAND cmdVersion="CMD_1_0" cmdName="BUSINESS_TRANSACTIONS.SEARCH" webService="yes" />
+     <COMMAND cmdVersion="CMD_1_0" cmdName="LETTER.CREATE" webService="yes" />
+     <COMMAND cmdVersion="CMD_1_0" cmdName="LEGEND_PAGE.CREATE" webService="yes" />
+     <COMMAND cmdVersion="CMD_1_0" cmdName="CUSTOMER_COLLECTIBLE.WRITE" webService="yes"/>
+     <COMMAND cmdVersion="CMD_1_0" cmdName="CUSTOMER_COLLECTIBLE.DELETE" webService="yes"/>
+     <COMMAND cmdVersion="CMD_1_0" cmdName="POSTINGPERIOD.READ" webService="yes"/>
+     <COMMAND cmdVersion="CMD_1_0" cmdName="CREDITSBYDEBIT.READ" webService="yes"/>
+     <COMMAND cmdVersion="CMD_1_0" cmdName="REFERENCED_TRANSACTION.SEARCH" webService="yes"/>
+     <COMMAND cmdVersion="CMD_1_0" cmdName="DEBITSBYCREDIT.READ" webService="yes"/>
+     <COMMAND cmdVersion="CMD_1_0" cmdName="REFERENCED_TRANSACTION.READ" webService="yes"/>
+
+    </SOI>
+
+  FMI_5.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE SOI PUBLIC "SOIDefinition.dtd" "SOIDefinition.dtd">
+    <SOI soiName="CMI" soiVersion="7">
+
+        <COMMAND cmdVersion="CMD_1" cmdName="ASSOCIATED_FINANCIAL_TRANSACTIONS.READ"/>
+        <COMMAND cmdVersion="CMD_1" cmdName="BATCH_NUMBER.CREATE"/>
+        <COMMAND cmdVersion="CMD_1" cmdName="CASH_DISCOUNT.CALCULATE"/>
+        <COMMAND cmdVersion="CMD_1" cmdName="COMPLAINT_REASON.READ"/>
+        <COMMAND cmdVersion="CMD_1" cmdName="CUSTOMER_PAYMENT_STATUS.READ"/>
+        <COMMAND cmdVersion="CMD_3" cmdName="FINANCIAL_DOCUMENT.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_4" cmdName="FINANCIAL_DOCUMENT.SEARCH" webService="yes"/>
+        <COMMAND cmdVersion="CMD_2" cmdName="FINANCIAL_DOCUMENT.WRITE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="FINANCIAL_DOCUMENT.DELETE"/>
+        <COMMAND cmdVersion="CMD_2" cmdName="FINANCIAL_DOCUMENT_DETAIL.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1" cmdName="FINANCIAL_DOCUMENT_ITEM_DETAIL.READ"/>
+        <COMMAND cmdVersion="CMD_1" cmdName="FINANCIAL_DOCUMENT_SERVICES.SEARCH" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1" cmdName="FINANCIAL_DOCUMENT_TRANSACTION.SEARCH" webService="yes"/>
+        <COMMAND cmdVersion="CMD_3" cmdName="FINANCIAL_SETTING.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_3" cmdName="FINANCIAL_TRANSACTION.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_2" cmdName="FINANCIAL_TRANSACTION.SEARCH" webService="yes"/>
+        <COMMAND cmdVersion="CMD_2" cmdName="FINANCIAL_TRANSACTION.WRITE" webService="yes"/>
+        <COMMAND cmdVersion="CMD_3" cmdName="FINANCIAL_TRANSACTION_DETAIL.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_2" cmdName="FINANCIAL_TRANSACTION_TYPE.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_2" cmdName="FINANCIAL_USE_CASE_TRANSACTION.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1" cmdName="HANDLING_REASONS.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_INSTRUCTION.READ" webService="yes" />
+        <COMMAND cmdVersion="CMD_2" cmdName="PAYMENT_INSTRUCTION.SEARCH" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_INSTRUCTION.WRITE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_INSTRUCTION.DELETE" />
+        <COMMAND cmdVersion="CMD_1" cmdName="PROCESS_STATE.READ" />
+        <COMMAND cmdVersion="CMD_1" cmdName="TAX_CATEGORY.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1" cmdName="TAXATION.CALCULATE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="COLLECTIBLE_HISTORY.READ" webService="yes" />
+        <COMMAND cmdVersion="CMD_1_0" cmdName="COLLECTIBLE.DELETE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1_0" cmdName="COLLECTIBLE.WRITE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1_0" cmdName="DOCUMENT.CREATE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1_0" cmdName="CUSTOMER_COLLECTIONIND.READ" webService="yes" />
+        <COMMAND cmdVersion="CMD_1_0" cmdName="BUSINESS_TRANSACTION.WRITE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1_0" cmdName="BUSINESS_TRANSACTION.READ" webService="yes" />
+        <COMMAND cmdVersion="CMD_1_0" cmdName="BUSINESS_TRANSACTIONS.SEARCH" webService="yes" />
+        <COMMAND cmdVersion="CMD_1_0" cmdName="LETTER.CREATE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1_0" cmdName="LEGEND_PAGE.CREATE" webService="yes" />
+
+        <COMMAND cmdVersion="CMD_1" cmdName="FINANCIAL_AGGREGATION_ATTRIBUTE.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1" cmdName="FINANCIAL_ALLOCATION.WRITE" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1" cmdName="FINANCIAL_ALLOCATION.REVERSE" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1" cmdName="FINANCIAL_INVOICE_TYPE.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1" cmdName="FINANCIAL_USE_CASE_ALLOCATION_METHODS.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_CHANNEL.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1" cmdName="EARLY_PAYMENT_DISCOUNT.CALCULATE" webService="yes"/>
+
+        <COMMAND cmdVersion="CMD_1_0" cmdName="CUSTOMER_COLLECTIBLE.WRITE" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="CUSTOMER_COLLECTIBLE.DELETE" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="POSTINGPERIOD.READ" webService="yes"/>
+
+        <COMMAND cmdVersion="CMD_1_0" cmdName="CREDITSBYDEBIT.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="REFERENCED_TRANSACTION.SEARCH" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="DEBITSBYCREDIT.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="REFERENCED_TRANSACTION.READ" webService="yes"/>
+
+        <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_SOURCE.READ" webService="yes"/>
+
+        <COMMAND cmdVersion="CMD_1" cmdName="FINANCIAL_DOCUMENT.CREATE" />
+        <COMMAND cmdVersion="CMD_1" cmdName="CORRECTIVE_INVOICE.WRITE" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="POSTINGPERIOD.CREATE" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="POSTINGPROCESS.EXECUTE" webService="yes"/>
+    </SOI>

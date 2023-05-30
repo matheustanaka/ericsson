@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-fms-soi.xml
+data:
+  Registry_FMS_SOI.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+
+    <ComponentRegistry>
+
+      <Node name="FUNC_FRMWK_SRV">
+        <!-- add plugin SOI extension to the SOI loading process -->
+      <Node name="SOIDefinitions" >
+              <KeyValue key="FMI_4.xml" value=""/>
+              <KeyValue key="FMI_5.xml" value=""/>
+        </Node>
+      </Node>
+    </ComponentRegistry>

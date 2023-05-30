@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-soi-omi
+data:
+  OMI_2.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE SOI PUBLIC "SOIDefinition.dtd" "SOIDefinition.dtd">
+
+    <SOI soiName="OMI" soiVersion="2">
+        <COMMAND cmdVersion="CMD_2" cmdName="ORDER.CREATE" webService="yes"/>
+        <COMMAND cmdVersion="CMD_2" cmdName="ORDER.SEARCH"/>
+        <COMMAND cmdVersion="CMD_1" cmdName="ORDER_TYPE.READ"/>
+    </SOI>

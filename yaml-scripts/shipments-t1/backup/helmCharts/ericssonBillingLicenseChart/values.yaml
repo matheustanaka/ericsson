@@ -1,0 +1,148 @@
+# Default values for lemChart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  imageCredentials:
+    # Conditional, if path names are used in the image registry: Defines the repository path for images pulled from the image registry for every container.
+    # Can also be set per container for the subcharts. Must be set in combination with the URL to locate the images in the image registry.
+    # repoPath: proj-eric-bss-eb-released  # example value
+    repoPath:
+    # Optional: Defines the pull policy used when images are pulled on helm install/upgrade.
+    # Setting it to "Always" may impact operational performance on helm install/upgrade.
+    # pullPolicy: IfNotPresent      # Default value
+    pullPolicy: IfNotPresent
+    registry:
+      # Mandatory: Defines the URL to the image registry for every container.
+      # Can also be set per container for the subcharts.
+      # url: localhost:32000  # example value
+      url:
+    # Optional: Defines the image pull secret used when images are pulled on helm install/upgrade.
+    # The secret is used to authenticate against the Docker registry.
+    pullSecret:
+
+  # To constrain the pods to particular nodes.
+  # Example:
+  #  nodeSelector:
+  #    kubernetes.io/hostname: "<hostname>"
+  nodeSelector: {}
+
+  # To constrain pods with specific labels. (E.g. Availability zone)
+  affinity: {}
+  # Example:
+  # affinity:
+  #   nodeAffinity:
+  #     preferredDuringSchedulingIgnoredDuringExecution:
+  #     - weight: 50
+  #       preference:
+  #         matchExpressions:
+  #         - key: topology.kubernetes.io/zone
+  #           operator: In
+  #           values:
+  #           - us-east-1a
+  #     - weight: 50
+  #       preference:
+  #         matchExpressions:
+  #         - key: topology.kubernetes.io/zone
+  #           operator: In
+  #           values:
+  #           - us-east-1b
+
+  # Mandatory: The UID to run the entrypoint of the container processes of the pods.
+  #            If not set, this value defaults in Kubernetes to the user specified in the image metadata.
+  #            Therefore the parameter is mandatory so that all of EB uses the same UID.
+  # runAsUser: 1001  # example value as integer
+  runAsUser: null
+  # Mandatory: The GID to run the entrypoint of the container process. Uses runtime default if unset.
+  #            May also be set in SecurityContext. If set in both SecurityContext and PodSecurityContext,
+  #            the value specified in SecurityContext takes precedence for that container.
+  # runAsGroup: 1002  # example value as integer
+  runAsGroup: null
+  # Mandatory: A special supplemental group that applies to all containers in a pod.
+  # fsGroup: 1003  # example value as integer
+  fsGroup: null
+
+  # Mandatory: Directory used to store application core or heap dumps.
+  # Note that the access rights and the "core_pattern" file of the host system must be adapted to the specified path.
+  # It's also possible to define sub-directories.
+  coredumpDirectory: "/coredump"  # example value
+
+  # RBAC
+  # Global configuration related to role-based access control (RBAC):
+  rbac:
+    # Create service accounts [true,false]
+    sa_roles_create: true  # example value
+
+#############################################################################################
+### In the following section configuration parameters of local charts can be overwritten.
+### Specify configuration parameters from local charts here in the
+### global values.yaml / my_values.yaml file in the following cases:
+###   - If a parameter value is site-specific, i.e. the parameter value needs to be
+###     adapted per installation.
+###   - Overwrite default values with site-specific values.
+#############################################################################################
+
+# Overwrite default configuration of the lem chart.
+eric-bss-eb-lem:
+  lemDeployments:
+    # Configuration for the LEM deployment which connects to a dedicated instance of Sentinel RMS License Manager.
+    # To enable HA, multiple LEM deployments with a different name and rmsServerHost can be configured below.
+    # The name of the first LEM deployment with a dedicated Sentinel RMS, e.g. "rms1"
+    - name: "rms1"
+      # The replicaCount should be 1 or 0 for each LEM deployment.
+      replicaCount: 1
+      # The IP address or hostname of the first machine where the Sentinel RMS License Manager is running.
+      rmsServerHost: ""
+      # To constrain pods with specific labels. (E.g. Availability zone)
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - eric-bss-eb-lem
+            topologyKey: kubernetes.io/hostname
+        # On multi-AZ setups, consider restraining the LEM to the RMS server's AZ.
+        # Example:
+        # nodeAffinity:
+        #   requiredDuringSchedulingIgnoredDuringExecution:
+        #     nodeSelectorTerms:
+        #     - matchExpressions:
+        #       - key: topology.kubernetes.io/zone
+        #         operator: In
+        #         values:
+        #         - us-east-1a
+    # The name of the second LEM deployment with a dedicated Sentinel RMS, e.g. "rms2"
+    # - name: "rms2"
+    #   The replicaCount should be 1 or 0 for each lem deployment.
+    #   replicaCount: 1
+    #   The IP address or hostname of the second machine in which the Sentinel RMS License Manager is running.
+    #   rmsServerHost: ""
+    #   To constrain pods with specific labels. (E.g. Availability zone)
+    #   affinity:
+    #     podAntiAffinity:
+    #       requiredDuringSchedulingIgnoredDuringExecution:
+    #       - labelSelector:
+    #           matchExpressions:
+    #           - key: app
+    #             operator: In
+    #             values:
+    #             - eric-bss-eb-lem
+    #         topologyKey: kubernetes.io/hostname
+    #   On multi-AZ setups, consider restraining the LEM to the RMS server's AZ.
+    #   Example:
+    #   nodeAffinity:
+    #     requiredDuringSchedulingIgnoredDuringExecution:
+    #       nodeSelectorTerms:
+    #       - matchExpressions:
+    #         - key: topology.kubernetes.io/zone
+    #           operator: In
+    #           values:
+    #           - us-east-1a
+
+# ADP rule GL-D1121-033: All charts must be enabled by default.
+# If a chart shall not be installed, the user can override these settings in a my_values.yaml file.
+eric-bss-eb-lem-rbac: {enabled: true}
+eric-bss-eb-lem-networkpolicies: {enabled: true}

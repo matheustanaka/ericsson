@@ -1,0 +1,122 @@
+# Default values for pmsChart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+imageCredentials:
+  eb-java-pms:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  init-logging-pms:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+
+images:
+  eb-java-pms:
+    name: "eric-bss-eb-pms"
+    tag: "22.15.12"
+  init-logging-pms:
+    name: "eric-bss-eb-init-logging"
+    tag: "22.15.12"
+
+replicaCount: 1
+
+# Grace period for pod termination, which is used to shut down PMS gracefully.
+terminationGracePeriodSeconds: "30"
+
+args:
+  javaOpts: "-Xms1024m \
+             -Xmx1024m \
+             -XX:+UseG1GC \
+             -XX:+HeapDumpOnOutOfMemoryError \
+             -Xlog:safepoint=warning \
+             -Xlog:gc=info \
+             -Dnetworkaddress.cache.ttl=60"
+  javaDebugOpts:
+
+jacorb:
+  log:
+    dumpOutgoingMessages: "off"
+    dumpIncomingMessages: "off"
+  orbConnection:
+    retries: 5
+    retryInterval: 500
+    clientIdleTimeout: 0
+    clientConnectTimeout: 90000
+    clientPendingReplyTimeout: 2000000
+  poaConfig:
+    threadPoolMax: 20
+    threadPoolMin: 5
+
+tnsnames:
+  bscsdb: '{{ tpl .Values.global.tnsnames.bscsdb . }}'
+
+sqlnet:
+  ora: '{{ tpl .Values.global.sqlnet.ora . }}'
+
+#
+######### DL_Integration.xml
+#
+dlIntegration:
+  pmsSetting:
+    defaultAccessChargeServiceCatCode: "ZERO"
+    defaultSubcriptionChargeServiceCatCode: "ZERO"
+    defaultUsageChargeServiceCatCode: "ZERO"
+    defaultSubcriptionChargeGlAccountCatCode:  "OTCA"
+    defaultAccessChargeGlAccountCatCode: "RCA"
+    defaultUsageChargeGlAccountCatCode: "UCA"
+
+resources:
+  limits:
+    cpu: 3
+    memory: 2Gi
+  requests:
+    cpu: 100m
+    memory: 1024Mi
+
+#A local nodeSelector definition has priority over the global definition above.
+#nodeSelector: {}
+
+# A local affinity definition has priority over the global definition.
+# affinity: {}
+# Example:
+# affinity:
+#   nodeAffinity:
+#     preferredDuringSchedulingIgnoredDuringExecution:
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1a
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1b
+
+
+suffix:
+
+# Configuration parameters of DXL listeners
+dxlListeners:
+  traceLogCommandListener:
+    # Maximum number of GSR message parts accepted by the listener (default: 50)
+    maxTraceLogCommandItems: 50
+
+#Business Config Files - customizable configmaps
+overrideConfigmap:
+  # Default configmap: eric-bss-eb-pms-applicationcontext-sfw-security-openam.xml
+  applicationcontextSfwSecurityOpenamXml:
+  # Default configmap: eric-bss-eb-pms-tracing.properties
+  tracingProperties:
+  # Default configmap: eric-bss-eb-pms-log4j2.xml
+  log4j2xml:
+  # Default configmap: eric-bss-eb-pms-rootapplicationcontext-pms.xml
+  rootApplicationContextPmsXml:

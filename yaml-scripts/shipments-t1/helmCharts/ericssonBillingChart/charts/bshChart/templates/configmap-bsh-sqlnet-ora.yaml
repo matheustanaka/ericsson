@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-bsh-sqlnet.ora
+data:
+  sqlnet.ora: |-
+{{ tpl .Values.sqlnet.ora . | indent 4 }}

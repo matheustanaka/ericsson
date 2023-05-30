@@ -1,0 +1,111 @@
+{{- if .Values.global.runDmfInstallScript -}}
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: eric-bss-eb-dmf-upgradescript-pre-upgrade-hook
+  labels:
+    app: eric-bss-eb-dmf
+    chart: {{ template "eric-bss-eb-dmf.chart" . }}
+    {{- include "eric-bss-eb-dmf.kubernetesIoInfo" . | nindent 4 }}
+    heritage: {{ .Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-dmf.productInfo" . | indent 4 }}
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded, before-hook-creation
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}"
+      labels:
+        app: eric-bss-eb-dmf
+        chart: {{ template "eric-bss-eb-dmf.chart" . }}
+        eric-bss-eb-dmf-network-database-client: 'true'
+        {{- include "eric-bss-eb-dmf.kubernetesIoInfo" . | nindent 8 }}
+        heritage: {{ .Release.Service }}
+      annotations:
+      {{- include "eric-bss-eb-dmf.productInfo" . | indent 8 }}
+    spec:
+      securityContext:
+        runAsUser: {{ required "A valid .Values.global.runAsUser entry is required!" .Values.global.runAsUser }}
+        runAsGroup: {{ required "A valid .Values.global.runAsGroup entry is required!" .Values.global.runAsGroup }}
+        fsGroup: {{ required "A valid .Values.global.fsGroup entry is required!" .Values.global.fsGroup }}
+      restartPolicy: Never
+      {{- if .Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ .Chart.Name }}-sa
+      {{- end }}
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      containers:
+        - name: pre-upgrade-job-rundmfupgradescript
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "pre-upgrade-job-rundmfupgradescript" }}
+          image: "{{ template "eric-bss-eb-dmf.registryUrl" $templDict }}/{{ template "eric-bss-eb-dmf.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-dmf.pullPolicy" $templDict }}
+          command: ["/bin/bash"]
+          args: ["-c", "cd /dmf/scripts \
+                      && . ./migenv.esh dmf --mig_setup_dir /dmf/resource/setup --mig_resource_dir /dmf/resource/setup  --mig_work_dir /dmf/work \
+                        && cd /dmf/perl/prg && perl -S DmfInst.pl maintain --setup_file /dmf/resource/setup/DMF_sample_upgrade_1_set.xml 1>/dmf/work/runDmfUpgradeScript_`date +'%Y-%m-%d_%H.%M.%S'`.log 2>&1 "]
+          env:
+            - name: TZ
+              value: "{{ .Values.global.timezone }}"
+            - name: NLS_LANG
+              value: "{{ .Values.global.nlsLang }}"
+          {{ if .Values.global.databaseTls.enable }}
+            - name: ORA_SEC_WLT
+              value: "/oratns/secret/admin"
+          {{ end }}
+          volumeMounts:
+            - name: dmf-log-volume
+              mountPath: /dmf/work
+            - name: tnsnames-ora-volume
+              mountPath: /oratns/tnsnames.ora
+              subPath: tnsnames.ora
+            - name: sqlnet-ora-volume
+              mountPath: /oratns/sqlnet.ora
+              subPath: sqlnet.ora
+            {{ if .Values.global.databaseTls.enable }}
+            - name: wallet-volume
+              mountPath: /oratns/secret
+            - name: wallet-admin-volume
+              mountPath: /oratns/secret/admin
+            {{ end }}
+            - name: standard-res
+              mountPath: /dmf/resource/setup/standard_1_res.xml
+              subPath: standard_1_res.xml
+      {{- if $.Values.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.nodeSelector | nindent 8 }}
+      {{- else if $.Values.global.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if $.Values.affinity }}
+      affinity: {{ toYaml $.Values.affinity | nindent 8 }}
+      {{- else if $.Values.global.affinity }}
+      affinity: {{ toYaml $.Values.global.affinity | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: dmf-log-volume
+          persistentVolumeClaim:
+            claimName: eric-bss-eb-dmf-pvc-log
+        - name: tnsnames-ora-volume
+          configMap:
+            name: eric-bss-eb-dmf-tnsnames.ora
+        - name: sqlnet-ora-volume
+          configMap:
+            name: eric-bss-eb-dmf-sqlnet.ora
+      {{ if .Values.global.databaseTls.enable }}
+        - name: wallet-volume
+          secret:
+            secretName: "{{ .Values.global.databaseTls.clientSecretName }}"
+        - name: wallet-admin-volume
+          secret:
+            secretName: "{{ .Values.global.databaseTls.clientAdminSecretName }}"
+      {{ end }}
+        - name: standard-res
+          configMap:
+            name: eric-bss-eb-dmfjob-standard-res.xml
+  backoffLimit: 0
+{{- end -}}

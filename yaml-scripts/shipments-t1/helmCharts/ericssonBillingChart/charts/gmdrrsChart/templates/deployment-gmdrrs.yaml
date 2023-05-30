@@ -1,0 +1,221 @@
+{{- $startParameters := .Values.gmdrrsDeployment.startParameters -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "eric-bss-eb-gmdrrs"
+  labels:
+    app: eric-bss-eb-gmdrrs
+    chart: {{ template "eric-bss-eb-gmdrrs.chart" $ }}
+    {{- include "eric-bss-eb-gmdrrs.kubernetesIoInfo" . | nindent 4 }}
+    heritage: {{ $.Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-gmdrrs.productInfo" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount | default 2}}
+  selector:
+    matchLabels:
+      app: eric-bss-eb-gmdrrs
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: eric-bss-eb-gmdrrs
+        {{- include "eric-bss-eb-gmdrrs.kubernetesIoInfo" . | nindent 8 }}
+        eric-bss-eb-network-gmd: 'true'
+        eric-bss-eb-network-database-client: 'true'
+        eric-bss-eb-network-lem-client: 'true'
+        eric-bss-eb-network-vault-client: 'true'
+      annotations:
+      {{- include "eric-bss-eb-gmdrrs.productInfo" . | indent 8 }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - eric-bss-eb-gmdrrs
+              topologyKey: kubernetes.io/hostname
+      securityContext:
+        {{- include "eric-bss-eb-gmdrrs.checkPodUserLoginData" . | nindent 8 }}
+      {{- if .Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ .Chart.Name }}-sa
+      {{- end }}
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      containers:
+        - name: eric-bss-eb-gmdrrs
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "eric-bss-eb-gmdrrs" }}
+          image: "{{ template "eric-bss-eb-gmdrrs.registryUrl" $templDict }}/{{ template "eric-bss-eb-gmdrrs.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-gmdrrs.pullPolicy" $templDict }}
+          resources:
+            limits:
+              memory: "{{ .Values.resources.limits.memory}}"
+              cpu: "{{ .Values.resources.limits.cpu}}"
+            requests:
+              memory: "{{ .Values.resources.requests.memory}}"
+              cpu: "{{ .Values.resources.requests.cpu}}"
+          env:
+          - name: K8S_ENV
+            value: "true"
+          - name: NLS_LANG
+            value: "{{ .Values.global.nlsLang }}"
+          - name: DATABASE_SERVER_NAME
+            value: "{{ .Values.global.databaseServerName }}"
+          - name: DATABASE_SERVER_PORT
+            value: "{{ .Values.global.databaseServerPort }}"
+          - name: TZ
+            value: "{{ .Values.global.timezone }}"
+          {{ if .Values.tracingAndLogging }}
+          {{ if .Values.tracingAndLogging.udrTracefile }}
+          - name: UDR_TRACEFILE
+            value: "{{ .Values.tracingAndLogging.udrTracefile }}"
+          {{ end }}
+          {{ if .Values.tracingAndLogging.dxlTracefile }}
+          - name: DXL_TRACEFILE
+            value: "{{ .Values.tracingAndLogging.dxlTracefile }}"
+          {{ end }}
+          {{ if .Values.tracingAndLogging.dtaTracefile }}
+          - name: DTA_TRACEFILE
+            value: "{{ .Values.tracingAndLogging.dtaTracefile }}"
+          {{ end }}
+          {{ end }}
+          {{ if $.Values.global.databaseTls.enable }}
+          - name: ORA_SEC_WLT
+            value: "/oratns/secret"
+          {{ end }}
+          - name: DXL_CONTINUE_AFTER_CORRUPT
+            value: "{{ .Values.global.tracingAndLogging.dxlContinueAfterCorrupt }}"
+          {{ if .Values.global.gmdSecurityTls.enable }}
+          - name: GMD_SSL_ENABLE
+            value: "1"
+          - name: GMD_CIPHER_LIST
+            value: "{{ .Values.global.gmdSecurityTls.cipherList }}"
+          {{ end }}
+          {{ if not $.Values.global.secretManager.enable }}
+          - name: NO_SECRET_MANAGER
+            value: "true"
+          {{ end }}
+          command: ["/bin/bash"]
+          args: ["-c", "ulimit -c unlimited && mkdir -p {{ $.Values.global.coredumpDirectory }} && \
+                  ./gmdrrs {{ $startParameters }}"]
+          volumeMounts:
+          {{ if .Values.global.gmdSecurityTls.enable }}
+          - name: gmdrrs-server-tls-volume
+            mountPath: "/tls/gmdrrs/server"
+            readOnly: true
+          {{ end }}
+          - name: ctrl-volume
+            mountPath: /workdir/CTRL
+          - name: pwdmgr-security-volume
+            mountPath: /workdir/PWDMGR_SECURITY
+          - name: gmdrrs-volume
+            mountPath: /workdir/GMD
+          - name: logs-volume
+            mountPath: /log
+          - name: coredump-volume
+            mountPath: "{{ .Values.global.coredumpDirectory }}"
+          - name: tnsnames-ora-volume
+            mountPath: /oratns/tnsnames.ora
+            subPath: tnsnames.ora
+          - name: sqlnet-ora-volume
+            mountPath: /oratns/sqlnet.ora
+            subPath: sqlnet.ora
+          - name: rac-setup-volume
+            mountPath: /ericssonbilling/resource/bat/RAC_Setup.xml
+            subPath: RAC_Setup.xml
+          {{ if $.Values.global.databaseTls.enable }}
+          - name: wallet-volume
+            mountPath: "/oratns/secret"
+          {{ end }}
+          {{ if and ($.Values.global.secretManager.enable) ($.Values.global.secretManager.vault.caSecretName) }}
+          - name: secretmanager-tls-volume
+            mountPath: "/tls/secretManager/vault"
+            readOnly: true
+          {{ end }}
+          - name: vault-clientcfg-xml-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.xml
+            subPath: vault-clientcfg.xml
+          - name: vault-clientcfg-dtd-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.dtd
+            subPath: vault-clientcfg.dtd
+          lifecycle:
+            preStop:
+              exec:
+                command: ["rm", "-f", "/workdir/CTRL/gmdrrs*"]
+      {{- if $.Values.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.nodeSelector | nindent 8 }}
+      {{- else if $.Values.global.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if $.Values.affinity }}
+      affinity: {{ toYaml $.Values.affinity | nindent 8 }}
+      {{- else if $.Values.global.affinity }}
+      affinity: {{ toYaml $.Values.global.affinity | nindent 8 }}
+      {{- end }}
+      # Teste Matheus Tanaka
+      tolerations:
+      - key: "nodepool"
+          operator: "Equal"
+          value: "sfppdev"
+          effect: "NoSchedule"
+      volumes:
+      {{ if .Values.global.gmdSecurityTls.enable }}
+      - name: gmdrrs-server-tls-volume
+        secret:
+          secretName: "{{ .Values.global.gmdSecurityTls.gmdrrsServerSecretName }}"
+          items:
+          - key: {{ .Values.global.gmdSecurityTls.gmdrrsServerKeystoreKey }}
+            path: gmdrrsKeystore.p12
+          - key: {{ .Values.global.gmdSecurityTls.gmdrrsKeystorePasswordKey }}
+            path: gmdrrsKeystorePassword.txt
+      {{ end }}
+      - name: ctrl-volume
+        emptyDir: {}
+      - name: pwdmgr-security-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-pwdmgr-security
+      - name: gmdrrs-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-gmd-pvc-artifact
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-logs
+      - name: coredump-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-coredump
+      - name: tnsnames-ora-volume
+        configMap:
+          name: eric-bss-eb-gmdrrs-tnsnames.ora
+      - name: sqlnet-ora-volume
+        configMap:
+          name: eric-bss-eb-gmdrrs-sqlnet.ora
+      - name: rac-setup-volume
+        configMap:
+          name: eric-bss-eb-gmdrrs-rac-setup.xml
+      - name: vault-clientcfg-xml-volume
+        configMap:
+          name: eric-bss-eb-gmdrrs-vault-clientcfg.xml
+      - name: vault-clientcfg-dtd-volume
+        configMap:
+          name: eric-bss-eb-gmdrrs-vault-clientcfg.dtd
+      {{ if and ($.Values.global.secretManager.enable) ($.Values.global.secretManager.vault.caSecretName) }}
+      - name: secretmanager-tls-volume
+        secret:
+          secretName: "{{ $.Values.global.secretManager.vault.caSecretName }}"
+          items:
+          - key: {{ $.Values.global.secretManager.vault.caCertificate }}
+            path: ca.pem
+      {{ end }}
+      {{ if $.Values.global.databaseTls.enable }}
+      - name: wallet-volume
+        secret:
+          secretName: "{{ $.Values.global.databaseTls.clientSecretName }}"
+      {{ end }}

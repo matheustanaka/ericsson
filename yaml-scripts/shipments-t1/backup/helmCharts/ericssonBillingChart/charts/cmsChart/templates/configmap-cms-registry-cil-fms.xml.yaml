@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-cil-fms.xml
+data:
+  Registry_CIL_FMS.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+    <ComponentRegistry>
+      <Node name="FUNC_FRMWK_SRV">
+        <Node name="CDFAltComponents">
+            <Node name="CIL::6">
+                <KeyValue key="cms/soi/FMI_4.xml"
+                        value="cms/cdf"
+                        type ="String" comment="offer all commands of FMI_4.xml"/>
+            </Node>
+
+            <Node name="CIL::7">
+                <KeyValue key="cms/soi/FMI_5.xml"
+                        value="cms/cdf"
+                        type ="String" comment="offer all commands of FMI_5.xml"/>
+            </Node>
+        </Node>
+      </Node>
+    </ComponentRegistry>

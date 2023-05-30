@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-rih.ini
+data:
+  rih.ini: |
+    LOG_FILTER_LEVEL={{$.Values.rihLogFilterLevel}}

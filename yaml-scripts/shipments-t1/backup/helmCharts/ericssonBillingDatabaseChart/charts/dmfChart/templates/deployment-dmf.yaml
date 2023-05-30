@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eric-bss-eb-dmf
+  labels:
+    app: eb-database-dmf
+    chart: {{ template "eric-bss-eb-dmf.chart" . }}
+    {{- include "eric-bss-eb-dmf.kubernetesIoInfo" . | nindent 4 }}
+    heritage: {{ .Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-dmf.productInfo" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: eb-database-dmf
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: eb-database-dmf
+        {{- include "eric-bss-eb-dmf.kubernetesIoInfo" . | nindent 8 }}
+        eric-bss-eb-dmf-network-database-client: 'true'
+      annotations:
+      {{- include "eric-bss-eb-dmf.productInfo" . | indent 8 }}
+    spec:
+      securityContext:
+        {{- include "eric-bss-eb-dmf.checkPodUserLoginData" . | nindent 8 }}
+      {{- if .Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ .Chart.Name }}-sa
+      {{- end }}
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      containers:
+        - name: dmf
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "dmf" }}
+          image: "{{ template "eric-bss-eb-dmf.registryUrl" $templDict }}/{{ template "eric-bss-eb-dmf.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-dmf.pullPolicy" $templDict }}
+          command: ["/bin/bash"]
+          args: ["-c","sleep infinity"]
+          env:
+            - name: TZ
+              value: "{{ .Values.global.timezone }}"
+            - name: NLS_LANG
+              value: "{{ .Values.global.nlsLang }}"
+            - name: MIG_ROOT_DIR
+              value: "/dmf"
+            - name: MIG_WORK_DIR
+              value: "/dmf/work"
+            - name: MIG_SETUP_DIR
+              value: "/dmf/resource/setup"
+            - name: MIG_RESOURCE_DIR
+              value: "/dmf/resource/setup"
+            {{ if .Values.global.databaseTls.enable }}
+            - name: ORA_SEC_WLT
+              value: "/oratns/secret/admin"
+            {{ end }}
+          volumeMounts:
+            - name: dbscripts
+              mountPath: /pvc-dbscripts
+            - name: dmf-log-volume
+              mountPath: /dmf/work
+            - name: standard-res
+              mountPath: /dmf/resource/setup/standard_1_res.xml
+              subPath: standard_1_res.xml
+            - name: tnsnames-ora-volume
+              mountPath: /oratns/tnsnames.ora
+              subPath: tnsnames.ora
+            - name: sqlnet-ora-volume
+              mountPath: /oratns/sqlnet.ora
+              subPath: sqlnet.ora
+            {{ if .Values.global.databaseTls.enable }}
+            - name: wallet-volume
+              mountPath: /oratns/secret
+            - name: wallet-admin-volume
+              mountPath: /oratns/secret/admin
+            {{ end }}
+      {{- if $.Values.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.nodeSelector | nindent 8 }}
+      {{- else if $.Values.global.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if $.Values.affinity }}
+      affinity: {{ toYaml $.Values.affinity | nindent 8 }}
+      {{- else if $.Values.global.affinity }}
+      affinity: {{ toYaml $.Values.global.affinity | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: dbscripts
+          persistentVolumeClaim:
+            claimName: eric-bss-eb-pvc-dbscripts
+        - name: dmf-log-volume
+          persistentVolumeClaim:
+            claimName: eric-bss-eb-dmf-pvc-log
+        - name: standard-res
+          configMap:
+            name: eric-bss-eb-dmfjob-standard-res.xml
+        - name: tnsnames-ora-volume
+          configMap:
+            name: eric-bss-eb-dmf-tnsnames.ora
+        - name: sqlnet-ora-volume
+          configMap:
+            name: eric-bss-eb-dmf-sqlnet.ora
+        {{ if .Values.global.databaseTls.enable }}
+        - name: wallet-volume
+          secret:
+            secretName: "{{ .Values.global.databaseTls.clientSecretName }}"
+        - name: wallet-admin-volume
+          secret:
+            secretName: "{{ .Values.global.databaseTls.clientAdminSecretName }}"
+        {{ end }}

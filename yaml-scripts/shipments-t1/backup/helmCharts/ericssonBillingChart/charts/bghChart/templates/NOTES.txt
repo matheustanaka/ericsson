@@ -1,0 +1,1 @@
+1. This Helm deployment starts the Bill Generation Handler (BGH) with the options "-b /workdir/BGH/PRINT -l /ericssonbilling/resource/bgh".

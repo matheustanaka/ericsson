@@ -1,0 +1,226 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-dcs-debtcollectionserver.xml
+data:
+  Registry_DCS_DebtCollectionServer.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+    <ComponentRegistry>
+        <Node name="FUNC_FRMWK_SRV">
+            <!-- List of files defining SOI's. These files are searched in SOIRootDirectory Filenames should be entered in as "key" attributes, "value" attributes
+                remains empty. -->
+            <Node name="SOIDefinitions">
+                <KeyValue key="DCI_2.xml" value="" type="String" comment="" />
+            </Node>
+            <!-- List of files containing the server's application context configuration -->
+            <Node name="ApplicationContextConfigs">
+                <KeyValue key="rootApplicationContext-dcs.xml" value="" type="String" comment="The application context configuration file of the server" />
+            </Node>
+            <!-- List of validation definitions. These files are searched in ValidationRootDirectory Filenames should be entered in as "key" attributes, "value"
+                attributes remains empty. -->
+            <Node name="ValidationDefinitions">
+                <KeyValue key="DCS_Validation.xml" value="" type="String" comment="" />
+            </Node>
+            <!-- List of listeners implementing ServerStartupListener interface. Each listener entered here will be instantiated using default constructor
+                without parameters and corresponding before and after methods will be called during server initialization process -->
+            <Node name="StartupListeners">
+                <KeyValue key="com.lhs.dcs.collectionsserver.DCSInitializer" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.ccb.sfw.spring.SpringIntegrationServerEventListener" value="" />
+                <KeyValue key="com.lhs.ccb.sfw.remoting.soi.BeanCreatingSOILayerStartupListener" value="" />
+            </Node>
+            <!-- List of listeners implementing ServerShutdown interface. Each listener entered here will be instantiated using default constructor without
+                parameters and corresponding before and after methods will be called during server shutdown -->
+            <Node name="ShutdownListeners">
+                <KeyValue key="com.lhs.dcs.collectionsserver.DCSShutdown" type="String" value="" comment="null" />
+            </Node>
+            <!-- This node holds the names of all DomainServiceAdapter classes. -->
+            <Node name="ServiceLayerAdapterNames">
+                <KeyValue key="com.lhs.dcs.collectible.services.CollectibleCreate" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsevent.services.CollectionsEventCreate" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.installments.services.PaymentPlanInstallmentHistoryRead" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.installments.services.PaymentPlanRead" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.installments.services.PaymentPlanTemplateSearch" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.installments.services.PaymentPlanTemplateDelete" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.installments.services.PaymentPlanTemplateRead" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.installments.services.PaymentPlanTemplateWrite" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.installments.services.PaymentPlanWrite" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.installments.services.PaymentPlanSearch" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.installments.services.PaymentPlanTemplateCreate" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.installments.services.PaymentPlanInstallmentWrite" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsagency.services.CollectionAgenciesSearch" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsagency.services.CollectionAgencyWrite" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsagency.services.CollectionAgencyDelete" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsagency.services.CollectionAgencyRead" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsagency.services.CollAgencyContactWrite" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsagency.services.CollAgencyContactDelete" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsagency.services.WorkloadAssignmentRead" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsagency.services.CollAgencyCommCalculate" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsevent.services.AgencyEventCreate" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsagency.services.CollAgencyCommRuleRead" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsagency.services.CollAgencyCommRuleWrite" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsagency.services.CollAgencyCommRuleDelete" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsagency.services.CollAgencyAssignmentWrite" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsagency.services.CollAgencyAssignmentsSearch" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsagency.services.CollAgencyCommissionWrite" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsagency.services.CollAgencyCommissionsSearch" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsagency.services.CollectionAgencyExport" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsagency.services.CollectionAgencyFixedCostsSearch" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.collectionsagency.services.CollectionAgencyFixedCostWrite" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.finance.services.CollectionFeeCreate" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.finance.services.CollectionFeeWrite" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.finance.services.CollectionFeeRead" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.finance.services.CollectionFeeDelete" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.finance.services.CollectionFeesSearch" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.finance.services.CollectionFeeItemDelete" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.finance.services.InterestRateCreate" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.finance.services.InterestRateRead" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.finance.services.InterestRateDelete" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.finance.services.InterestRateWrite" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.finance.services.InterestRatesSearch" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.finance.services.CollectionFeeHistoryRead" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.finance.services.InterestRateHistoryRead" type="String" value="" comment="null" />
+                <KeyValue key="com.lhs.dcs.batchJob.services.BatchJobCollAgencyAssignmentsSearch" type="String" value="" comment="null" />
+            </Node>
+            <!-- This node contains class to subclass mappings. It can be used to customize an implementation class by subclassing. Each customized class needs
+                a KeyValue entry here, mapping the parent class name of the core implementation to a customized class name. Per default this node is empty. -->
+            <Node name="ClassLookupTable">
+            </Node>
+            <!-- TOPLink related settings, configuration of persistent domain objects -->
+            <Node name="Persistence">
+                <!-- Settings for the Java wrapper of NEXTFREE stored procedures. -->
+                <Node name="NEXTFREE">
+                    <!-- Specifies fetch size for a particular sequence. If a sequence is found in the list than NEXTFREE.GetNumValues / NEXTFREE.GetStringValues
+                        with array interface will be used with specified fetch size. If a sequence isn't found in the list than NEXTFREE.GetValue / NEXTFREE.GetStringValue will
+                        be used (no array interface and caching) -->
+                    <Node name="FetchSizePerSequence">
+                        <!-- Example <KeyValue key="MAX_CONTRACT_ID" value="10" type="Integer"/> -->
+                    </Node>
+                </Node>
+                <!-- Contains KeyValue entries holding the package names of all packages with persistent classes. Each of the packages listed here is assumed
+                    to contain a class 'BOregister', which must add the descriptors of the package to the list of all application descriptors. -->
+                <Node name="PackageNamesForBORegistry">
+                    <KeyValue key="com.lhs.dcs.installments" value="" />
+                    <KeyValue key="com.lhs.dcs.collectionsagency" value="" />
+                    <KeyValue key="com.lhs.dcs.commondomain" value="" />
+                    <KeyValue key="com.lhs.dcs.finance" value="" />
+                    <KeyValue key="com.lhs.dcs.tier" value="" />
+                </Node>
+                <!-- Contains a list of reference data classes, that should be refreshed periodically. -->
+                <Node name="RefreshReferenceData">
+                    <!-- Example
+                        <Node name "Reason" >
+                            <KeyValue key="CLASS" value="com.lhs.CommonDomain.bscs_core.Reason" />
+                            <KeyValue key="ABSOLUTE" type="Boolean" value="true" comment=""/>
+                            <KeyValue key="START" type="Integer" value="1000" comment="Milliseconds on which a refresh is initiated. In case ABSOLUTE flag is set, the next refresh is set on next midnight plus this value, otherwise on server start plus this value."/>
+                            <KeyValue key="REPLACE_READALL" type="Boolean" value="true" comment="null"/>
+                        </Node>
+                    -->
+                </Node>
+            </Node> <!-- TOPLink related settings -->
+            <Node name="Persistence">
+                <Node name="OraConstraintViolation">
+                    <Node name="OraCodes">
+                        <KeyValue key="1" value="" type="String" />
+                    </Node>
+                    <Node name="constraints">
+                        <KeyValue key="PAY_PLAN_TEMPLATE_SHDES_UK" value="DCS.DuplicateTemplatePublicKey" type="String" />
+                        <KeyValue key="CC_COLL_AGENCY_COMMISSION_CALC" value="DCS.InvalidCommissionCalcStatus" />
+                        <KeyValue key="CC_COLL_AGENCY_F_C_STATUS" value="DCS.InvalidFixedCostStatus" />
+                        <KeyValue key="FK_TIER_NTIER_ID" value="DCS.TierIsANextTier" />
+                        <KeyValue key="UC_TIER_CODE" value="DCS.TierCodeAlreadyExists" />
+                        <KeyValue key="UC_TIER_NAME" value="DCS.TierNameAlreadyExists" />
+                        <KeyValue key="PK_COLL_AGENCY_TIER_ID" value="DCS.TierAssignmentAlreadyExists" />
+                        <KeyValue key="CC_COLLAGENCYTIER_MARKETSHARE" value="DCS.InvalidMarketShareValue" />
+                        <KeyValue key="CK_TIER_MEASUREMENT_UNIT" value="DCS.InvalidMeasurementUnitValue" />
+                    </Node>
+                </Node>
+            </Node>
+        </Node> <!-- FUNC_DCS_SRV -->
+        <Node name="WMS Settings">
+            <Node name="WorkflowDefinitionsNotReassignable">
+                <Node name="DCS">
+                    <!--
+                        Add here the workflows marked as not reassignable.
+                        Examples:
+
+                        <KeyValue key="SubName" value="" comment="" />
+                            This will block any workflow containing “SubName”. ‘aaaSubName’, ‘aaSubNamebb’, ‘SubNamebb’ and ‘SubName’ will be blocked
+
+                        <KeyValue key="bDirectNameb" value="" comment=" " />
+                            This block only a workflow which the name is exactly ‘DirectName’. ‘aaDirectName’, ‘aaDirectNamebb’ and ‘DirectNamebb’ won’t be blocked.
+
+                        <KeyValue key="DirectNameb" value="" comment=" " />
+                            This block workflows ending with ‘DirectName’. This will block ‘aaDirectName’ and ‘DirectName’ but won’t block ‘aaDirectNamebb’ and ‘DirectNamebb’
+
+                        <KeyValue key="bDirectName" value="" comment=" " />
+                            This block workflows starting with ‘DirectName’. This will block ‘DirectNamebb’ and ‘DirectName’ but won’t block ‘aaDirectNamebb’ and ‘aaDirectName’
+
+                        For more information, consult the Java pattern documentation docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html
+                     -->
+                </Node>
+            </Node>
+        </Node>
+        <Node name="DCS Settings">
+            <KeyValue key="stringifiedTRUE" type="String" value="{{ .Values.debtColl.dcsSetting.stringifiedTRUE }}" comment="null" />
+            <KeyValue key="checkForUniqueness" type="Boolean" value="{{ .Values.debtColl.dcsSetting.checkForUniqueness }}" comment="null" />
+            <KeyValue key="NoOfRequiredDigits" type="Integer" value="{{ .Values.debtColl.dcsSetting.NoOfRequiredDigits }}" comment="null" />
+            <KeyValue key="checkPreconditions" type="Boolean" value="{{ .Values.debtColl.dcsSetting.checkPreconditions }}" comment="null" />
+            <KeyValue key="JobExecutorsStartDelayTime" type="Integer" value="{{ .Values.debtColl.dcsSetting.JobExecutorsStartDelayTime }}" comment="null" />
+            <!-- Please, the selection workflow must be configured bellow -->
+            <!-- Hint: In registry "Registry_CAB_CollectionAdaptorBSCS.xml" and tag "ProcessCustomerBusinessUnitChange" the BU check can be switched off/on. -->
+            <KeyValue key="SelectionWorkflow" type="String" value="{{ .Values.debtColl.dcsSetting.SelectionWorkflow }}" comment="Selection Workflow Name" />
+            <!-- Define fields to identify a collectible or event based on Collectible Type. Domain values are C Customer Based, I Invoice Based, Billing Account
+                Based -->
+            <KeyValue key="CollectibleTypeIdentifier" type="String" value="{{ .Values.debtColl.dcsSetting.CollectibleTypeIdentifier }}" comment="Collectible Type Identifier PART/ATTRIBUTE" />
+            <Node name="CollectibleIdentifier">
+                <Node name="C">
+                    <KeyValue key="Attribute" type="String" value="{{ .Values.debtColl.dcsSetting.CollectibleIdentifier.C.Attribute }}" comment="Customer Identifier PART/ATTRIBUTE" />
+                    <KeyValue key="CheckStatus" type="Boolean" value="{{ .Values.debtColl.dcsSetting.CollectibleIdentifier.C.CheckStatus }}" comment="Should check the workflow status" />
+                </Node>
+                <Node name="I">
+                    <KeyValue key="Attribute" type="String" value="{{ .Values.debtColl.dcsSetting.CollectibleIdentifier.I.Attribute }}" comment="Collectible Identifier PART/ATTRIBUTE" />
+                    <KeyValue key="CheckStatus" type="Boolean" value="{{ .Values.debtColl.dcsSetting.CollectibleIdentifier.I.CheckStatus }}" comment="Should check the workflow status" />
+                </Node>
+                <Node name="B">
+                    <KeyValue key="Attribute" type="String" value="{{ .Values.debtColl.dcsSetting.CollectibleIdentifier.B.Attribute }}" comment="Collectible Identifier PART/ATTRIBUTE" />
+                    <KeyValue key="CheckStatus" type="Boolean" value="{{ .Values.debtColl.dcsSetting.CollectibleIdentifier.B.CheckStatus }}" comment="Should check the workflow status" />
+                </Node>
+            </Node>
+            <Node name="EventIdentifier">
+                <Node name="C">
+                    <KeyValue key="Attribute" type="String" value="{{ .Values.debtColl.dcsSetting.EventIdentifier.C.Attribute }}" comment="Customer Identifier PART/ATTRIBUTE" />
+                </Node>
+                <Node name="I">
+                    <KeyValue key="Attribute" type="String" value="{{ .Values.debtColl.dcsSetting.EventIdentifier.I.Attribute }}" comment="Collectible Identifier PART/ATTRIBUTE" />
+                </Node>
+                <Node name="B">
+                    <KeyValue key="Attribute" type="String" value="{{ .Values.debtColl.dcsSetting.EventIdentifier.B.Attribute }}" comment="Billing account Identifier PART/ATTRIBUTE" />
+                </Node>
+            </Node>
+            <!-- Define fields to identify an the Event code for and Event -->
+            <KeyValue key="EventCodeIdentifier" type="String" value="{{ .Values.debtColl.dcsSetting.EventCodeIdentifier }}" comment="Event code Identifier ATTRIBUTE" />
+            <KeyValue key="InvoicePartEvent" type="String" value="{{ .Values.debtColl.dcsSetting.InvoicePartEvent }}" comment="" />
+            <!-- This flag indicates that in case a new invoice arrives the triggering of respective event must be mandatory or not. In case that this is true
+                and isn't possible to perform the signaling, an exception is thrown, CEB handles it and put the CIR again in the queue to perform a retry later. In case
+                that its false and is not possible to trigger the signal, this is just ignored -->
+            <KeyValue key="InvoicePartEventMandatory" type="Boolean" value="{{ .Values.debtColl.dcsSetting.InvoicePartEventMandatory }}" comment="" />
+            <!-- This node configure events that are mandatory for command COLLECTIONS_EVENT.CREATE In case that the command is called with a event which is
+                configured as mandatory here, the collectible (workflow instance) must be able to process the event accordingly, otherwise an exception will be thrown. -->
+            <Node name="CollectionsEventCreateMandatoryEvents">
+                <!-- <KeyValue key="Payment" value="{{ .Values.debtColl.dcsSetting.CollectionsEventCreateMandatoryEvents.Payment }}"/> -->
+            </Node>
+            <KeyValue key="CollectionAgencyExport" type="Boolean" value="{{ .Values.debtColl.dcsSetting.CollectionAgencyExport }}" comment="Export Collection Agency data" />
+            <KeyValue key="CadTemplateFile" type="String" value="{{ .Values.debtColl.dcsSetting.CadTemplateFile }}" comment="" />
+            <KeyValue key="TemplatePath" type="String" value="{{ .Values.debtColl.dcsSetting.TemplatePath }}" comment="" />
+            <KeyValue key="OutputPath" type="String" value="{{ .Values.debtColl.dcsSetting.OutputPath }}" comment="" />
+            <!--
+            <Node name="Plugin Settings">
+                <KeyValue key="PluginAdministrator" type="String" value="{{ .Values.debtColl.dcsSetting.PluginSettings.PluginAdministrator }}" comment=""/>
+                <KeyValue key="PluginsEnabled" type="Boolean" value="{{ .Values.debtColl.dcsSetting.PluginSettings.PluginsEnabled }}" comment=""/>
+                <KeyValue key="Plugin descriptors directory" type="String" value="{{ .Values.debtColl.dcsSetting.PluginSettings.PluginDescriptorsDirectory }}" comment=""/>
+                <KeyValue key="Plugin names" type="String" value="{{ .Values.debtColl.dcsSetting.PluginSettings.PluginNames }}" comment="Parent node for all the plug-in adapters."/>
+            </Node>
+            -->
+        </Node> <!-- DCS Settings -->
+    </ComponentRegistry>

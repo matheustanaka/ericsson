@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-pms-tracing.properties
+data:
+  tracing.properties: |-
+    ############################################################
+    # Settings for TraceLog (used only in FUNC_FRMWK_SRV)
+    ############################################################
+    #
+    # Note: TraceLog is doesn't use any global settings. Its
+    # configuration completely described in this section.
+    # Actually TraceLog doesn't use Java Logging API and it is not
+    # a "logger" like SystemLog or DatabaseLog.
+    # It just traces CORBA calls, writes results in XML files conform to
+    # trace.dtd
+    # There is no way to specify handlers, filters or formatters for
+    # this log, no log rotation
+    #
+    ############################################################
+
+
+    # Use OFF value to completely turn off tracing
+    # Use ALL value to turn on tracing
+    TraceLog.level = OFF
+
+    # 'true' indicates one single trace log for all clients
+    # 'false' indicates one trace log per client
+    TraceLog.global=false
+
+    # The target directory for the trace output
+    # Well-known special components could be used here:
+    # "/" "%t" "%h" "%g" "%u" "%%"
+    # For trace logs additionally "%n" could be used to specify the login user,
+    # that executed the trace
+    #
+    # If TraceLog.global=false than an internal number of the ServiceFactoryI will be appended
+    # to the filename.
+    # If TraceLog.global=true than a "global" will be appended to the filename
+    #
+    TraceLog.pattern=%t/PMS.{HOSTNAME}.trace_%n_%u_

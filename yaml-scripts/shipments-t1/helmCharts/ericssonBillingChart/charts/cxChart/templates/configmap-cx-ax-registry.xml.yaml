@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cx-ax-registry.xml
+data:
+  AX_Registry.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+
+    <!-- AX / BSCS iX -->
+
+    <ComponentRegistry>
+    <Node name="FUNC_WCLT">
+
+    <!--
+      - The configuration files for default models (each default model must have a configuration file)
+      - used by: ModelMetaDataRepository
+    -->
+    <Node name="ModelConfigs">
+        <KeyValue key="FinancialDocumentModels" type="String" value="com/lhs/ax/financialOverview/resource/FinancialDocumentModelConfig.xml" comment=""/>
+        <KeyValue key="FinancialTransactionModels" type="String" value="com/lhs/ax/financialOverview/resource/FinancialTransactionModelConfig.xml" comment=""/>
+        <KeyValue key="CollectionModels" type="String" value="com/lhs/ax/financialOverview/resource/CollectionModelConfig.xml" comment=""/>
+        <KeyValue key="DebtorCreditorModels" type="String" value="com/lhs/ax/debtorCreditor/resource/DebtorCreditorModelConfig.xml" comment=""/>
+        <KeyValue key="DebtorCreditorContractModels" type="String" value="com/lhs/ax/contract/resource/DebtorCreditorContractModelConfig.xml" comment=""/>
+        <KeyValue key="AXUltilityModels" type="String" value="com/lhs/ax/util/resource/AXUltilityModelConfig.xml" comment=""/>
+        <KeyValue key="FinancialSettingModels" type="String" value="com/lhs/ax/financialsettings/resource/FinancialSettingModelConfig.xml"/>
+        <KeyValue key="FinancialDocumentTransactionModels" type="String" value="com/lhs/ax/financialOverview/resource/FinancialDocumentTransactionModelConfig.xml" comment=""/>
+    </Node>
+
+    <!--  URL to DCX -->
+
+    {{- if and .Values.tomcat.secretName }}
+    <KeyValue key="DCX_URL" type="String" value="https://{{.Values.global.ingress.fqdn.TRF}}/dcx/" comment=""/>
+    {{ else }}
+    <KeyValue key="DCX_URL" type="String" value="http://{{.Values.global.ingress.fqdn.TRF}}/dcx/" comment=""/>
+    {{ end }}
+
+    <!--
+      - Soi server name and version
+    -->
+    <KeyValue key="CMI" type="String" value="CIL" comment=""/>
+    <KeyValue key="CMI_Version" type="String" value="7" comment=""/>
+
+    <!--
+       List of files containing the client's application context configuration
+    -->
+    <Node name="ApplicationContextConfigs">
+        <KeyValue key="plugin/ax/rootApplicationContext-ax.xml" value=""
+                  comment="The first application context configuration file of the AX client" />
+    </Node>
+
+    </Node>
+    </ComponentRegistry>

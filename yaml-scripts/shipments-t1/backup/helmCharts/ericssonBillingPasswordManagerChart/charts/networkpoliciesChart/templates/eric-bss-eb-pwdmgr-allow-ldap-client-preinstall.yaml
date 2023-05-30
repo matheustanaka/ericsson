@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: eric-bss-eb-pwdmgr-allow-ldap-client
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-2000"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  podSelector:
+    matchLabels:
+      eric-bss-eb-pwdmgr-network-ldap-client: 'true'
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: {{ .Values.ldap.cidr }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.ldap.port }}

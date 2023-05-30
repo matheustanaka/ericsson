@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-sms-log4j2.xml
+data:
+  log4j2.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <!-- The com.lhs.ccb.sfw.utilities package contains custom logging plugins that are loaded by Log4j2. -->
+    <Configuration packages="com.lhs.ccb.sfw.utilities">
+
+        <Properties>
+            <!-- The log-path defines the location of the log files -->
+            <Property name="log-path">${sys:java.io.tmpdir}</Property>
+        </Properties>
+
+        <Appenders>
+            <!-- The ConsoleAppender defines how the logs will be displayed in System.out. -->
+            <Console name="ConsoleAppender" target="SYSTEM_OUT">
+                <PatternLayout>
+                    <pattern>
+                        %slp
+                    </pattern>
+                </PatternLayout>
+            </Console>
+            <!-- The RollingFile defines the name of the log files as well as their rolling policies -->
+            <RollingFile name="SystemLogFileAppender"
+                fileName="${log-path}/sms.{HOSTNAME}.log"
+                filePattern="${log-path}/sms.{HOSTNAME}_%d{yyyy-MM-dd}_%03i.log">
+                <PatternLayout pattern="%slp" />
+                <Policies>
+                    <SizeBasedTriggeringPolicy size="500 MB" />
+                    <TimeBasedTriggeringPolicy modulate="true"/>
+                </Policies>
+                <DefaultRolloverStrategy fileindex="nomax"/>
+            </RollingFile>
+        </Appenders>
+
+        <!-- Defines the Loggers with their names and logging levels. -->
+        <Loggers>
+            <Logger name="SystemLog" level="info" additivity="false">
+                <AppenderRef ref="SystemLogFileAppender" />
+                <AppenderRef ref="ConsoleAppender" />
+            </Logger>
+            <Logger name="com.lhs.smpp.SMSServer" level="info" additivity="false">
+                <AppenderRef ref="SystemLogFileAppender" />
+                <AppenderRef ref="ConsoleAppender" />
+            </Logger>
+            <Logger name="com.lhs.smpp.DataBaseSMSMonitor" level="info" additivity="false">
+                <AppenderRef ref="SystemLogFileAppender" />
+                <AppenderRef ref="ConsoleAppender" />
+            </Logger>
+            <Root level="warn" additivity="false">
+                <AppenderRef ref="SystemLogFileAppender" />
+                <AppenderRef ref="ConsoleAppender" />
+            </Root>
+        </Loggers>
+    </Configuration>

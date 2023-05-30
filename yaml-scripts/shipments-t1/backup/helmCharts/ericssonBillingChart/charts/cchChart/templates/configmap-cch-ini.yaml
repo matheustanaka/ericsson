@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cch.ini
+data:
+  cch.ini: |
+    LOG_FILTER_LEVEL = {{.Values.logFilterLevel}}

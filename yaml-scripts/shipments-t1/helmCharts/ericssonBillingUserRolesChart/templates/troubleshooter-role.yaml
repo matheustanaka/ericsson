@@ -1,0 +1,70 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: eric-bss-eb-troubleshooter-role
+rules:
+  # Following permissions are added so that "kubectl logs" and "kubectl exec" works and the troubleshooter
+  # can get information about the pods to troubleshoot them: get, list, watch
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get","list", "watch", "delete", "deletecollection"]
+
+  - apiGroups: [""]
+    resources: ["pods/log","services","persistentvolumeclaims"]
+    verbs: ["get", "list", "watch"]
+
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
+
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch", "patch", "update"]
+
+  - apiGroups: ["apps"]
+    resources: ["deployments", "daemonsets", "statefulsets"]
+    verbs: ["get", "list", "watch", "patch", "update"]
+
+  - apiGroups: ["batch"]
+    resources: ["cronjobs", "jobs"]
+    verbs: ["get", "list", "watch", "patch", "update"]
+
+  # Added, so that one can execute "helm list"
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["list"]
+
+  # Added, so that one can execute "kubectl describe configmap ..."
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list"]
+
+  # Added, so that one can execute "kubectl get all"
+  - apiGroups: ["apps"]
+    resources: ["replicasets"]
+    verbs: ["get", "list", "watch"]
+
+  - apiGroups: [""]
+    resources: ["replicationcontrollers"]
+    verbs: ["get", "list", "watch"]
+
+  - apiGroups: ["autoscaling"]
+    resources: ["horizontalpodautoscalers"]
+    verbs: ["get", "list", "watch"]
+
+  - apiGroups: [""]
+    resources: ["endpoints"]
+    verbs: ["get", "list"]
+
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["get", "list", "watch"]
+
+  - apiGroups: ["projectcontour.io"]
+    resources: ["httpproxies"]
+    verbs: ["get", "list"]
+
+# Following permissions for proxies / httpproxies are added
+  - apiGroups: [""]
+    resources: ["proxies"]
+    verbs: ["create", "get", "list", "update", "delete"]

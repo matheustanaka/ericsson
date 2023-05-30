@@ -1,0 +1,129 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-cms-resource.xml
+data:
+  Registry_CMS_Resource.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+
+    <ComponentRegistry>
+
+        <Node name="CMS Settings">
+
+                <Node name="Resource Settings">
+
+                <KeyValue key="CheckAssignability" value="Y" comment="Enables checks for external resources, whether they can be assigned a contract or not."/>
+
+                   <KeyValue key="GlobalMicroCellDefaultScalingFactor" type="Float" comment="Default scaling factor for global microcells." value="1.0"/>
+                <KeyValue key="GlobalMicroCellMaxAllowedScalingFactor" type="Float" comment="Maximum allowed scaling factor for global microcells" value="1.0"/>
+
+                <KeyValue key="LockTime"    type="Integer"    value="30" comment="Time a resource is locked in minutes, if the RESERVATION flag is set in the SOI."/>
+
+                <Node name="ClassIndicator DirectoryNumber">
+                    <!-- in customizations for new directory number types just add a line like the following
+                     <KeyValue key="value form DIRECTORY_NUMBER_VIEW.NPCODE_CLASS" value="implementation class"/>
+                     e.g. for the exiting type T it is
+                    <KeyValue key="T" value="com.lhs.Resource.bscs_core.PhoneNumber"/>
+                     -->
+                </Node>
+
+                <Node name="ClassIndicator DirectoryNumberTemplate">
+                      <!-- in customizations for new directory number template types just add a line like the following
+                     <KeyValue key="value form RES_DIRNUM_STRUCTURE.NPCODE_CLASS" value="implementation class"/>
+                     e.g. for the exiting type T it is
+                    <KeyValue key="T" value="com.lhs.Resource.bscs_core.PhoneNumberTemplate"/>
+                     -->
+                </Node>
+
+                <Node name="ClassIndicator AbstractPortingInformation">
+                    <!-- in customizations for new porting resources types just add a line like the following
+                     <KeyValue key="value form RES_DIRNUM_STRUCTURE.NPCODE_CLASS" value="implementation class"/>
+                     e.g. for the exiting type T it is
+                    <KeyValue key="T" value="com.lhs.Resource.bscs_core.PhoneNumberPortingInformation"/>
+                     -->
+                </Node>
+
+                <Node name="Resource Search">
+                    <KeyValue key="MaxResultSetSize"    type="Integer"    value="50"/>
+                    <KeyValue key="wildcardLimit" type="Integer" value="3" comment="the minimum number of characters before wildcard in a search string"    />
+                </Node>
+
+                <Node name="Directory Number Search">
+                    <KeyValue key="MaxResultSetSize" type="Integer" value="30" />
+                    <KeyValue key="DefaultResultSetSize" type="Integer" value="20" />
+                </Node>
+
+                <Node name="Port Search">
+                    <KeyValue key="MaxResultSetSize" type="Integer" value="30" />
+                    <KeyValue key="DefaultResultSetSize" type="Integer" value="20" />
+                </Node>
+
+                <Node name="Storage Medium Search">
+                    <KeyValue key="MaxResultSetSize" type="Integer" value="30" />
+                    <KeyValue key="DefaultResultSetSize" type="Integer" value="20" />
+
+                </Node>
+
+                <Node name="VPNPrivateNumber Search">
+                    <KeyValue key="MaxResultSetSize" type="Integer" value="20" />
+                    <KeyValue key="DefaultResultSetSize" type="Integer" value="20" />
+                </Node>
+
+                <Node name="Phone Number Search">
+                    <KeyValue key="MaxResultSetSize" type="Integer" value="30" />
+                    <KeyValue key="DefaultResultSetSize" type="Integer" value="20" />
+                </Node>
+
+                <Node name="PDP Address Search">
+                    <KeyValue key="MaxResultSetSize" type="Integer" value="20" />
+                    <KeyValue key="DefaultResultSetSize" type="Integer" value="20" />
+                </Node>
+
+                <KeyValue key="CheckDealerRestriction" value="N" comment="In case that a dealer assignment for a user exist, ensure that resource belongs to the same dealer. Domain : Y, N"/>
+
+                  <Node name="VirtualPrivateNetwork Search">
+                    <KeyValue key="MaxResultSetSize" type="Integer" value="500" />
+                    <KeyValue key="DefaultResultSetSize" type="Integer" value="50" />
+                    <KeyValue key="DefaultOutput" value="VPN_ID, VPN_NAME, SCCODE, SCCODE_PUB" />
+                    <KeyValue key="BaseTable" value="VIRTUAL_PRIVATE_NETWORK" />
+                    <KeyValue key="BaseTableAlias" value="VPN" />
+                    <KeyValue key="DefaultNumberOfCharactersBeforeWildcard" type="Integer"
+                        value="0" />
+                    <KeyValue key="FromClauseOrder" value="MPDSCTAB M" />
+                    <Node name="Attributes">
+                        <Node name="VPN_ID">
+                            <KeyValue key="SelectClause" value="VPN.VPN_ID" />
+                            <KeyValue key="ConditionWhereClause" value="VPN.VPN_ID" />
+                            <KeyValue key="SupportsWildcardSearch" type="Boolean" value="false" />
+                        </Node>
+                        <Node name="VPN_NAME">
+                            <KeyValue key="SelectClause" value="VPN.VPN_NAME" />
+                            <KeyValue key="ConditionWhereClause" value="VPN.VPN_NAME" />
+                            <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true" />
+                        </Node>
+                        <Node name="SCCODE">
+                            <KeyValue key="SelectClause" value="VPN.SCCODE" />
+                            <KeyValue key="ConditionWhereClause" value="VPN.SCCODE" />
+                        </Node>
+                        <Node name="SCCODE_PUB">
+                            <KeyValue key="SelectClause" value="M.SCSLPREFIX" />
+                            <Node name="FromClauses">
+                                <KeyValue key="MPDSCTAB M" value="" />
+                            </Node>
+                            <Node name="JoinWhereClauses">
+                                <Node name="OutputAttributes">
+                                    <KeyValue key="VPN.SCCODE = M.SCCODE" value="" />
+                                </Node>
+                            </Node>
+                        </Node>
+                       </Node>
+                </Node>
+
+                <KeyValue key="IndividualResourceRetention"    type="Boolean" value="false"/>
+
+            </Node>
+
+        </Node><!-- CMS Settings -->
+
+    </ComponentRegistry>

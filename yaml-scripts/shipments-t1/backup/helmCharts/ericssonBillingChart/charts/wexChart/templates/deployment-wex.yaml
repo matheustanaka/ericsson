@@ -1,0 +1,240 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eric-bss-eb-wex
+  labels:
+    app: eb-java-wex
+    chart: {{ template "eric-bss-eb-wex.chart" . }}
+    {{- include "eric-bss-eb-wex.kubernetesIoInfo" . | nindent 4 }}
+    heritage: {{ .Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-wex.productInfo" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount | default 1}}
+  selector:
+    matchLabels:
+      app: eb-java-wex
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: eb-java-wex
+        eric-bss-eb-network-soi-client: 'true'
+        eric-bss-eb-network-web-client: 'true'
+        {{- include "eric-bss-eb-wex.kubernetesIoInfo" . | nindent 8 }}
+      annotations:
+      {{- include "eric-bss-eb-wex.productInfo" . | indent 8 }}
+    spec:
+      securityContext:
+        {{- include "eric-bss-eb-wex.checkPodUserLoginData" . | nindent 8 }}
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      initContainers:
+        - name: wex-webapps-init
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "wex-webapps-init" }}
+          image: "{{ template "eric-bss-eb-wex.registryUrl" $templDict }}/{{ template "eric-bss-eb-wex.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-wex.pullPolicy" $templDict }}
+          command: ["/bin/sh"]
+          args: ["-c","tar xzf /webapps.tar.gz -C /webapps && sed s/{HOSTNAME}/$HOSTNAME/g /apache-tomcat/webapps/wex/WEB-INF/classes/logging.properties >> /apache-tomcat/conf/logging.properties && mkdir -p /log/wex -m 750"]
+          volumeMounts:
+          - mountPath: /webapps
+            name: webapps-volume
+          - name: init-logging-properties-volume
+            mountPath: /apache-tomcat/conf
+          - name: logging-properties-volume
+            mountPath: /apache-tomcat/webapps/wex/WEB-INF/classes/logging.properties
+            subPath: logging.properties
+          - name: logs-volume
+            mountPath: /log
+        {{ if eq .Values.global.useDeploymentMode "eb" }}
+        - name: wex-config-init
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "wex-config-init" }}
+          image: "{{ template "eric-bss-eb-wex.registryUrl" $templDict }}/{{ template "eric-bss-eb-wex.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-wex.pullPolicy" $templDict }}
+          command: ["/bin/sh"]
+          args: ["-c","rm -Rf webapps/wex/help && unzip -o /configuration.zip -d /webapps/wex/"]
+          volumeMounts:
+          - mountPath: /webapps
+            name: webapps-volume
+        {{ end }}
+        {{ if index .Values "images" "wex-init-customized" "name" }}
+        - name: wex-init-customized
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "wex-init-customized" }}
+          image: "{{ template "eric-bss-eb-wex.registryUrl" $templDict }}/{{ template "eric-bss-eb-wex.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-wex.pullPolicy" $templDict }}
+          command: ["/bin/sh"]
+          args: ["-c","tar xzf {{ index .Values "images" $templDict.containerKey "directory" }}/webapps.tar.gz -C /webapps"]
+          volumeMounts:
+          - mountPath: /webapps
+            name: webapps-volume
+        {{ end }}
+      {{- if .Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ .Chart.Name }}-sa
+      {{- end }}
+      containers:
+        - name: eric-bss-eb-wex
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "eb-java-wex" }}
+          image: "{{ template "eric-bss-eb-wex.registryUrl" $templDict }}/{{ template "eric-bss-eb-wex.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-wex.pullPolicy" $templDict }}
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /wex
+              {{ if .Values.tomcat.secretName }}
+              scheme: HTTPS
+              {{ else }}
+              scheme: HTTP
+              {{ end }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /wex/health
+              {{ if .Values.tomcat.secretName }}
+              scheme: HTTPS
+              {{ else }}
+              scheme: HTTP
+              {{ end }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          resources:
+            limits:
+              memory: "{{ .Values.resources.limits.memory}}"
+              cpu: "{{ .Values.resources.limits.cpu}}"
+            requests:
+              memory: "{{ .Values.resources.requests.memory}}"
+              cpu: "{{ .Values.resources.requests.cpu}}"
+          env:
+          - name: K8S_NAMING_SERVICE_LIST
+            value: "{{ .Values.global.k8sNamingServiceList }}"
+          - name: TZ
+            value: "{{ .Values.global.timezone }}"
+          volumeMounts:
+          - name: wex-jacorb-properties-volume
+            mountPath: /ericssonbilling/jacorb.properties
+            subPath: jacorb.properties
+          - name: init-logging-properties-volume
+            mountPath: /apache-tomcat/conf/logging.properties
+            subPath: logging.properties
+          - name: logs-volume
+            mountPath: /log
+          - name: wex-omx-registry-volume
+            mountPath: /apache-tomcat/webapps/wex/WEB-INF/classes/Registry/OMX_Registry.xml
+            subPath: OMX_Registry.xml
+          - name: wex-wmx-registry-volume
+            mountPath: /apache-tomcat/webapps/wex/WEB-INF/classes/Registry/WMX_Registry.xml
+            subPath: WMX_Registry.xml
+          - name: wex-integration-volume
+            mountPath: /apache-tomcat/webapps/wex/WEB-INF/classes/Registry/OMX_Integration.xml
+            subPath: OMX_Integration.xml
+          - name: tomcat-server-volume
+            mountPath: /apache-tomcat/conf/server.xml
+            subPath: server.xml
+          - name: applicationcontext-cfw-security-xml-volume
+            mountPath: /apache-tomcat/webapps/wex/WEB-INF/classes/applicationContext-cfw-security.xml
+            subPath: applicationContext-cfw-security.xml
+          - mountPath: /apache-tomcat/webapps
+            name: webapps-volume
+          - name: tomcat-conf-catalina-volume
+            mountPath: /apache-tomcat/conf/Catalina
+          - name: tomcat-work-volume
+            mountPath: /apache-tomcat/work
+          {{ if .Values.tomcat.secretName }}
+          - name: key-store-volume
+            mountPath: "/ssl_tomcat"
+            readOnly: true
+          {{ end }}
+          {{ if .Values.global.forgerock.secretName }}
+          - name: openam-key-store-volume
+            mountPath: "/ssl_openam"
+            readOnly: true
+          {{ end }}
+          ports:
+            - name: http-wex
+              containerPort: 8080
+          command: ["/bin/bash"]
+          args: ["-c","${JAVA_HOME}/bin/java \
+                       {{ .Values.args.javaDebugOpts }} \
+                       -cp ${CATALINA_HOME}/bin/bootstrap.jar:\
+                           ${CATALINA_HOME}/bin/tomcat-juli.jar \
+                       -Dcatalina.base=${CATALINA_HOME} \
+                       -Dcatalina.home=${CATALINA_HOME} \
+                       -Dignore.endorsed.dirs= \
+                       -Djdk.tls.ephemeralDHKeySize={{ .Values.args.ephemeralDHKeySize }} \
+                       -Dtomcat.maxThreads={{ .Values.tomcat.connector.maxThreads }} \
+                       -Dtomcat.keystoreFile={{ .Values.tomcat.connector.keystoreFile }} \
+                       -Dtomcat.keystorePass={{ .Values.tomcat.connector.keystorePass }} \
+                       -Dorg.apache.catalina.security.SecurityListener.UMASK=0027 \
+                       -Dcustom.props=/ericssonbilling/jacorb.properties \
+                       -Djava.util.logging.config.file=${CATALINA_HOME}/conf/logging.properties \
+                       -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager \
+                       -Djava.protocol.handler.pkgs=org.apache.catalina.webresources \
+                       -Djava.io.tmpdir=/log/wex org.apache.catalina.startup.Bootstrap start"]
+      {{- if .Values.nodeSelector }}
+      nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector: {{ toYaml .Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity: {{ toYaml .Values.affinity | nindent 8 }}
+      {{- else if .Values.global.affinity }}
+      affinity: {{ toYaml .Values.global.affinity | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: wex-jacorb-properties-volume
+        configMap:
+           name: eric-bss-eb-wex-jacorb.properties
+      - name: logging-properties-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.loggingProperties | default "eric-bss-eb-wex-logging.properties" }}
+      - name: wex-omx-registry-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryOmxXml | default "eric-bss-eb-wex-omx-registry.xml" }}
+      - name: wex-wmx-registry-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryWmxXml | default "eric-bss-eb-wex-wmx-registry.xml" }}
+      - name: wex-integration-volume
+        configMap:
+          name: eric-bss-eb-wex-integration.xml
+      - name: tomcat-server-volume
+        configMap:
+          name: eric-bss-eb-wex-tomcat-server.xml
+      - name: applicationcontext-cfw-security-xml-volume
+        configMap:
+          name: eric-bss-eb-wex-applicationcontext-cfw-security.xml
+      - name: webapps-volume
+        emptyDir: {}
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-logs
+      - name: init-logging-properties-volume
+        emptyDir: {}
+      - name: tomcat-conf-catalina-volume
+        emptyDir: {}
+      - name: tomcat-work-volume
+        emptyDir: {}
+      {{ if .Values.tomcat.secretName }}
+      - name: key-store-volume
+        secret:
+          secretName: {{ .Values.tomcat.secretName }}
+      {{ end }}
+      {{ if .Values.global.forgerock.secretName }}
+      - name: openam-key-store-volume
+        secret:
+          secretName: {{ .Values.global.forgerock.secretName }}
+      {{ end }}
+
+

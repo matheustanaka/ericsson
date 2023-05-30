@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-rih-comlock
+data:
+  ComLock.cfg: |-
+    ###############################################################################
+    #
+    #                           Configuration of Locks
+    #
+    ###############################################################################
+    #
+    # Section LOCK_LIB
+    # ----------------
+    # TRACE_LEVEL                Trace Level (optional, values 0 ... 4, default 0)
+    # TRACE_FILE                 Trace File (optional, default none)
+    # REMOVE_LOCKS_ON_EXIT       Remove Locks on Exit (optional, default NO)
+    #
+    # Section LOCK_ACCESS
+    # -------------------
+    # LOCK_CFG_KEY               Access key (mandatory). Must be unique for each
+    #                            user or group (see access rights).
+    #                            Format: hex (e.g. 0xbabacaba)
+    # LOCK_CFG_PERMISSION        Access permissions (mandatory)
+    #                            Format: oct (e.g. 600 for user r/w - access)
+    #
+    #
+    # Section LOCK_TABLES
+    # -------------------
+    # TABLE_NAME                 Name of a lock table (used to find individual
+    #                            lock configuration)
+    #
+    #
+    # Section LOCK_TABLE_NAME
+    # -----------------------
+    # LOCK_TYPE                  Lock Type (known types: RW_LOCK, SIMPLE_LOCK)
+    # LOCK_NUMBER                Maximum number of locks in this lock table
+    # LOCK_SET_SIZE              Number of locks per lock set (for semaphore locks
+    #                            only, always 1 else)
+    # LOCK_READERS               Maximum number of readers locks (RW_LOCK only,
+    #                            always 1 else)
+    #
+    ###############################################################################
+
+
+    # ==========================
+    # General Parameters
+    # ==========================
+    [LOCK_LIB]
+    TRACE_LEVEL=0
+    TRACE_FILE=
+    REMOVE_LOCKS_ON_EXIT={{$.Values.global.comLock.removeLocksOnExit}}
+
+
+    # ==========================
+    # Access Parameters
+    # ==========================
+    [LOCK_ACCESS]
+    LOCK_CFG_KEY=0xbabacaba
+    LOCK_CFG_PERMISSION=600
+
+
+    # ==========================
+    # Declaration of Lock Tables
+    # ==========================
+    [LOCK_TABLES]
+    TABLE_NAME=COHASH_RIH            // Locks for RIH Contract Hash table
+
+
+    # =========================
+    # RIH Lock Tables
+    # =========================
+    [COHASH_RIH]
+    LOCK_TYPE=RW_LOCK
+    LOCK_NUMBER={{$.Values.global.comLock.rih.contractHash.lockNumber}}
+    LOCK_SET_SIZE={{$.Values.global.comLock.rih.contractHash.lockSetSize}}
+    LOCK_READERS=10000

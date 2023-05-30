@@ -1,0 +1,5 @@
+apiVersion: v2
+appVersion: "1.0"
+description: A Helm chart for Device Input Handler (DIH)
+name: eric-bss-eb-dih
+version: 22.15.12+0

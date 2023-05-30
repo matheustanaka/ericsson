@@ -1,0 +1,428 @@
+{{- range $gmdextDeployment := .Values.gmdextDeployments }}
+{{- $startParameters := $gmdextDeployment.startParameters -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "eric-bss-eb-gmdext-{{ $gmdextDeployment.name }}"
+  labels:
+    app: eric-bss-eb-gmdext
+    chart: {{ template "eric-bss-eb-gmdext.chart" $ }}
+    {{- include "eric-bss-eb-gmdext.kubernetesIoInfo" $ | nindent 4 }}
+    heritage: {{ $.Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-gmdext.productInfo" $ | indent 4 }}
+spec:
+  replicas: {{ $gmdextDeployment.replicaCount | default 2}}
+  selector:
+    matchLabels:
+      app: eric-bss-eb-gmdext
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: eric-bss-eb-gmdext
+        {{- include "eric-bss-eb-gmdext.kubernetesIoInfo" $ | nindent 8 }}
+        eric-bss-eb-network-database-client: 'true'
+        eric-bss-eb-network-data-client: 'true'
+        eric-bss-eb-network-lem-client: 'true'
+        eric-bss-eb-network-vault-client: 'true'
+      annotations:
+      {{- include "eric-bss-eb-gmdext.productInfo" $ | indent 8 }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - eric-bss-eb-gmdext
+              topologyKey: kubernetes.io/hostname
+      hostIPC: false
+      securityContext:
+        {{- include "eric-bss-eb-gmdext.checkPodUserLoginData" $ | nindent 8 }}
+      {{- if $.Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ $.Chart.Name }}-sa
+      {{- end }}
+      shareProcessNamespace: {{ $.Values.global.shareProcessNamespace }}
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      initContainers:
+        - name: init-wait-for-data
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "init-wait-for-data" }}
+          image: "{{ template "eric-bss-eb-gmdext.registryUrl" $templDict }}/{{ template "eric-bss-eb-gmdext.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-gmdext.pullPolicy" $templDict }}
+          command: ["/bin/bash"]
+          args: ["-c", "./waitForCondition.sh dmh {{ $.Values.global.conditionCheckInterval }} "]
+          env:
+          {{ if $.Values.global.dataHighAvailability.enable }}
+          - name: DATA_CONNECT_NAME
+            value: "{{ $.Values.global.dataServerName }}"
+          - name: DATA_CONNECT_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }},T:eric-bss-eb-data1-service:{{ $.Values.global.dataClusterPort }}"
+          - name: DATA_CONNECT_MODE
+            value: "0"
+          {{ else }}
+          - name: DATA_SERVER_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }}"
+          {{ end }}
+          - name: TZ
+            value: "{{ $.Values.global.timezone }}"
+          - name: BSCS_LOG_FULL
+            value: "/log/gmd"
+          volumeMounts:
+          {{ if $.Values.global.securityTls.enable }}
+          - name: tls-volume
+            mountPath: "/tls/connect"
+            readOnly: true
+          {{ end }}
+          - mountPath: /log
+            name: logs-volume
+        - name: init-wait-for-xrefs
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "init-wait-for-xrefs" }}
+          image: "{{ template "eric-bss-eb-gmdext.registryUrl" $templDict }}/{{ template "eric-bss-eb-gmdext.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-gmdext.pullPolicy" $templDict }}
+          command: ["/bin/bash"]
+          args: ["-c", "./waitForCondition.sh checkXref {{ $.Values.global.conditionCheckInterval }} -U "]
+          env:
+          - name: TZ
+            value: "{{ $.Values.global.timezone }}"
+          - name: BSCS_LOG_FULL
+            value: "/log/gmd"
+          volumeMounts:
+          - mountPath: /workdir/XREF
+            name: xref-volume
+          - mountPath: /log
+            name: logs-volume
+      containers:
+        - name: eric-bss-eb-rdh-udmap
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "eric-bss-eb-rdh-udmap" }}
+          image: "{{ template "eric-bss-eb-gmdext.registryUrl" $templDict }}/{{ template "eric-bss-eb-gmdext.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-gmdext.pullPolicy" $templDict }}
+          resources:
+            limits:
+              memory: "{{ $.Values.rdhUdmap.resources.limits.memory}}"
+              cpu: "{{ $.Values.rdhUdmap.resources.limits.cpu}}"
+            requests:
+              memory: "{{ $.Values.rdhUdmap.resources.requests.memory}}"
+              cpu: "{{ $.Values.rdhUdmap.resources.requests.cpu}}"
+          env:
+          - name: K8S_ENV
+            value: "true"
+          {{ if $.Values.global.databaseTls.enable }}
+          - name: ORA_SEC_WLT
+            value: "/oratns/secret"
+          {{ end }}
+          - name: DXL_CONTINUE_AFTER_CORRUPT
+            value: "{{ $.Values.global.tracingAndLogging.dxlContinueAfterCorrupt }}"
+          {{ if $.Values.global.dataHighAvailability.enable }}
+          - name: DATA_CONNECT_NAME
+            value: "{{ $.Values.global.dataServerName }}"
+          - name: DATA_CONNECT_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }},T:eric-bss-eb-data1-service:{{ $.Values.global.dataClusterPort }}"
+          - name: DATA_CONNECT_MODE
+            value: "0"
+          {{ else }}
+          - name: DATA_SERVER_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }}"
+          {{ end }}
+          - name: DATABASE_SERVER_NAME
+            value: "{{ $.Values.global.databaseServerName }}"
+          - name: DATABASE_SERVER_PORT
+            value: "{{ $.Values.global.databaseServerPort }}"
+          - name: DATABASE_SERVER_NAME_RTX
+            value: "{{ $.Values.global.rtxDatabaseServerName }}"
+          - name: DATABASE_SERVER_PORT_RTX
+            value: "{{ $.Values.global.rtxDatabaseServerPort }}"
+          # using SHM environment different from that of bare-metal installation
+          # due to different SHM access rights for applications running in pods
+          # and those from bare-metal installation
+          - name: SHM_MAX_ENVIRONMENTS
+            value: "{{ $.Values.rdhUdmap.envVariables.shmMaxEnvironments }}"
+          - name: SHM_MAX_SECTORS
+            value: "{{ $.Values.rdhUdmap.envVariables.shmMaxSectors }}"
+          - name: SHM_MAX_SEGMENTS
+            value: "{{ $.Values.rdhUdmap.envVariables.shmMaxSegments }}"
+          - name: SHM_MIN_SEGMENT_SIZE
+            value: "{{ $.Values.rdhUdmap.envVariables.shmMinSegmentSize }}"
+          - name: TZ
+            value: "{{ $.Values.global.timezone }}"
+          {{ if $.Values.global.securityTls.enable }}
+          - name: DATA_SSL_CONNECT
+            value: "1"
+          - name: DATA_CIPHER_LIST
+            value: "{{ $.Values.global.securityTls.cipherList }}"
+          {{ end }}
+          {{ if $.Values.rdhUdmap.tracingAndLogging }}
+          {{ if $.Values.rdhUdmap.tracingAndLogging.dtaTracefile }}
+          - name: DTA_TRACEFILE
+            value: "{{ $.Values.rdhUdmap.tracingAndLogging.dtaTracefile }}"
+          {{ end }}
+          {{ if $.Values.rdhUdmap.tracingAndLogging.dxlTracefile }}
+          - name: DXL_TRACEFILE
+            value: "{{ $.Values.rdhUdmap.tracingAndLogging.dxlTracefile }}"
+          {{ end }}
+          {{ if $.Values.rdhUdmap.tracingAndLogging.udrTracefile }}
+          - name: UDR_TRACEFILE
+            value: "{{ $.Values.rdhUdmap.tracingAndLogging.udrTracefile }}"
+          {{ end }}
+          {{ end }}
+          - name: DATA_RETRY_TIME
+            value: "{{ $.Values.dataRetry.dataRetryTime }}"
+          - name: DATA_RETRY_TIME_MAX
+            value: "{{ $.Values.dataRetry.dataRetryTimeMax }}"
+          # Configure rdh start options
+          - name: TRACE_LEVEL
+            value: "{{ $.Values.rdhUdmap.traceLevel | default 0 }}"
+          - name: USE_SLAVE
+            value: "{{ $.Values.rdhUdmap.useSlave }}"
+          - name: DATA_TIMEOUT
+            value: "{{ $.Values.rdhUdmap.dataTimeout  }}"
+          - name: OPTIONAL_PARAMETERS
+            value: "{{ $.Values.rdhUdmap.optionalParameters }}"
+          {{ if not $.Values.global.secretManager.enable }}
+          - name: NO_SECRET_MANAGER
+            value: "true"
+          {{ end }}
+          command: ["/bin/bash"]
+          args: ["-c", "ulimit -c unlimited && mkdir -p {{ $.Values.global.coredumpDirectory }} && \
+                  ./rdh -udmap -t $TRACE_LEVEL $USE_SLAVE $DATA_TIMEOUT $OPTIONAL_PARAMETERS"]
+          volumeMounts:
+          {{ if $.Values.global.securityTls.enable }}
+          - name: tls-volume
+            mountPath: "/tls/connect"
+            readOnly: true
+          {{ end }}
+          {{ if $.Values.global.databaseTls.enable }}
+          - name: wallet-volume
+            mountPath: /oratns/secret
+          {{ end }}
+          - name: ctrl-volume
+            mountPath: /workdir/CTRL
+          - name: xref-volume
+            mountPath: /workdir/XREF
+          - name: pwdmgr-security-volume
+            mountPath: /workdir/PWDMGR_SECURITY
+          - name: logs-volume
+            mountPath: /log
+          - name: coredump-volume
+            mountPath: "{{ $.Values.global.coredumpDirectory }}"
+          - name: tnsnames-ora-volume
+            mountPath: /oratns/tnsnames.ora
+            subPath: tnsnames.ora
+          - name: sqlnet-ora-volume
+            mountPath: /oratns/sqlnet.ora
+            subPath: sqlnet.ora
+          - mountPath: /dev/shm
+            name: dshm
+          {{ if and ($.Values.global.secretManager.enable) ($.Values.global.secretManager.vault.caSecretName) }}
+          - name: secretmanager-tls-volume
+            mountPath: "/tls/secretManager/vault"
+            readOnly: true
+          {{ end }}
+          - name: vault-clientcfg-xml-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.xml
+            subPath: vault-clientcfg.xml
+          - name: vault-clientcfg-dtd-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.dtd
+            subPath: vault-clientcfg.dtd
+        - name: eric-bss-eb-gmdext
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "eric-bss-eb-gmdext" }}
+          image: "{{ template "eric-bss-eb-gmdext.registryUrl" $templDict }}/{{ template "eric-bss-eb-gmdext.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-gmdext.pullPolicy" $templDict }}
+          resources:
+            limits:
+              memory: "{{ $.Values.resources.limits.memory}}"
+              cpu: "{{ $.Values.resources.limits.cpu}}"
+            requests:
+              memory: "{{ $.Values.resources.requests.memory}}"
+              cpu: "{{ $.Values.resources.requests.cpu}}"
+          env:
+          - name: K8S_ENV
+            value: "true"
+          - name: NLS_LANG
+            value: "{{ $.Values.global.nlsLang }}"
+          {{ if $.Values.global.dataHighAvailability.enable }}
+          - name: DATA_CONNECT_NAME
+            value: "{{ $.Values.global.dataServerName }}"
+          - name: DATA_CONNECT_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }},T:eric-bss-eb-data1-service:{{ $.Values.global.dataClusterPort }}"
+          - name: DATA_CONNECT_MODE
+            value: "0"
+          {{ else }}
+          - name: DATA_SERVER_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }}"
+          {{ end }}
+          - name: DATABASE_SERVER_NAME
+            value: "{{ $.Values.global.databaseServerName }}"
+          - name: DATABASE_SERVER_PORT
+            value: "{{ $.Values.global.databaseServerPort }}"
+          - name: TZ
+            value: "{{ $.Values.global.timezone }}"
+          - name: DXL_CONTINUE_AFTER_CORRUPT
+            value: "{{ $.Values.global.tracingAndLogging.dxlContinueAfterCorrupt }}"
+          {{ if $.Values.global.databaseTls.enable }}
+          - name: ORA_SEC_WLT
+            value: "/oratns/secret"
+          {{ end }}
+          {{ if $.Values.global.securityTls.enable }}
+          - name: DATA_SSL_CONNECT
+            value: "1"
+          - name: DATA_CIPHER_LIST
+            value: "{{ $.Values.global.securityTls.cipherList }}"
+          {{ end }}
+          {{ if $gmdextDeployment.tracingAndLogging }}
+          {{ if $gmdextDeployment.tracingAndLogging.birdTraceLevel }}
+          - name: BIRD_TRACE_LVL
+            value: "{{ $gmdextDeployment.tracingAndLogging.birdTraceLevel }}"
+          {{ end }}
+          {{ if $gmdextDeployment.tracingAndLogging.dxlTracefile }}
+          - name: DXL_TRACEFILE
+            value: "{{ $gmdextDeployment.tracingAndLogging.dxlTracefile }}"
+          {{ end }}
+          {{ if $gmdextDeployment.tracingAndLogging.udrTracefile }}
+          - name: UDR_TRACEFILE
+            value: "{{ $gmdextDeployment.tracingAndLogging.udrTracefile }}"
+          {{ end }}
+          {{ if $gmdextDeployment.tracingAndLogging.dtaTracefile }}
+          - name: DTA_TRACEFILE
+            value: "{{ $gmdextDeployment.tracingAndLogging.dtaTracefile }}"
+          {{ end }}
+          {{ end }}
+          - name: DATA_RETRY_TIME
+            value: "{{ $.Values.dataRetry.dataRetryTime }}"
+          - name: DATA_RETRY_TIME_MAX
+            value: "{{ $.Values.dataRetry.dataRetryTimeMax }}"
+          {{ if not $.Values.global.secretManager.enable }}
+          - name: NO_SECRET_MANAGER
+            value: "true"
+          {{ end }}
+          command: ["/bin/bash"]
+          args: ["-c", "ulimit -c unlimited && mkdir -p {{ $.Values.global.coredumpDirectory }} && \
+                  ./waitForShm.sh -gmdext -sleep {{ $.Values.global.conditionCheckInterval }} && exec ./gmdext {{ $startParameters }}"]
+          volumeMounts:
+          - name: ctrl-volume
+            mountPath: /workdir/CTRL
+          - name: xref-volume
+            mountPath: /workdir/XREF
+          - name: pwdmgr-security-volume
+            mountPath: /workdir/PWDMGR_SECURITY
+          - name: gmdext-volume
+            mountPath: /workdir/GMD
+          - name: logs-volume
+            mountPath: /log
+          - name: coredump-volume
+            mountPath: "{{ $.Values.global.coredumpDirectory }}"
+          - name: tnsnames-ora-volume
+            mountPath: /oratns/tnsnames.ora
+            subPath: tnsnames.ora
+          - name: sqlnet-ora-volume
+            mountPath: /oratns/sqlnet.ora
+            subPath: sqlnet.ora
+          - name: rac-setup-volume
+            mountPath: /ericssonbilling/resource/bat/RAC_Setup.xml
+            subPath: RAC_Setup.xml
+          {{ if $.Values.global.securityTls.enable }}
+          - name: tls-volume
+            mountPath: "/tls/connect"
+            readOnly: true
+          {{ end }}
+          {{ if $.Values.global.databaseTls.enable }}
+          - name: wallet-volume
+            mountPath: /oratns/secret
+          {{ end }}
+          - mountPath: /dev/shm
+            name: dshm
+          {{ if and ($.Values.global.secretManager.enable) ($.Values.global.secretManager.vault.caSecretName) }}
+          - name: secretmanager-tls-volume
+            mountPath: "/tls/secretManager/vault"
+            readOnly: true
+          {{ end }}
+          - name: vault-clientcfg-xml-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.xml
+            subPath: vault-clientcfg.xml
+          - name: vault-clientcfg-dtd-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.dtd
+            subPath: vault-clientcfg.dtd
+          lifecycle:
+            preStop:
+              exec:
+                command: ["rm", "-f", "/workdir/CTRL/gmdext*"]
+      {{- if $.Values.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.nodeSelector | nindent 8 }}
+      {{- else if $.Values.global.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if $.Values.affinity }}
+      affinity: {{ toYaml $.Values.affinity | nindent 8 }}
+      {{- else if $.Values.global.affinity }}
+      affinity: {{ toYaml $.Values.global.affinity | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: ctrl-volume
+        emptyDir: {}
+      - name: pwdmgr-security-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-pwdmgr-security
+      - name: xref-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-xref
+      - name: gmdext-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-gmd-pvc-artifact
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-logs
+      - name: coredump-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-coredump
+      - name: tnsnames-ora-volume
+        configMap:
+          name: eric-bss-eb-gmdext-tnsnames.ora
+      - name: sqlnet-ora-volume
+        configMap:
+          name: eric-bss-eb-gmdext-sqlnet.ora
+      - name: rac-setup-volume
+        configMap:
+          name: eric-bss-eb-gmdext-rac-setup.xml
+      - name: vault-clientcfg-xml-volume
+        configMap:
+          name: eric-bss-eb-gmdext-vault-clientcfg.xml
+      - name: vault-clientcfg-dtd-volume
+        configMap:
+          name: eric-bss-eb-gmdext-vault-clientcfg.dtd
+      {{ if and ($.Values.global.secretManager.enable) ($.Values.global.secretManager.vault.caSecretName) }}
+      - name: secretmanager-tls-volume
+        secret:
+          secretName: "{{ $.Values.global.secretManager.vault.caSecretName }}"
+          items:
+          - key: {{ $.Values.global.secretManager.vault.caCertificate }}
+            path: ca.pem
+      {{ end }}
+      {{ if $.Values.global.securityTls.enable }}
+      - name: tls-volume
+        secret:
+          secretName: "{{ $.Values.global.securityTls.clientSecretName }}"
+          items:
+          - key: {{ $.Values.global.securityTls.trustedCertificateKey }}
+            path: certificate.pem
+      {{ end }}
+      {{ if $.Values.global.databaseTls.enable }}
+      - name: wallet-volume
+        secret:
+          secretName: "{{ $.Values.global.databaseTls.clientSecretName }}"
+      {{ end }}
+      - name: dshm
+        emptyDir:
+         medium: Memory
+---
+{{- end}}

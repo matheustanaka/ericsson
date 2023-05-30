@@ -1,0 +1,552 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "eric-bss-eb-evh"
+  labels:
+    app:  eric-bss-eb-evh
+    chart: {{ template "eric-bss-eb-evh.chart" $ }}
+    {{- include "eric-bss-eb-evh.kubernetesIoInfo" $ | nindent 4 }}
+    heritage: {{ $.Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-evh.productInfo" $ | indent 4 }}
+spec:
+  replicas: {{ $.Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: eric-bss-eb-evh
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: eric-bss-eb-evh
+        eric-bss-eb-network-database-client: 'true'
+        eric-bss-eb-network-data-client: 'true'
+        eric-bss-eb-network-soi-client: 'true'
+        eric-bss-eb-network-lem-client: 'true'
+        eric-bss-eb-network-vault-client: 'true'
+        {{- include "eric-bss-eb-evh.kubernetesIoInfo" $ | nindent 8 }}
+      annotations:
+      {{- include "eric-bss-eb-evh.productInfo" $ | indent 8 }}
+    spec:
+      terminationGracePeriodSeconds: {{ $.Values.terminationGracePeriodSeconds }}
+      securityContext:
+        {{- include "eric-bss-eb-evh.checkPodUserLoginData" $ | nindent 8 }}
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      initContainers:
+        - name: init-wait-for-data
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "init-wait-for-data" }}
+          image: "{{ template "eric-bss-eb-evh.registryUrl" $templDict }}/{{ template "eric-bss-eb-evh.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-evh.pullPolicy" $templDict }}
+          command: ["/bin/bash"]
+          args: ["-c", "./waitForCondition.sh dmh {{ $.Values.global.conditionCheckInterval }} "]
+          env:
+          {{ if $.Values.global.dataHighAvailability.enable }}
+          - name: DATA_CONNECT_NAME
+            value: "{{ $.Values.global.dataServerName }}"
+          - name: DATA_CONNECT_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }},T:eric-bss-eb-data1-service:{{ $.Values.global.dataClusterPort }}"
+          - name: DATA_CONNECT_MODE
+            value: "0"
+          {{ else }}
+          - name: DATA_SERVER_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }}"
+          {{ end }}
+          - name: TZ
+            value: "{{ $.Values.global.timezone }}"
+          - name: BSCS_LOG_FULL
+            value: "/log/evh"
+          volumeMounts:
+            - name: logs-volume
+              mountPath: /log
+            {{ if $.Values.global.securityTls.enable }}
+            - name: tls-volume
+              mountPath: "/tls/connect"
+              readOnly: true
+            {{ end }}
+        - name: init-wait-for-xrefs
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "init-wait-for-xrefs" }}
+          image: "{{ template "eric-bss-eb-evh.registryUrl" $templDict }}/{{ template "eric-bss-eb-evh.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-evh.pullPolicy" $templDict }}
+          command: ["/bin/bash"]
+          args: ["-c", "./waitForCondition.sh checkXref {{ $.Values.global.conditionCheckInterval }} -U "]
+          env:
+          - name: BSCS_LOG_FULL
+            value: "/log/evh"
+          - name: TZ
+            value: "{{ $.Values.global.timezone }}"
+          volumeMounts:
+          - mountPath: /workdir/XREF
+            name: xref-volume
+          - mountPath: /log
+            name: logs-volume
+        - name: init-logging-evh
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "init-logging-evh" }}
+          image: "{{ template "eric-bss-eb-evh.registryUrl" $templDict }}/{{ template "eric-bss-eb-evh.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-evh.pullPolicy" $templDict }}
+          command: ["/bin/sh"]
+          args: ["-c","sed s/{HOSTNAME}/$HOSTNAME/g /ericssonbilling/logging.properties >> /ericssonbilling/resource/init/logging.properties && \
+                       sed s/{HOSTNAME}/$HOSTNAME/g /ericssonbilling/jacorb.properties >> /ericssonbilling/resource/init/jacorb.properties && \
+                       mkdir -p /log/evh -m 750"]
+          volumeMounts:
+          - name: init-properties-volume
+            mountPath: /ericssonbilling/resource/init
+          - name: evh-logging-properties-volume
+            mountPath: /ericssonbilling/logging.properties
+            subPath: logging.properties
+          - name: evh-jacorb-properties-volume
+            mountPath: /ericssonbilling/jacorb.properties
+            subPath: jacorb.properties
+          - name: logs-volume
+            mountPath: /log
+      {{ if index $.Values "images" "evh-init-customized" "name" }}
+        - name: evh-init-customized
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "evh-init-customized" }}
+          image: "{{ template "eric-bss-eb-evh.registryUrl" $templDict }}/{{ template "eric-bss-eb-evh.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-evh.pullPolicy" $templDict }}
+          command: ["/bin/sh"]
+          args: ["-c","cp /{{ index $.Values "images" $templDict.containerKey "directory" }}/* /evh-customized-libs/"]
+          volumeMounts:
+          - mountPath: /evh-customized-libs
+            name: evh-customized-libs-volume
+      {{ end }}
+      {{- if $.Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ $.Chart.Name }}-sa
+      {{- end }}
+      containers:
+        {{if $.Values.useRdh}}
+        - name: eric-bss-eb-rdh-udmap
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "rdh-udmap" }}
+          image: "{{ template "eric-bss-eb-evh.registryUrl" $templDict }}/{{ template "eric-bss-eb-evh.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-evh.pullPolicy" $templDict }}
+          resources:
+            limits:
+              memory: "{{ $.Values.rdhUdmap.resources.limits.memory}}"
+              cpu: "{{ $.Values.rdhUdmap.resources.limits.cpu}}"
+            requests:
+              memory: "{{ $.Values.rdhUdmap.resources.requests.memory}}"
+              cpu: "{{ $.Values.rdhUdmap.resources.requests.cpu}}"
+          env:
+          - name: K8S_ENV
+            value: "true"
+          {{ if $.Values.global.databaseTls.enable }}
+          - name: ORA_SEC_WLT
+            value: "/oratns/secret"
+          {{ end }}
+          - name: DXL_CONTINUE_AFTER_CORRUPT
+            value: "{{ $.Values.global.tracingAndLogging.dxlContinueAfterCorrupt }}"
+          {{ if $.Values.global.dataHighAvailability.enable }}
+          - name: DATA_CONNECT_NAME
+            value: "{{ $.Values.global.dataServerName }}"
+          - name: DATA_CONNECT_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }},T:eric-bss-eb-data1-service:{{ $.Values.global.dataClusterPort }}"
+          - name: DATA_CONNECT_MODE
+            value: "0"
+          {{ else }}
+          - name: DATA_SERVER_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }}"
+          {{ end }}
+          - name: DATABASE_SERVER_NAME
+            value: "{{ $.Values.global.databaseServerName }}"
+          - name: DATABASE_SERVER_PORT
+            value: "{{ $.Values.global.databaseServerPort }}"
+          - name: DATABASE_SERVER_NAME_RTX
+            value: "{{ $.Values.global.rtxDatabaseServerName }}"
+          - name: DATABASE_SERVER_PORT_RTX
+            value: "{{ $.Values.global.rtxDatabaseServerPort }}"
+          # using SHM environment different from that of bare-metal installation
+          # due to different SHM access rights for applications running in pods
+          # and those from bare-metal installation
+          - name: SHM_MAX_ENVIRONMENTS
+            value: "{{ $.Values.rdhUdmap.envVariables.shmMaxEnvironments }}"
+          - name: SHM_MAX_SECTORS
+            value: "{{ $.Values.rdhUdmap.envVariables.shmMaxSectors }}"
+          - name: SHM_MAX_SEGMENTS
+            value: "{{ $.Values.rdhUdmap.envVariables.shmMaxSegments }}"
+          - name: SHM_MIN_SEGMENT_SIZE
+            value: "{{ $.Values.rdhUdmap.envVariables.shmMinSegmentSize }}"
+          - name: TZ
+            value: "{{ $.Values.global.timezone }}"
+          {{ if $.Values.global.securityTls.enable }}
+          - name: DATA_SSL_CONNECT
+            value: "1"
+          - name: DATA_CIPHER_LIST
+            value: "{{ $.Values.global.securityTls.cipherList }}"
+          {{ end }}
+          {{ if $.Values.rdhUdmap.tracingAndLogging }}
+          {{ if $.Values.rdhUdmap.tracingAndLogging.dtaTracefile }}
+          - name: DTA_TRACEFILE
+            value: "{{ $.Values.rdhUdmap.tracingAndLogging.dtaTracefile }}"
+          {{ end }}
+          {{ if $.Values.rdhUdmap.tracingAndLogging.dxlTracefile }}
+          - name: DXL_TRACEFILE
+            value: "{{ $.Values.rdhUdmap.tracingAndLogging.dxlTracefile }}"
+          {{ end }}
+          {{ if $.Values.rdhUdmap.tracingAndLogging.udrTracefile }}
+          - name: UDR_TRACEFILE
+            value: "{{ $.Values.rdhUdmap.tracingAndLogging.udrTracefile }}"
+          {{ end }}
+          {{ end }}
+          - name: DATA_RETRY_TIME
+            value: "{{ $.Values.dataRetry.dataRetryTime }}"
+          - name: DATA_RETRY_TIME_MAX
+            value: "{{ $.Values.dataRetry.dataRetryTimeMax }}"
+          # Configure rdh start options
+          - name: TRACE_LEVEL
+            value: "{{ $.Values.rdhUdmap.traceLevel | default 0 }}"
+          - name: USE_SLAVE
+            value: "{{ $.Values.rdhUdmap.useSlave }}"
+          - name: DATA_TIMEOUT
+            value: "{{ $.Values.rdhUdmap.dataTimeout  }}"
+          - name: OPTIONAL_PARAMETERS
+            value: "{{ $.Values.rdhUdmap.optionalParameters }}"
+          {{ if not $.Values.global.secretManager.enable }}
+          - name: NO_SECRET_MANAGER
+            value: "true"
+          {{ end }}
+          command: ["/bin/bash"]
+          args: ["-c", "ulimit -c unlimited && mkdir -p {{ $.Values.global.coredumpDirectory }} && \
+                  ./rdh -udmap -t $TRACE_LEVEL $USE_SLAVE $DATA_TIMEOUT $OPTIONAL_PARAMETERS"]
+          volumeMounts:
+          {{ if $.Values.global.securityTls.enable }}
+          - name: tls-volume
+            mountPath: "/tls/connect"
+            readOnly: true
+          {{ end }}
+          {{ if $.Values.global.databaseTls.enable }}
+          - name: wallet-volume
+            mountPath: /oratns/secret
+          {{ end }}
+          - name: rdh-ctrl-volume
+            mountPath: /workdir/CTRL
+          - name: xref-volume
+            mountPath: /workdir/XREF
+          - name: pwdmgr-security-volume
+            mountPath: /workdir/PWDMGR_SECURITY
+          - name: logs-volume
+            mountPath: /log
+          - name: coredump-volume
+            mountPath: "{{ $.Values.global.coredumpDirectory }}"
+          - name: tnsnames-ora-volume
+            mountPath: /oratns/tnsnames.ora
+            subPath: tnsnames.ora
+          - name: sqlnet-ora-volume
+            mountPath: /oratns/sqlnet.ora
+            subPath: sqlnet.ora
+          - mountPath: /dev/shm
+            name: dshm
+          {{ if and ($.Values.global.secretManager.enable) ($.Values.global.secretManager.vault.caSecretName) }}
+          - name: secretmanager-tls-volume
+            mountPath: "/tls/secretManager/vault"
+            readOnly: true
+          {{ end }}
+          - name: vault-clientcfg-xml-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.xml
+            subPath: vault-clientcfg.xml
+          - name: vault-clientcfg-dtd-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.dtd
+            subPath: vault-clientcfg.dtd
+        {{ end }}
+        - name: eric-bss-eb-evh
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "eric-bss-eb-evh" }}
+          image: "{{ template "eric-bss-eb-evh.registryUrl" $templDict }}/{{ template "eric-bss-eb-evh.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-evh.pullPolicy" $templDict }}
+          resources:
+            limits:
+              memory: "{{ $.Values.resources.limits.memory}}"
+              cpu: "{{ $.Values.resources.limits.cpu}}"
+            requests:
+              memory: "{{ $.Values.resources.requests.memory}}"
+              cpu: "{{ $.Values.resources.requests.cpu}}"
+          env:
+          - name: K8S_ENV
+            value: "true"
+          - name: NLS_LANG
+            value: "{{ $.Values.global.nlsLang }}"
+          {{ if $.Values.global.dataHighAvailability.enable }}
+          - name: DATA_CONNECT_NAME
+            value: "{{ $.Values.global.dataServerName }}"
+          - name: DATA_CONNECT_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }},T:eric-bss-eb-data1-service:{{ $.Values.global.dataClusterPort }}"
+          - name: DATA_CONNECT_MODE
+            value: "0"
+          {{ else }}
+          - name: DATA_SERVER_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }}"
+          {{ end }}
+          - name: DATABASE_SERVER_NAME
+            value: "{{ $.Values.global.databaseServerName }}"
+          - name: DATABASE_SERVER_PORT
+            value: "{{ $.Values.global.databaseServerPort }}"
+          - name: TZ
+            value: "{{ $.Values.global.timezone }}"
+          - name: DATA_RETRY_TIME
+            value: "{{ $.Values.dataRetry.dataRetryTime }}"
+          - name: DATA_RETRY_TIME_MAX
+            value: "{{ $.Values.dataRetry.dataRetryTimeMax }}"
+          - name: BSCS_RESOURCE
+            value: "/ericssonbilling/resource/"
+          {{ if $.Values.tracingAndLogging }}
+          {{ if $.Values.tracingAndLogging.bscsErrorTimestamp }}
+          - name: BSCS_ERROR_TIMESTAMP
+            value: "{{ $.Values.tracingAndLogging.bscsErrorTimestamp }}"
+          {{ end }}
+          {{ if $.Values.tracingAndLogging.dxlTracefile }}
+          - name: DXL_TRACEFILE
+            value: "{{ $.Values.tracingAndLogging.dxlTracefile }}"
+          {{ end }}
+          {{ if $.Values.tracingAndLogging.dtaTracefile }}
+          - name: DTA_TRACEFILE
+            value: "{{ $.Values.tracingAndLogging.dtaTracefile }}"
+          {{ end }}
+          {{ end }}
+          {{ if $.Values.global.securityTls.enable }}
+          - name: DATA_SSL_CONNECT
+            value: "1"
+          - name: DATA_CIPHER_LIST
+            value: "{{ $.Values.global.securityTls.cipherList }}"
+          {{ end }}
+          {{ if $.Values.global.databaseTls.enable }}
+          - name: ORA_SEC_WLT
+            value: "/oratns/secret"
+          {{ end }}
+          - name: DXL_CONTINUE_AFTER_CORRUPT
+            value: "{{ $.Values.global.tracingAndLogging.dxlContinueAfterCorrupt }}"
+          - name: MP_LOG_SIZE
+            value: "{{ $.Values.global.tracingAndLogging.mpLogParameters.mpLogSize }}"
+          - name: MP_LOG_INTERVAL
+            value: "{{ $.Values.global.tracingAndLogging.mpLogParameters.mpLogInterval }}"
+          - name: EVH_DXL_TRACING
+            value: "{{ $.Values.tracingAndLogging.evhTrace }}"
+          - name: BSCS_LOG_POSTFIX
+            value: "evha0"
+          - name: K8S_NAMING_SERVICE_LIST
+            value: "{{ .Values.global.k8sNamingServiceList }}"
+          # Dummy configuration for SOISRV HOST/PORT.
+          # Needed
+          # - to avoid bigger code changes in evh and its plugins
+          # - these code changes would affect EVH running on bare metal, which is to be avoided
+          # Containerized EVH uses K8S_NAMING_SERVICE_LIST and not the following dummies:
+          - name: SOISRV_HOST
+            value: "dummy"
+          - name: SOISRV_PORT
+            value: "0000"
+          {{ if not $.Values.global.secretManager.enable }}
+          - name: NO_SECRET_MANAGER
+            value: "true"
+          {{ end }}
+          command: ["/bin/bash"]
+          {{if $.Values.useRdh}}
+          args: ["-c", "ulimit -c unlimited && mkdir -p {{ $.Values.global.coredumpDirectory }} && \
+                       ./waitForShm.sh -bch -sleep {{ $.Values.global.conditionCheckInterval }} && \
+                       cp /ericssonbilling/resource/init/logging.properties /ericssonbilling/resource/evh/ && \
+                       cp /ericssonbilling/resource/init/jacorb.properties /ericssonbilling/resource/ && \
+                       ./evh {{ $.Values.tracingAndLogging.evhTrace }}" ]
+          {{else}}
+          args: ["-c", "ulimit -c unlimited && mkdir -p {{ $.Values.global.coredumpDirectory }} && \
+                       cp /ericssonbilling/resource/init/logging.properties /ericssonbilling/resource/evh/ && \
+                       cp /ericssonbilling/resource/init/jacorb.properties /ericssonbilling/resource/ && \
+                       ./evh {{ $.Values.tracingAndLogging.evhTrace }}" ]
+          {{end}}
+          volumeMounts:
+          - name: pwdmgr-security-volume
+            mountPath: /workdir/PWDMGR_SECURITY
+          - name: logs-volume
+            mountPath: /log
+          - name: coredump-volume
+            mountPath: "{{ $.Values.global.coredumpDirectory }}"
+          - name: xref-volume
+            mountPath: /workdir/XREF
+          - name: eric-bss-eb-evh-pvc-output-volume
+            mountPath: /workdir/EXPORT
+          - name: eric-bss-eb-ctrl-volume
+            mountPath: /workdir/CTRL
+          - name: init-properties-volume
+            mountPath: /ericssonbilling/resource/init
+          - name: tnsnames-ora-volume
+            mountPath: /oratns/tnsnames.ora
+            subPath: tnsnames.ora
+          - name: sqlnet-ora-volume
+            mountPath: /oratns/sqlnet.ora
+            subPath: sqlnet.ora
+          {{ if $.Values.global.securityTls.enable }}
+          - name: tls-volume
+            mountPath: "/tls/connect"
+            readOnly: true
+          {{ end }}
+          {{ if $.Values.global.databaseTls.enable }}
+          - name: wallet-volume
+            mountPath: "/oratns/secret"
+          {{ end }}
+          {{ if $.Values.useRdh }}
+          - mountPath: /dev/shm
+            name: dshm
+          {{ end }}
+          - mountPath: /evh-customized-libs
+            name: evh-customized-libs-volume
+          - mountPath: /ericssonbilling/resource/evh/udrascii/bir_ascii.ini
+            name: evh-bir-ascii-volume
+            subPath: bir_ascii.ini
+          - mountPath: /ericssonbilling/resource/evh/evh_css.properties
+            name: evh-css-properties-volume
+            subPath: evh_css.properties
+          - mountPath: /ericssonbilling/resource/evh/evh_ovd.properties
+            name: evh-ovd-properties-volume
+            subPath: evh_ovd.properties
+          - mountPath: /ericssonbilling/resource/FUNC_FRMWK_CMN_Registry.xml
+            name: evh-func-frmwk-cmn-registry-volume
+            subPath: FUNC_FRMWK_CMN_Registry.xml
+          - mountPath: /ericssonbilling/resource/evh/EvhRegistry.xml
+            name: evh-registry-volume
+            subPath: EvhRegistry.xml
+          - mountPath: /ericssonbilling/resource/evh/plugin_nk/EvhRegistry_nk.xml
+            name: evh-registry-nk-volume
+            subPath: EvhRegistry_nk.xml
+          - mountPath: /ericssonbilling/resource/evh/udrascii/udr_ascii.ini
+            name: evh-udr-ascii-volume
+            subPath: udr_ascii.ini
+          - mountPath: /ericssonbilling/resource/evh/Registry.xml
+            name: registry-volume
+            subPath: Registry.xml
+          - mountPath: /ericssonbilling/resource/svc.conf
+            name: svc-conf-volume
+            subPath: svc.conf
+          - mountPath: /ericssonbilling/resource/system.properties
+            name: system-properties-volume
+            subPath: system.properties
+          {{ if and ($.Values.global.secretManager.enable) ($.Values.global.secretManager.vault.caSecretName) }}
+          - name: secretmanager-tls-volume
+            mountPath: "/tls/secretManager/vault"
+            readOnly: true
+          {{ end }}
+          - name: vault-clientcfg-xml-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.xml
+            subPath: vault-clientcfg.xml
+          - name: vault-clientcfg-dtd-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.dtd
+            subPath: vault-clientcfg.dtd
+      {{- if $.Values.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.nodeSelector | nindent 8 }}
+      {{- else if $.Values.global.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if $.Values.affinity }}
+      affinity: {{ toYaml $.Values.affinity | nindent 8 }}
+      {{- else if $.Values.global.affinity }}
+      affinity: {{ toYaml $.Values.global.affinity | nindent 8 }}
+      {{- end }}
+      restartPolicy: "{{ $.Values.restartPolicy }}"
+      # Teste Matheus Tanaka
+      tolerations:
+      - key: "nodepool"
+          operator: "Equal"
+          value: "sfppdev"
+          effect: "NoSchedule"
+      volumes:
+      {{if $.Values.useRdh}}
+      - name: rdh-ctrl-volume
+        emptyDir: {}
+      - name: dshm
+        emptyDir:
+          medium: Memory
+      {{end}}
+      - name: eric-bss-eb-ctrl-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-pids
+      - name: eric-bss-eb-evh-pvc-output-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-evh-pvc-output
+      - name: pwdmgr-security-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-pwdmgr-security
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-logs
+      - name: coredump-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-coredump
+      - name: xref-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-xref
+      - name: tnsnames-ora-volume
+        configMap:
+          name: eric-bss-eb-evh-tnsnames.ora
+      - name: sqlnet-ora-volume
+        configMap:
+          name: eric-bss-eb-evh-sqlnet.ora
+      {{ if $.Values.global.securityTls.enable }}
+      - name: tls-volume
+        secret:
+          secretName: "{{ $.Values.global.securityTls.clientSecretName }}"
+          items:
+          - key: {{ $.Values.global.securityTls.trustedCertificateKey }}
+            path: certificate.pem
+      {{ end }}
+      {{ if $.Values.global.databaseTls.enable }}
+      - name: wallet-volume
+        secret:
+          secretName: "{{ $.Values.global.databaseTls.clientSecretName }}"
+      {{ end }}
+      - name: evh-customized-libs-volume
+        emptyDir: {}
+      - name: evh-bir-ascii-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.birAscii | default "eric-bss-eb-evh-bir-ascii.ini" }}
+      - name: evh-css-properties-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.cssProperties | default "eric-bss-eb-evh-css.properties" }}
+      - name: evh-ovd-properties-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.ovdProperties | default "eric-bss-eb-evh-ovd.properties" }}
+      - name: evh-func-frmwk-cmn-registry-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.funcFrmwkCmnRegistryXml | default "eric-bss-eb-evh-func-frmwk-cmn-registry.xml" }}
+      - name: evh-registry-volume
+        configMap:
+          name: eric-bss-eb-evh-evh-registry.xml
+      - name: evh-registry-nk-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.evhRegistryNk | default "eric-bss-eb-evh-evh-registry-nk.xml" }}
+      - name: evh-udr-ascii-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.udrAscii | default "eric-bss-eb-evh-udr-ascii.ini" }}
+      - name: registry-volume
+        configMap:
+          name: eric-bss-eb-evh-registry.xml
+      - name: evh-jacorb-properties-volume
+        configMap:
+          name: eric-bss-eb-evh-jacorb.properties
+      - name: init-properties-volume
+        emptyDir: {}
+      - name: evh-logging-properties-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.loggingProperties | default "eric-bss-eb-evh-logging.properties" }}
+      - name: svc-conf-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.svcConf | default "eric-bss-eb-evh-svc-conf" }}
+      - name: system-properties-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.systemProperties | default "eric-bss-eb-evh-system.properties" }}
+      - name: vault-clientcfg-xml-volume
+        configMap:
+          name: eric-bss-eb-evh-vault-clientcfg.xml
+      - name: vault-clientcfg-dtd-volume
+        configMap:
+          name: eric-bss-eb-evh-vault-clientcfg.dtd
+      {{ if and ($.Values.global.secretManager.enable) ($.Values.global.secretManager.vault.caSecretName) }}
+      - name: secretmanager-tls-volume
+        secret:
+          secretName: "{{ $.Values.global.secretManager.vault.caSecretName }}"
+          items:
+          - key: {{ $.Values.global.secretManager.vault.caCertificate }}
+            path: ca.pem
+      {{ end }}
+

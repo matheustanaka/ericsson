@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: eric-bss-eb-allow-exstream-client
+spec:
+  podSelector:
+    matchLabels:
+      eric-bss-eb-network-exstream-client: 'true'
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: {{.Values.exstream.cidr }}
+      ports:
+        - protocol: TCP
+          port: {{.Values.exstream.port }}

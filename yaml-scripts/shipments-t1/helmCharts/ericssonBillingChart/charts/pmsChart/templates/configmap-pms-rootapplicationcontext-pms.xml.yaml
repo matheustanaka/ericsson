@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-pms-rootapplicationcontext-pms.xml
+data:
+  rootApplicationContext-pms.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns="http://www.springframework.org/schema/beans"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:util="http://www.springframework.org/schema/util"
+           xmlns:tx="http://www.springframework.org/schema/tx"
+           xmlns:aop="http://www.springframework.org/schema/aop"
+           xmlns:context="http://www.springframework.org/schema/context"
+           xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd
+           http://www.springframework.org/schema/tx  http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd"
+           default-autowire="byName">
+
+        <context:annotation-config/>
+
+        <context:component-scan base-package="com/lhs/ccb/domainlayer, com/lhs/pms" name-generator="com.lhs.ccb.sfw.spring.DefaultBeanNameGenerator">
+            <context:include-filter type="assignable" expression="com.lhs.ccb.sfw.persistence.PersistenceDefinitionBase"/>
+        </context:component-scan>
+
+        <import resource="classpath*:applicationContext-util.xml"/>
+        <import resource="classpath*:applicationContext-sfw-infrastructure.xml"/>
+        <import resource="classpath*:applicationContext-remoting-soi.xml" />
+        <import resource="classpath*:applicationContext-pms-charAssignments.xml" />
+        <import resource="classpath*:applicationContext-pms-common.xml" />
+        <import resource="classpath*:applicationContext-rfssRole-validation-configuration.xml" />
+        <import resource="classpath*:applicationContext-PMS-converters.xml" />
+
+        <bean id="vaultClientManager"  class="com.lhs.ccb.sfw.security.password.vault.VaultClientManager">
+            <property name="applicationName" value="pms"/>
+        </bean>
+
+        <!--  RECEIVER CONTEXT -->
+
+        <import resource="classpath*:applicationContext-jdatalib.xml" />
+
+        <bean id="receiverConnectionFactory" class="com.lhs.dxl.jms.DXLDaTAConnectionFactory">
+            <constructor-arg value="PMS"></constructor-arg>
+            <property name="attributeValueMap">
+                <map>
+                    <entry key="19" value="${SVAPPLINDEX}"/>
+                </map>
+            </property>
+        </bean>
+
+        <bean id="receiverDestination" class="com.lhs.dxl.jms.DXLDaTADestination"/>
+        <bean id="messageListener" class="com.lhs.dxl.support.DelegatingMessageListener">
+            <property name="udrMessageListeners">
+                <list>
+                    <bean class="com.lhs.dxl.support.TraceLogCommandListener">
+                        <property name="maxTraceLogCommandItems" value="{{ .Values.dxlListeners.traceLogCommandListener.maxTraceLogCommandItems | default 50 }}"/>
+                    </bean>
+                </list>
+           </property>
+        </bean>
+
+        <bean id="dataConnectionInitializer" class="com.lhs.dxl.support.SimpleMessageListenerContainerInitializer">
+            <property name="connectionFactory" ref="receiverConnectionFactory"/>
+            <property name="destination" ref="receiverDestination"/>
+            <property name="messageListener" ref="messageListener"/>
+            <property name="concurrentConsumers" value="1"/>
+            <property name="simpleMessageListenerContainerBeanName" value="container"/>
+            <property name="retryWaitTime" value="${DATA_RETRY_WAIT_TIME:5000}"/>
+        </bean>
+
+        <bean id="pmsJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+            <property name="connectionFactory" ref="receiverConnectionFactory"/>
+        </bean>
+
+        <!-- END RECEIVER CONTEXT -->
+
+    </beans>
+

@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-tomcat-server.xml
+data:
+  server.xml: |
+    <?xml version='1.0' encoding='utf-8'?>
+    <!--
+      Licensed to the Apache Software Foundation (ASF) under one or more
+      contributor license agreements.  See the NOTICE file distributed with
+      this work for additional information regarding copyright ownership.
+      The ASF licenses this file to You under the Apache License, Version 2.0
+      (the "License"); you may not use this file except in compliance with
+      the License.  You may obtain a copy of the License at
+
+          www.apache.org/licenses/LICENSE-2.0
+
+      Unless required by applicable law or agreed to in writing, software
+      distributed under the License is distributed on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+      See the License for the specific language governing permissions and
+      limitations under the License.
+    -->
+    <!-- Note:  A "Server" is not itself a "Container", so you may not
+         define subcomponents such as "Valves" at this level.
+         Documentation at /docs/config/server.html
+
+         Set port to -1 to disable the shutdown port
+     -->
+    <Server port="-1">
+
+      <!-- A "Service" is a collection of one or more "Connectors" that share
+           a single "Container" Note:  A "Service" is not itself a "Container",
+           so you may not define subcomponents such as "Valves" at this level.
+           Documentation at /docs/config/service.html
+       -->
+      <Service name="Catalina">
+
+        <!-- A "Connector" represents an endpoint by which requests are received
+             and responses are returned. Documentation at :
+             Java HTTP Connector: /docs/config/http.html (blocking & non-blocking)
+             Java AJP  Connector: /docs/config/ajp.html
+             APR (HTTP/AJP) Connector: /docs/apr.html
+             Define a non-SSL HTTP/1.1 Connector on port configured in tomcatEmbedded.properties
+        -->
+
+        <!-- Tomcat version can be retrieved by many ways and it must be hidden by default. As security proposal, keep server information as empty (server=" ") -->
+
+        {{ if .Values.tomcat.secretName }}
+        <Connector port="${tomcatEmbeddedSecure.port}" protocol="HTTP/1.1" SSLEnabled="true"
+                   scheme="https" secure="true"
+                   keystoreFile="/ssl_tomcat/${tomcatEmbedded.keystoreFile}" keystorePass="${tomcatEmbedded.keystorePass}"
+                   clientAuth="false" SSLProtocol="TLSv1.2"
+                   acceptCount="${tomcatEmbedded.acceptCount}"
+                   connectionTimeout="${tomcatEmbedded.connectionTimeout}"
+                   maxConnections="${tomcatEmbedded.maxConnections}"
+                   maxThreads="${tomcatEmbedded.maxThreads}"
+                   server=" "/>
+        {{ else }}
+        <Connector port="${tomcatEmbedded.port}" protocol="HTTP/1.1"
+                   acceptCount="${tomcatEmbedded.acceptCount}"
+                   connectionTimeout="${tomcatEmbedded.connectionTimeout}"
+                   maxConnections="${tomcatEmbedded.maxConnections}"
+                   maxThreads="${tomcatEmbedded.maxThreads}" server=" "/>
+        {{ end }}
+
+        <!-- Define a SSL HTTP/1.1 Connector on port 9443
+             This connector uses the JSSE configuration, when using APR, the
+             connector should be using the OpenSSL style configuration
+             described in the APR documentation.
+             The properties are configured in tomcatEmbedded.properties.
+             For "keystoreFile" and "keystorePass" a default value is currently used only.
+        -->
+
+        <!-- Uncomment below connector and replace the required fields in order to enable SSL HTTP/1.1 connection
+             ${tomcatEmbeddedSecure.port} - secured port value
+             keystoreFile="path/to/your/keystore" - provide path to your keystore file(.JKS)
+             keystorePass="YourKeystorePassword" - provide your keystore password
+        -->
+
+        <!-- <Connector port="${tomcatEmbeddedSecure.port}" protocol="HTTP/1.1" SSLEnabled="true"
+                   scheme="https" secure="true"
+                   clientAuth="false" SSLProtocol="TLSv1.2"
+                   keystoreFile="${tomcatEmbedded.keystoreFile}"
+                   keystorePass="${tomcatEmbedded.keystorePass}"
+                   acceptCount="${tomcatEmbedded.acceptCount}"
+                   connectionTimeout="${tomcatEmbedded.connectionTimeout}"
+                   maxConnections="${tomcatEmbedded.maxConnections}"
+                   maxThreads="${tomcatEmbedded.maxThreads}" server=" "/>
+        -->
+
+        <!-- An Engine represents the entry point (within Catalina) that processes
+             every request.  The Engine implementation for Tomcat stand alone
+             analyzes the HTTP headers included with the request, and passes them
+             on to the appropriate Host (virtual host).
+             Documentation at /docs/config/engine.html -->
+        <Engine name="Catalina" defaultHost="localhost">
+
+          <!-- for embedded tomcat only one host is supported  -->
+          <Host name="localhost">
+              <Valve className="org.apache.catalina.valves.ErrorReportValve" showReport="false" showServerInfo="false" />
+          </Host>
+
+        </Engine>
+
+      </Service>
+    </Server>
+

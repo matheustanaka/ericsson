@@ -1,0 +1,249 @@
+# Default values for bchA0Chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+imageCredentials:
+  bch:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  bch-init-customized:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  init-wait-for-data-bch:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  init-wait-for-xrefs:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  rdh-udmap:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+
+images:
+  bch:
+    name: "eric-bss-eb-bch"
+    tag: "22.15.12"
+  bch-init-customized:
+#   Example for customization:
+#    name: bscs/batch-init
+#    directory: /external-files
+    name:
+    tag:
+    directory:
+  init-wait-for-data-bch:
+    name: "eric-bss-eb-wait-for-condition"
+    tag: "22.15.12"
+  init-wait-for-xrefs:
+    name: "eric-bss-eb-wait-for-condition"
+    tag: "22.15.12"
+  rdh-udmap:
+    name: "eric-bss-eb-rdh"
+    tag: "22.15.12"
+
+restartPolicy: Always
+
+metadataName: eric-bss-eb-bch
+
+bchDeployments:
+  # Installation for a deployment, a deployment contains one rdh -udmap container and many bch container
+  # A deployment can be installed multiple times as replica
+  # the bch containers are listed with a type, which is also the start parameter
+  # and a list of instances, a separate bch container will be installed for each entry
+  # The instance name will also be the container name in the deployment, so make sure that
+  # each instance name is unique within a deployment.
+  # NOTE: bch -H30 should be started only once, so make sure that it is started
+  #       - in one deployment only
+  #       - with replicaCount 1
+  - name: "a0"
+    replicaCount: 1
+    bchContainer:
+      - type: "a0"
+        instances: [ "eric-bss-eb-bch-a0-1", "eric-bss-eb-bch-a0-2", "eric-bss-eb-bch-a0-3", "eric-bss-eb-bch-a0-4", "eric-bss-eb-bch-a0-5", "eric-bss-eb-bch-a0-6", "eric-bss-eb-bch-a0-7", "eric-bss-eb-bch-a0-8", "eric-bss-eb-bch-a0-9", "eric-bss-eb-bch-a0-10" ]
+    # To generate tracefiles, it is necessary set the tracefile name in the variables below.
+    # These files will be stored in the log PVC.
+    tracingAndLogging:
+      batppLogger:
+      birdTraceLevel:
+      bscsErrorTimestamp: ""
+      # dtaTracefile: "dta.bch-a0.trc"
+      dtaTracefile: ""
+      # udrTracefile: "udr.bch-a0.trc"
+      udrTracefile: ""
+      # dxlTracefile: "dxl.bch-a0.trc"
+      dxlTracefile: ""
+  - name: "a1"
+    replicaCount: 1
+    bchContainer:
+      - type: "a1"
+        instances: [ "eric-bss-eb-bch-a1" ]
+    tracingAndLogging:
+      batppLogger:
+      birdTraceLevel:
+      bscsErrorTimestamp: ""
+      # dtaTracefile: "dta.bch-a1.trc"
+      dtaTracefile: ""
+      # udrTracefile: "udr.bch-a1.trc"
+      udrTracefile: ""
+      # dxlTracefile: "dxl.bch-a1.trc"
+      dxlTracefile: ""
+  - name: "a2"
+    replicaCount: 1
+    bchContainer:
+      - type: "a2"
+        instances: [ "eric-bss-eb-bch-a2-1", "eric-bss-eb-bch-a2-2", "eric-bss-eb-bch-a2-3", "eric-bss-eb-bch-a2-4", "eric-bss-eb-bch-a2-5", "eric-bss-eb-bch-a2-6", "eric-bss-eb-bch-a2-7", "eric-bss-eb-bch-a2-8", "eric-bss-eb-bch-a2-9", "eric-bss-eb-bch-a2-10" ]
+    tracingAndLogging:
+      batppLogger:
+      birdTraceLevel:
+      bscsErrorTimestamp: ""
+      # dtaTracefile: "dta.bch-a2.trc"
+      dtaTracefile: ""
+      # udrTracefile: "udr.bch-a2.trc"
+      udrTracefile: ""
+      # dxlTracefile: "dxl.bch-a2.trc"
+      dxlTracefile: ""
+  - name: "a3"
+    replicaCount: 1
+    bchContainer:
+      - type: "a3"
+        instances: [ "eric-bss-eb-bch-a3-1", "eric-bss-eb-bch-a3-2", "eric-bss-eb-bch-a3-3", "eric-bss-eb-bch-a3-4", "eric-bss-eb-bch-a3-5", "eric-bss-eb-bch-a3-6", "eric-bss-eb-bch-a3-7", "eric-bss-eb-bch-a3-8", "eric-bss-eb-bch-a3-9", "eric-bss-eb-bch-a3-10" ]
+    tracingAndLogging:
+      batppLogger:
+      birdTraceLevel:
+      bscsErrorTimestamp: ""
+      # dtaTracefile: "dta.bch-a3.trc"
+      dtaTracefile: ""
+      # udrTracefile: "udr.bch-a3.trc"
+      udrTracefile: ""
+      # dxlTracefile: "dxl.bch-a3.trc"
+      dxlTracefile: ""
+  - name: "h30"
+    replicaCount: 1
+    bchContainer:
+      - type: "H30"
+        instances: [ "eric-bss-eb-bch-h30" ]
+    tracingAndLogging:
+      batppLogger:
+      birdTraceLevel:
+      bscsErrorTimestamp: ""
+      # dtaTracefile: "dta.bch-h30.trc"
+      dtaTracefile: ""
+      # udrTracefile: "udr.bch-h30.trc"
+      udrTracefile: ""
+      # dxlTracefile: "dxl.bch-h30.trc"
+      dxlTracefile: ""
+
+# Grace period for POD termination, in which the POD can shut down gracefully.
+# After that period, k8s will terminate the POD un-gracefully (SIGKILL).
+# Adapt this value in case the POD needs more time to terminate gracefully,
+#   e.g. in case the PID remains in table BCH_INSTANCE after POD termination.
+# Note, after the POD has terminated gracefully, the terminationGracePeriodSeconds is stopped immediately.
+#       So it does not harm to specify a big value here.
+terminationGracePeriodSeconds: 60
+
+#DATA_RETRY_TIME, DATA_RETRY_TIME_MAX
+#By default, there is no definition for a time interval in which applications try to reconnect to DaTA.
+#If you set the environment variable, the value represents the time interval an application waits
+#until it tries to reconnect to DaTA.
+#Subsequent connection retries are performed under the following conditions:
+# - A double time interval has elapsed and has exceeded a maximum of 60 seconds.
+# - A double time interval has elapsed and the value specified by DATA_RETRY_TIME_MAX has been exceeded
+dataRetry:
+  dataRetryTime:
+  dataRetryTimeMax:
+
+bchRacSetup:
+  waitTime: 500
+  totalWaitTime: 30
+  numAttempts: 60
+
+startParameters:
+# -g  active: -g, inactive: (leave empty)
+# If active, an invoice is always generated. Small invoice amounts cannot be suppressed or forwarded.
+  alwaysGenerateInvoice:
+
+# if kubelet configuration and the PodSecurityPolicy allow the correspondig unsafe sysctls,
+# the values for the bch pods can be set here
+keepAliveSysctls:
+  netIpv4TcpKeepaliveTime:   "300"
+  netIpv4TcpKeepaliveProbes: "10"
+  netIpv4TcpKeepaliveIntvl:  "15"
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 10Gi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+rdhUdmap:
+  traceLevel: 0
+  useSlave: "-useSlave 1"
+  dataTimeout: "-w -1"
+  optionalParameters: ""
+  envVariables:
+    shmMaxEnvironments: "20"
+    shmMaxSectors: "10"
+    shmMaxSegments: "1000"
+    shmMinSegmentSize: "65536"
+  resources:
+    limits:
+      cpu: 1
+      memory: 5Gi
+    requests:
+      cpu: 100m
+      memory: 64Mi
+  tracingAndLogging:
+    bscsErrorTimestamp: ""
+    # dtaTracefile: "dta.rdh-udmap.trc"
+    dtaTracefile: ""
+    # udrTracefile: "udr.rdh-udmap.trc"
+    udrTracefile: ""
+    # dxlTracefile: "dxl.rdh-udmap.trc"
+    dxlTracefile: ""
+
+#A local nodeSelector definition has priority over the global definition above.
+nodeSelector: {}
+
+# A local affinity definition has priority over the global definition.
+# affinity: {}
+# Example:
+# affinity:
+#   nodeAffinity:
+#     preferredDuringSchedulingIgnoredDuringExecution:
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1a
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1b
+
+#  kubernetes.io/hostname: "<hostname>"
+
+
+suffix:
+
+tnsnames:
+  bscsdb: '{{ tpl .Values.global.tnsnames.bscsdb . }}'
+  rtxdb: '{{ tpl .Values.global.tnsnames.rtxdb . }}'
+
+sqlnet:
+  ora: '{{ tpl .Values.global.sqlnet.ora . }}'

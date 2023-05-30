@@ -1,0 +1,133 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "eric-bss-eb-vmdrep"
+  labels:
+    app: eric-bss-eb-vmdrep
+    chart: {{ template "eric-bss-eb-vmdrep.chart" $ }}
+    {{- include "eric-bss-eb-vmdrep.kubernetesIoInfo" . | nindent 4 }}
+    heritage: {{ $.Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-vmdrep.productInfo" . | indent 4 }}
+spec:
+  {{ if gt (int $.Values.replicaCount) 1 }}
+  replicas: 1
+  {{ else }}
+  replicas: {{ $.Values.replicaCount | default 1}}
+  {{ end }}
+  selector:
+    matchLabels:
+      app: eric-bss-eb-vmdrep
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: eric-bss-eb-vmdrep
+        eric-bss-eb-network-vmd: 'true'
+        eric-bss-eb-network-lem-client: 'true'
+        {{- include "eric-bss-eb-vmdrep.kubernetesIoInfo" . | nindent 8 }}
+      annotations:
+      {{- include "eric-bss-eb-vmdrep.productInfo" . | indent 8 }}
+    spec:
+      securityContext:
+        {{- include "eric-bss-eb-vmdrep.checkPodUserLoginData" . | nindent 8 }}
+      {{- if .Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ .Chart.Name }}-sa
+      {{- end }}
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      containers:
+        - name: eric-bss-eb-vmdrep
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "eric-bss-eb-vmdrep" }}
+          image: "{{ template "eric-bss-eb-vmdrep.registryUrl" $templDict }}/{{ template "eric-bss-eb-vmdrep.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-vmdrep.pullPolicy" $templDict }}
+          resources:
+            limits:
+              memory: "{{ .Values.resources.limits.memory}}"
+              cpu: "{{ .Values.resources.limits.cpu}}"
+            requests:
+              memory: "{{ .Values.resources.requests.memory}}"
+              cpu: "{{ .Values.resources.requests.cpu}}"
+          env:
+          - name: NLS_LANG
+            value: "{{ .Values.global.nlsLang }}"
+          - name: TZ
+            value: "{{ .Values.global.timezone }}"
+          {{ if .Values.global.gmdSecurityTls.enable }}
+          - name: GMD_SSL_ENABLE
+            value: "1"
+          - name: GMD_CIPHER_LIST
+            value: "{{ .Values.global.gmdSecurityTls.cipherList }}"
+          {{ end }}
+          command: ["/bin/bash"]
+          args: ["-c", "ulimit -c unlimited && mkdir -p {{ $.Values.global.coredumpDirectory }} && \
+                  ./vmdrep /ericssonbilling/resource/vmdrep.ini"]
+          volumeMounts:
+          {{ if .Values.global.gmdSecurityTls.enable }}
+          - name: vmdrep-client-tls-volume
+            mountPath: "/tls/vmdrep/client"
+            readOnly: true
+          - name: vmdrep-server-tls-volume
+            mountPath: "/tls/vmdrep/server"
+            readOnly: true
+          {{ end }}
+          - name: ctrl-volume
+            mountPath: /workdir/CTRL
+          - name: logs-volume
+            mountPath: /log
+          - name: coredump-volume
+            mountPath: "{{ .Values.global.coredumpDirectory }}"
+          - name: vmdrep-ini-volume
+            mountPath: /ericssonbilling/resource/vmdrep.ini
+            subPath: vmdrep.ini
+          lifecycle:
+            preStop:
+              exec:
+                command: ["rm", "-f", "/workdir/CTRL/vmdrep*"]
+      {{- if .Values.nodeSelector }}
+      nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector: {{ toYaml .Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity: {{ toYaml .Values.affinity | nindent 8 }}
+      {{- else if .Values.global.affinity }}
+      affinity: {{ toYaml .Values.global.affinity | nindent 8 }}
+      {{- end }}
+      # Teste Matheus Tanaka
+      tolerations:
+      - key: "nodepool"
+          operator: "Equal"
+          value: "sfppdev"
+          effect: "NoSchedule"
+      volumes:
+      {{ if .Values.global.gmdSecurityTls.enable }}
+      - name: vmdrep-client-tls-volume
+        secret:
+          secretName: "{{ .Values.global.gmdSecurityTls.vmdrepClientSecretName }}"
+          items:
+          - key: {{ .Values.global.gmdSecurityTls.vmdrepTrustedCertificateKey }}
+            path: vmdrepTrustedCertificate.pem
+      - name: vmdrep-server-tls-volume
+        secret:
+          secretName: "{{ .Values.global.gmdSecurityTls.vmdrepServerSecretName }}"
+          items:
+          - key: {{ .Values.global.gmdSecurityTls.vmdrepServerKeystoreKey }}
+            path: vmdrepKeystore.p12
+          - key: {{ .Values.global.gmdSecurityTls.vmdrepKeystorePasswordKey }}
+            path: vmdrepKeystorePassword.txt
+      {{ end }}
+      - name: ctrl-volume
+        emptyDir: {}
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-logs
+      - name: coredump-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-coredump
+      - name: vmdrep-ini-volume
+        configMap:
+          name: eric-bss-eb-vmdrep-vmdrep.ini

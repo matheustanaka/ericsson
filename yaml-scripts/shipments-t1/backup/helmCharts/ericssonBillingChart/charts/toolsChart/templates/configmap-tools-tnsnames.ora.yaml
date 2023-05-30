@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-tools-tnsnames.ora
+data:
+  #
+  # TODO: Second entry with {{.Values.global.rtxDb}}.world= can be removed,
+  # when tracker BSCS_RND-4890 is fixed.
+  tnsnames.ora: |-
+    bscsdb =
+{{ tpl .Values.tnsnames.bscsdb . | indent 6 }}
+    rtxdb =
+{{ tpl .Values.tnsnames.rtxdb . | indent 6 }}

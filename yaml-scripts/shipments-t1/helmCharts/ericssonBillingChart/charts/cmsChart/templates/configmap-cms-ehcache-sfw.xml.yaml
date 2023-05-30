@@ -1,0 +1,203 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-ehcache-sfw.xml
+data:
+  ehcache-sfw.xml: |
+    <ehcache>
+
+        <!--
+        CacheManager Configuration
+        ==========================
+        RMICacheReplicatorFactory when configured to use Multicast can cause issues in a network
+        hosting multiple environments and the specific IP/Port of each environment isn't properly adjusted.
+        Customers usually disable the Multicast in production environment.
+        That's the reason why RMICacheReplicatorFactory usage is avoided for Muticast.
+        -->
+
+        <cacheManagerPeerProviderFactory
+            class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
+            properties="peerDiscovery=automatic, multicastGroupAddress=230.0.0.1,
+            multicastGroupPort=4446, timeToLive=32"/>
+
+        <cacheManagerPeerListenerFactory
+            class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
+            properties="socketTimeoutMillis=2000"/>
+
+        <diskStore path="java.io.tmpdir"/>
+
+        <defaultCache
+            maxElementsInMemory="10000"
+            eternal="false"
+            timeToIdleSeconds="30"
+            timeToLiveSeconds="30"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU"
+        />
+
+        <cache name="reachableGrantedAuthorities"
+            maxElementsInMemory="10000"
+            eternal="false"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU">
+        </cache>
+
+        <cache name="grantedAuthorities"
+            maxElementsInMemory="10"
+            eternal="false"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU">
+            <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                properties="replicateAsynchronously=false, replicatePuts=false, replicateUpdates=false" />
+        </cache>
+
+        <cache name="stsTokenValidationResult"
+            maxElementsInMemory="1000"
+            eternal="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="300"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU">
+        </cache>
+
+        <cache name="users"
+            maxElementsInMemory="1000"
+            eternal="false"
+            timeToIdleSeconds="30"
+            timeToLiveSeconds="30"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU">
+        </cache>
+
+        <cache name="oesRoleInformation"
+            maxElementsInMemory="10000"
+            eternal="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="300"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU">
+        </cache>
+
+        <cache name="usersHistory"
+            maxElementsInMemory="10000"
+            eternal="false"
+            timeToIdleSeconds="30"
+            timeToLiveSeconds="30"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU">
+            <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                properties="replicateAsynchronously=false, replicatePuts=false, replicateUpdates=false" />
+        </cache>
+
+         <cache name="usersAuthentication"
+            maxElementsInMemory="10000"
+            eternal="false"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="1800"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU">
+        </cache>
+
+        <cache name="usersAuthenticationObject"
+            maxElementsInMemory="10000"
+            eternal="false"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="1800"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU">
+        </cache>
+
+        <cache name="openAmTokenAuthenticationObject"
+            maxElementsInMemory="10000"
+            eternal="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="300"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU">
+        </cache>
+
+        <cache name="systemUsersAuthentication"
+            maxElementsInMemory="10000"
+            eternal="false"
+            timeToIdleSeconds="86400"
+            timeToLiveSeconds="86400"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU">
+        </cache>
+
+        <cache name="systemUsers"
+            maxElementsInMemory="10000"
+            eternal="false"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU">
+        </cache>
+
+        <cache name="passwordPolicies"
+            maxElementsInMemory="200000"
+            eternal="false"
+            timeToIdleSeconds="86400"
+            timeToLiveSeconds="86400"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU">
+        </cache>
+
+        <cache name="allIDMGroups"
+            maxElementsInMemory="200000"
+            eternal="false"
+            timeToIdleSeconds="86400"
+            timeToLiveSeconds="86400"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU">
+        </cache>
+
+        <cache name="checkLicense"
+            maxElementsInMemory="10000"
+            eternal="false"
+            timeToIdleSeconds="86400"
+            timeToLiveSeconds="86400"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU">
+        </cache>
+
+        <cache name="hasLicenseFeature"
+            maxElementsInMemory="10000"
+            eternal="false"
+            timeToIdleSeconds="86400"
+            timeToLiveSeconds="86400"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU">
+        </cache>
+
+    </ehcache>

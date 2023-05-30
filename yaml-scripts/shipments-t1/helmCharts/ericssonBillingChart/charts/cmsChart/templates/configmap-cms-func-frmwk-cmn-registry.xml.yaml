@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-func-frmwk-cmn-registry.xml
+data:
+  FUNC_FRMWK_CMN_Registry.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+
+    <!-- FUNC_FRMWK_CMN_Registry.xml -->
+
+    <ComponentRegistry>
+
+    <Node name="FUNC_FRMWK_CMN">
+
+        <Node name="MulticastSettings">
+            <!-- The ChannelName is utilized by JGROUPs, and evaluated by the JAVA CMN FRMWK. -->
+            <KeyValue key="ChannelName" value="BSCSChannel"
+                comment="The channel name used by JGroups to identify members
+                of a multicast group. Usually here no change is required."/>
+
+            <!-- The RequestTimeout is utilized by JGROUPs, and evaluated by the JAVA CMN FRMWK. -->
+            <KeyValue key="RequestTimeout" value="3000"
+                comment="The time to wait until a multicast request is answered by
+                any of the registered members. If no response is received within the
+                time given a ComponentException will be thrown. Use value '1' for no timeout."/>
+        </Node>
+
+        <Node name="ServiceRootLocator">
+            <!-- The Implementation determines if JGROUP multicast mesages are used. -->
+            <!-- "Multicast" switches on the multicast mechanism. -->
+            <!-- "NamingService" is the "old" implementation with the name based FF lookup. -->
+            <KeyValue key="Implementation" type="String" value="NamingService"
+                comment="The node name of the implementation that shall be used for locating the ServiceRoot."/>
+
+            <Node name="NamingService">
+                <KeyValue key="ServiceRootLocatorImpl" type="String" value="com.lhs.ccb.common.soiimpl.ServiceRootLocatorNamingService"
+                    comment="The fully qualified implementation class of the ServiceRootLocater interface."/>
+                <KeyValue key="ServerName" type="String" value="com/lhs/public/soi/fedfactory1"
+                    comment="The server name to be looked up in the NamingService."/>
+            </Node>
+
+            <Node name="Multicast">
+                <KeyValue key="ServiceRootLocatorImpl" type="String" value="com.lhs.ccb.common.soiimpl.ServiceRootLocatorMulticast"
+                    comment="The fully qualified implementation class of the ServiceRootLocater interface.
+                    This implementation currently needs no additional parameters since only the lookup of
+                    of a FederatedFactory via multicast is supported."/>
+            </Node>
+        </Node>
+
+        <Node name="JNI-Settings">
+
+            <!-- List of JVM options. -->
+            <Node name="Options">
+                 <KeyValue key="-Xms256m" type="String" value="" comment="JVM Option."/>
+                 <KeyValue key="-Xmx512m" type="String" value="" comment="JVM Option."/>
+            </Node>
+
+            <!-- List of JVM system properties. -->
+            <!-- These properties must be overwritten by Applications in their application specific registry files.-->
+            <Node name="SysProps">
+                 <KeyValue key="java.class.path" type="String" value="${BSCS_RESOURCE}:${BSCS_JAR}/func_util.jar:${BSCS_JAR}/soi.jar:${BSCS_JAR}/func_frwmwk_cmn.jar:${BSCS_3PP_JAR}/jgroups-5.1.9.Final.jar:${BSCS_3PP_JAR}/ascii-table-1.2.0.jar:${BSCS_3PP_JAR}/commons-lang3-3.12.0.jar:${BSCS_3PP_JAR}/log4j-core-2.17.1.jar:${BSCS_3PP_JAR}/log4j-api-2.17.1.jar:${BSCS_3PP_JAR}/log4j-jul-2.17.1.jar" comment="JVM System Property. Applications must overwrite this property - they do need their local resource directory additionally to the path, which is given here."/>
+                 <KeyValue key="java.io.tmpdir" type="String" value="${BSCS_LOG}" comment="JVM System Property. Applications must replace this with their local logging directory."/>
+                 <KeyValue key="java.util.logging.config.file" type="String" value="" comment="JVM System Property. Applications must set a path to a valid logging configuration file."/>
+                 <!--  Use the option preferIPv4Stack in case of problem with IPv6, for instance see bugs.sun.com/bugdatabase/view_bug.do?bug_id=6402758 -->
+                 <!--
+                     <KeyValue key="java.net.preferIPv4Stack" type="String" value="true" comment="JVM System Property. Prefer IPv4 for jgroups/Multicast"/>
+                  -->
+            </Node>
+        </Node>
+
+    </Node>
+
+    </ComponentRegistry>

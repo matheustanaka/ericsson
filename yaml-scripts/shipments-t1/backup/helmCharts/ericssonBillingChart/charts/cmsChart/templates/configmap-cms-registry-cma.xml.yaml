@@ -1,0 +1,132 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-cma.xml
+data:
+  Registry_CMA.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+
+    <ComponentRegistry>
+
+        <Node name="FUNC_FRMWK_SRV">
+
+            <!--
+                List of files defining SOI's. These files are searched in SOIRootDirectory
+                Filenames should be entered in as "key" attributes, "value" attributes remains empty.
+            -->
+            <!--
+            <Node name="SOIDefinitions">
+                <KeyValue key="CMICMA_1.xml" value="" />
+                <KeyValue key="CMICMA_2.xml" value="" />
+                <KeyValue key="CMIHYB_1.xml" value="" />
+            </Node>
+            -->
+
+
+                    <!--
+                     List of files containing the server's application context configuration
+                     -->
+                    <Node name="ApplicationContextConfigs">
+                      <KeyValue key="rootApplicationContext-cms.xml" value=""
+                        comment="The first application context configuration file of the server" />
+                      <KeyValue key="rootApplicationContext-cma.xml" value=""
+                        comment="The second application context configuration file of the server" />
+                    </Node>
+
+
+            <Node name="StartupListeners">
+                <KeyValue
+                    key="com.lhs.ccb.sfw.remoting.soi.BeanCreatingSOILayerStartupListener"
+                    value="" />
+            </Node>
+            <!--
+                List of listeners implementing ServerShutdown interface.
+                Each listener entered here will be instantiated using default constructor without parameters and
+                corresponding before- and after- methods will be called during server shutdown
+            -->
+            <Node name="ShutdownListeners">
+                <KeyValue
+                    key="com.lhs.ccb.sfw.spring.SpringIntegrationServerEventListener"
+                    value="" />
+            </Node>
+
+            <!-- This node holds the names of all DomainServiceAdapter classes. -->
+            <Node name="ServiceLayerAdapterNames"></Node>
+
+            <!-- This node contains class to subclass mappings. It can be used to customize an
+                implementation class by subclassing. Each customized class needs a KeyValue
+                entry here, mapping the parent class name of the core implementation to a
+                customized class name. Per default this node is empty.
+            -->
+            <Node name="ClassLookupTable"></Node>
+
+            <!-- TOPLink related settings, configuration of persistent domain objects-->
+            <Node name="Persistence">
+
+                <!-- Settings for the Java wrapper of NEXTFREE stored procedures. -->
+                <Node name="NEXTFREE">
+                    <!--
+                        Specifies fetch size for a particular sequence.
+                        If a sequence is found in the list than NEXTFREE.GetNumValues / NEXTFREE.GetStringValues  with
+                        array interface will be used with specified fetch size
+
+                        If a sequence isn't found in the list than NEXTFREE.GetValue / NEXTFREE.GetStringValue
+                        will be used (no array interface and caching)
+                    -->
+                    <Node name="FetchSizePerSequence"></Node>
+                </Node>
+
+                <!-- Contains KeyValue entries holding the package names of all packages with
+                    persistent classes. Each of the packages listed here is assumed to contain
+                    a class 'BOregister', which must add the descriptors of the package to the
+                    list of all application descriptors.
+                -->
+                <Node name="PackageNamesForBORegistry">
+                    <KeyValue key="com.lhs.cma.contract.domain" value="" />
+                    <KeyValue key="com.lhs.cma.topology.domain" value=""/>
+                    <KeyValue key="com.lhs.cma.common.domain" value=""/>
+                    <KeyValue key="com.lhs.cma.resource.domain" value=""/>
+                    <KeyValue key="com.lhs.cma.crs.domain" value=""/>
+                </Node>
+
+                <!--
+                    Contains a list of reference data classes, that should be refreshed periodically.
+                -->
+                <!--   The following calls periodically a stored procedure to delete deactive contracts of type NOCS
+                <Node name="RefreshReferenceData">
+                    <Node name="RemoveDeactivatedContract" >
+                           <KeyValue key="CLASS" value="com.lhs.cma.contract.service.BatchContractProcessor" />
+                        <KeyValue key="ABSOLUTE" type="Boolean" value="true"/>
+
+                        <KeyValue key="PERIOD" type="Integer" value="20000"/>
+                        <KeyValue key="START" type="Integer" value="10000" comment="Milliseconds on which a process is initiated. In case ABSOLUTE flag is set, the next refresh is set on next midnight plus this value, otherwise on server start plus this value."/>
+
+                        <KeyValue key="METHOD" value="removeDeactivatedContracts" comment="This value specifies a method that is called on the class this node belongs to. The method must be static without parameter. Using this method it is possible to reset singleton from periodically, e.g. to reset local caches."/>
+                    </Node>
+                </Node>
+                 -->
+            </Node>
+        </Node><!-- FUNC_FRMWK_SRV -->
+        <Node name="CMA Settings">
+            <!-- This key holds the configuration for the CreateSubscription command of EMA Adapter
+            -->
+            <KeyValue key="CreateSubscriptionWithDelete" value="false" type="Boolean" comment="Configuration value for CreateSubscription command of EMA adapter" />
+
+            <!--
+            <Node name="Batch Login" >
+                <KeyValue key="User" value="CX" />
+                <KeyValue key="Password" value="CX" />
+            </Node>
+            -->
+
+        </Node>
+
+         <!--Node name="CMS Settings"-->
+             <!-- overwrite some settings, that are available only in the  -->
+            <!--Node name="CustomerStates" >
+                <KeyValue key="Active" value="initial" />
+                <KeyValue key="Deactive" value="" />
+            </Node>
+         </Node-->
+    </ComponentRegistry>

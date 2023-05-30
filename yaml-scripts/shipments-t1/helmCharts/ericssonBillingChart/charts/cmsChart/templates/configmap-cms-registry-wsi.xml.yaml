@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-wsi.xml
+data:
+  Registry_WSI.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+
+    <ComponentRegistry>
+        <Node name="WSI Settings">
+           <Node name="JSON Settings">
+                <!--
+                Enable global JSON schema validation:
+                none: no validation,
+                request: incoming request is validated,
+                response: outgoing response is validated,
+                requestAndResponse: both is validated.
+                IF NONE is specified, the validation can be swiched on for single commands with url-parameter validate.
+                -->
+                <KeyValue key="VALIDATE_JSON_SCHEMA_INDICATOR" type="String" value="none" comment="Enable global JSON schema validation" />
+                <!--  Warning : the CIL_JSON_SCHEMA_HOST key should not include port in the value,the port is dynamically constructed during runtime -->
+                <KeyValue key="CIL_JSON_SCHEMA_HOST" type="String" value="http://localhost" comment="The URI fragment (with protocol and host) used for schema references in JSON schemas. The port on that host is derived from CIL's embedded Tomcat configuration." />
+                <KeyValue key="CIL_JSON_SCHEMA_CONTEXT" type="String" value="/rest/view/CIL/" comment="The base path to JSON schemas used for JSON schema references." />
+           </Node>
+
+           <!--
+           Timeout for REST and SOAP service execution. The timeout value is considered as a number of milliseconds.
+           If this timeout is not specified or if its value is set negative, the request will never be timed out.
+           -->
+           <KeyValue key="RequestExecutionTimeout" type="Integer" value="60000" comment="Timeout in milliseconds used when waiting for REST and SOAP service execution."/>
+
+           <!-- List of all public SOI -->
+           <Node name="SOI Public List">
+                <KeyValue key="CIL_6" type="String" value="" />
+                <KeyValue key="CIL_7" type="String" value="" />
+           </Node>
+
+           <Node name="SOAP Nillable Configuration">
+                <!-- Switching this key value to "true" will add the property "nillable = true" in SOAP WSDLs for all optional (non-mandatory)
+                attributes. Note, however, that this does not mean, that every attribute indicated as nillable can actually be reset to NULL
+                in the persistence layer by calling the respective SOAP request. This still depends on the individual handling of the attribute
+                in the related command implementation. This parameter will have no effect if the parameter value of
+                "SupportCDFNillableAttributeOnWSDL" is set "true".
+                -->
+                <KeyValue key="DeclareNillableForOptionalAttributesOnWSDL" type="Boolean" value="false" />
+                <!--
+                By setting this key value "true", the configuration parameter "DeclareNillableForOptionalAttributesOnWSDL" will be ignored.
+                Then, only those attributes will be shown as nillable in the WSDL which are indicated, accordingly, in the CDF file
+                (property: nillable="yes").
+                -->
+                <KeyValue key="SupportCDFNillableAttributeOnWSDL" type="Boolean" value="false" />
+           </Node>
+
+           <Node name="Namespace SOAP Configuration">
+                <KeyValue key="SuppressNamespaceInResponse" type="Boolean" value="false" />
+           </Node>
+
+        </Node>
+    </ComponentRegistry>

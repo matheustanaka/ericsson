@@ -1,0 +1,1483 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-dch-dchflex-statement-configuration.xml
+data:
+  dchflex-statement-configuration.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <DCHCollectible Name="DCH Flex Plugin Sample" Author="LHS" Version="22.0" Date="2013-04-26" Project="iX Collections R2">
+      <!-- On conversions, the customer must configure the DATA_MAPPING.NAME value -->
+      <Conversions>
+        <Conversion Id="DCH"/>
+      </Conversions>
+      <!-- Note that the values of the variables ALL_FAMILY_GROUPS and FG_% are always overwritten by the value of the calling parameter -f of DCH (if -f is not given, then all family groups are considered). The variables just have to exist here.-->
+      <Variables>
+{{ range $dchflexParameters := .Values.dchflexStatementConfiguration }}
+        <VariableSet BU_ID={{ $dchflexParameters.buId | quote }}>
+          <Variable Name="COMMIT_CYCLE" Value={{ $dchflexParameters.commitCycle | quote }}/>
+          <Variable Name="COLLECTIBLE_TYPE" Value={{ $dchflexParameters.collectibleType | quote }}/>
+          <Variable Name="GRACE_PERIOD" Value={{ $dchflexParameters.gracePeriod | quote }}/>
+          <Variable Name="MINIMUM_AMOUNT" Value={{ $dchflexParameters.minimumAmount | quote }}/>
+          <Variable Name="EVENT_DATE_TYPE" Value={{ $dchflexParameters.eventDateType | quote }}/>
+          <Variable Name="EXEMPT_FLAG" Value={{ $dchflexParameters.exemptFlag | quote }}/>
+          <Variable Name="DISPUTE_FLAG" Value={{ $dchflexParameters.disputeFlag | quote }}/>
+          <Variable Name="MODULE_NAME" Value="DCH"/>
+          <Variable Name="RECORD_TYPE" Value={{ $dchflexParameters.recordType | quote }}/>
+          <Variable Name="BATCH_SIZE" Value={{ $dchflexParameters.batchSize | quote }}/>
+          <Variable Name="ALL_FAMILY_GROUPS" Value="1"/>
+          <Variable Name="FG_01" Value="-99"/>
+          <Variable Name="FG_02" Value="-99"/>
+          <Variable Name="FG_03" Value="-99"/>
+          <Variable Name="FG_04" Value="-99"/>
+          <Variable Name="FG_05" Value="-99"/>
+          <Variable Name="FG_06" Value="-99"/>
+          <Variable Name="FG_07" Value="-99"/>
+          <Variable Name="FG_08" Value="-99"/>
+          <Variable Name="FG_09" Value="-99"/>
+          <Variable Name="FG_10" Value="-99"/>
+        </VariableSet>
+{{ end }}
+      </Variables>
+
+      <Statement Name="SELECT_CONTRACT_INFO">
+        <Dependency Statement="SELECT_COLLECTIBLE_INFO" Variable="BillAccountId"/>
+        <Query>
+          <!-- PN357106 -->
+          SELECT CA.CUSTOMER_ID,
+                CA.CO_ID,
+                CA.CO_CODE,
+                CA.CO_ACTIVATED,
+                CA.TMCODE,
+                RP.SHDES,
+                RP.SPECIAL_USAGE_IND
+          FROM  CONTRACT_ALL CA,
+                RATEPLAN RP,
+                BILLING_ACCOUNT BA,
+                BILLING_ACCOUNT_ASSIGNMENT BAA
+          WHERE BA.CUSTOMER_ID = CA.CUSTOMER_ID
+            AND CA.TMCODE = RP.TMCODE
+            AND BA.BILLING_ACCOUNT_ID = :BillAccountId
+            AND NVL(BAA.CONTRACT_ID, CA.CO_ID) = CA.CO_ID
+            AND BA.BILLING_ACCOUNT_ID = BAA.BILLING_ACCOUNT_ID(+)
+        </Query>
+
+        <Controls>
+            <CO_ID>CONTRACT_ID</CO_ID>
+        </Controls>
+
+        <!-- CONTRACT PART - BEGIN -->
+        <Attribute Name="CUSTOMER_ID">
+          <SQL_QUERY_COLUMN>1</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>205</CIR_PART_ID>
+          <CIR_FIELD_ID>477</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>37</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CONTRACT_ID">
+          <SQL_QUERY_COLUMN>2</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>205</CIR_PART_ID>
+          <CIR_FIELD_ID>477</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>36</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CONTRACT_PKEY">
+          <SQL_QUERY_COLUMN>3</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>205</CIR_PART_ID>
+          <CIR_FIELD_ID>477</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>452</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CO_ACTIVATED">
+          <SQL_QUERY_COLUMN>4</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>205</CIR_PART_ID>
+          <CIR_FIELD_ID>477</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="TMCODE">
+          <SQL_QUERY_COLUMN>5</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>205</CIR_PART_ID>
+          <CIR_FIELD_ID>477</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>39</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="TMCODE_PKEY">
+          <SQL_QUERY_COLUMN>6</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>205</CIR_PART_ID>
+          <CIR_FIELD_ID>477</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>761</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="SPECIAL_USAGE_IND">
+          <SQL_QUERY_COLUMN>7</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>205</CIR_PART_ID>
+          <CIR_FIELD_ID>477</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1052</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <!-- CONTRACT PART - END -->
+      </Statement>
+
+
+      <Statement Name="SELECT_PRODUCT_INFO">
+        <Dependency Statement="SELECT_CONTRACT_INFO" Variable="ContractId"/>
+        <Query>
+            SELECT DISTINCT
+                mpusp.SPCODE,
+                pssph.PRODUCT_ID,
+                mpusp.PRODUCTOFFERING_TYPE,
+                mpusp.EXTERNAL_SERVICE_PACKAGE_NAME
+            FROM PR_SERV_SPCODE_HIST pssph
+                INNER JOIN MPUSPTAB mpusp
+                    ON mpusp.SPCODE = pssph.SPCODE
+            WHERE pssph.CO_ID = :ContractId
+                AND pssph.PRODUCT_ID IS NOT NULL
+        </Query>
+
+        <Controls>
+        </Controls>
+
+        <!-- PRODUCT PART - BEGIN -->
+
+        <Attribute Name="SPCODE">
+            <SQL_QUERY_COLUMN>1</SQL_QUERY_COLUMN>
+            <CIR_PART_ID>209</CIR_PART_ID>
+            <CIR_FIELD_ID>653</CIR_FIELD_ID>
+            <CIR_ATTRIBUTE_ID>43</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="PRODUCT_ID">
+            <SQL_QUERY_COLUMN>2</SQL_QUERY_COLUMN>
+            <CIR_PART_ID>209</CIR_PART_ID>
+            <CIR_FIELD_ID>653</CIR_FIELD_ID>
+            <CIR_ATTRIBUTE_ID>974</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="PRODUCT_OFFERING_TYPE">
+            <SQL_QUERY_COLUMN>3</SQL_QUERY_COLUMN>
+            <CIR_PART_ID>209</CIR_PART_ID>
+            <CIR_FIELD_ID>653</CIR_FIELD_ID>
+            <CIR_ATTRIBUTE_ID>1053</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="PRODUCT_OFFERING_ID">
+            <SQL_QUERY_COLUMN>4</SQL_QUERY_COLUMN>
+            <CIR_PART_ID>209</CIR_PART_ID>
+            <CIR_FIELD_ID>653</CIR_FIELD_ID>
+            <CIR_ATTRIBUTE_ID>973</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <!-- PRODUCT PART - END -->
+      </Statement>
+
+
+      <Statement Name="SELECT_COLLECTIBLE_INFO">
+        <Dependency/>
+        <Query>
+          <![CDATA[
+          WITH PRESELECT_INV
+          AS
+          (
+          SELECT /*+ PARALLEL(32) */
+                DISTINCT
+                CUST.CUSTOMER_ID,
+                CUST.CUSTCODE,
+                CUST.CUSTNUM,
+                CUST.CSCURBALANCE,
+                CUST.CURRENCY,
+                BAV.BILLCYCLE,
+                CUST.PRGCODE,
+                TO_CHAR (CUST.CSACTIVATED, 'YYYYMMDDHH24MISS') CSACTIVATED,
+                CUST.CSTYPE,
+                CC.COUNTRY,
+                CUST.COSTCENTER_ID,
+                CUST.CSLEVEL,
+                NVL (TO_CHAR (CUST.AREA_ID), 'NONE') AREA_ID,
+                TO_CHAR (SYSDATE, 'YYYY') - TO_CHAR (CC.BIRTHDATE, 'YYYY') AGE,
+                CUST.CSCLIMIT,
+                CUST.CSCREDIT_SCORE,
+                CC.CCNAME,
+                NVL2 (CC.CCTN_AREA, '(' || CC.CCTN_AREA || ') ' || CC.CCTN, CC.CCTN) CCTN_AREA,
+                CC.CCSMSNO,
+                CC.CCEMAIL,
+                CC.CCSTREET,
+                CC.CCSTREETNO,
+                CC.CCZIP,
+                CC.CCCITY,
+                CC.CCLANGUAGE,
+                /* Handle difference between 1st and 2nd original SELECT */
+                CASE
+                  WHEN (INV.BILLING_ACCOUNT_ID IS NOT NULL) THEN
+                    TA.TERMCODE
+                  ELSE
+                    NULL
+                END AS TERMCODE,
+                PTA.PAYMENTNAME,
+                PTA.PAYMENTCODE,
+                INV.OHXACT,
+                INV.OHREFNUM,
+                /* Handle difference between 1st and 2nd original SELECT */
+                CASE
+                  WHEN (INV.BILLING_ACCOUNT_ID IS NOT NULL) THEN
+                    INV.BILLING_ACCOUNT_ID
+                  ELSE
+                    NULL
+                END AS BILLING_ACCOUNT_ID,
+                /* Handle difference between 1st and 2nd original SELECT */
+                CASE
+                  WHEN (INV.BILLING_ACCOUNT_ID IS NOT NULL) THEN
+                    BA.BILLING_ACCOUNT_CODE
+                  ELSE
+                    NULL
+                END AS BILLING_ACCOUNT_CODE,
+                TO_CHAR (INV.OHDUEDATE, 'YYYYMMDDHH24MISS') OHDUEDATE,
+                TO_CHAR (INV.OHENTDATE, 'YYYYMMDDHH24MISS') OHENTDATE,
+                INV.OHINVAMT_DOC,
+                INV.OHOPNAMT_DOC,
+                INV.DOCUMENT_CURRENCY,
+                INV.COMPLAINT,
+                TO_CHAR (INV.COMPLAINT_DATE, 'YYYYMMDDHH24MISS') COMPLAINT_DATE,
+                PGA.PRGNAME,
+                DECODE (CUST.CSTYPE,
+                        'a', 'ACTIVE',
+                        'd', 'DEACTIVE',
+                        'i', 'INTERESTED',
+                        's', 'SUSPENDED',
+                        'd', 'DEACTIVE') CSTYPE_DES,
+                TA.SHNAME,
+                BC.DESCRIPTION,
+                /* Handle difference between 1st and 2nd original SELECT */
+                CASE
+                  WHEN (INV.BILLING_ACCOUNT_ID IS NOT NULL) THEN
+                    BA.BILLING_ACCOUNT_NAME
+                  ELSE
+                    NULL
+                END AS BILLING_ACCOUNT_NAME,
+                CC.CCLINE1,
+                CC.CCLINE2,
+                CC.CCLINE3,
+                CC.CCLINE4,
+                CC.CCLINE5,
+                CC.CCLINE6,
+                PCON.SHDES,
+                CC.CCFNAME,
+                CC.CCLNAME,
+                TO_CHAR (CC.BIRTHDATE, 'YYYYMMDD') BIRTHDATE,
+                CASE
+                    WHEN INV.OHDUEDATE < SYSDATE THEN INV.OHOPNAMT_DOC
+                    WHEN INV.OHDUEDATE >= SYSDATE THEN 0.0
+                END
+                    INVOICE_OPEN_OVERDUE_AMOUNT,
+                (SELECT SUM (invoice.ohopnamt_doc)
+                    FROM orderhdr_all invoice
+                  WHERE cust.customer_id = invoice.customer_id
+                    AND ( (    invoice.ohstatus = 'DN'
+                            AND EXTDOC.REF_OHXACT IS NOT NULL
+                            AND :COLLECTIBLE_TYPE = 'I'
+                            AND CUST.COLLECTION_IND = 'X')
+                          OR (  invoice.ohstatus IN ('IN', 'FC')
+                            AND invoice.OHDUEDATE < (TRUNC (SYSDATE) - :GRACE_PERIOD))
+                        )
+                ) CUSTOMER_OVERDUE_AMOUNT,
+                (SELECT INVOICE1.OHDUEDATE
+                    FROM CUSTOMER_ALL CU, ORDERHDR_ALL INVOICE1
+                  WHERE     INVOICE1.CUSTOMER_ID = CU.CUSTOMER_ID
+                        AND ROWNUM = 1
+                        AND INVOICE1.OHDUEDATE =
+                                (SELECT MIN (ODD.OHDUEDATE)
+                                  FROM ORDERHDR_ALL ODD
+                                  WHERE     ODD.CUSTOMER_ID = CUST.CUSTOMER_ID
+                                        AND ODD.OHSTATUS = 'IN'
+                                        AND ODD.OHOPNAMT_DOC > 0))
+                    OLDEST_INV_DUEDATE,
+                DECODE (INV.OHINVAMT_DOC, 0, 'X', ' ') INVOICE_ZERO_AMT_IND,
+                (SELECT COUNT (*)
+                    FROM CONTRACT_ALL
+                  WHERE CUSTOMER_ID = CUST.CUSTOMER_ID)
+                    NUMCONTRACTS,
+                (SELECT COUNT (OHXACT)
+                    FROM ORDERHDR_ALL ZZZ
+                  WHERE ZZZ.CUSTOMER_ID = CUST.CUSTOMER_ID AND ZZZ.OHOPNAMT_DOC > 0)
+                    OPENINVOICES,
+                OLDEST_INV.OHXACT   AS OLDEST_INV_KEY,
+                OLDEST_INV.OHREFNUM AS OLDEST_INV_PKEY,
+                INV.OHSTATUS,
+                TA.TERMNAME,
+                FAL.FAMILY_GROUP_ID,
+                CUST.CSCREDIT_PROVIDER,
+                CUST.CSCREDIT_DATE,
+                CUST.CSCREDIT_PROCESS,
+                CUST.CSCREDIT_USER,
+                CUST.CSCLIMIT_O_TR1,
+                CUST.CSCLIMIT_O_TR2,
+                CUST.CSCLIMIT_O_TR3,
+                CUST.DUNNING_MODE,
+                CUST.CSCREDIT_REMARK,
+                CSSCH.CURRENT_SCHEME_TYPE,
+                INV.BUSINESS_UNIT_ID         INV_BUSINESS_UNIT_ID,
+                CUST.BUSINESS_UNIT_ID        CUST_BUSINESS_UNIT_ID,
+                INV.OHDOCSTATUS,
+                nvl(BA.CUR_BALANCE,0) BA_BALANCE_AMNT,
+                BA.PRIMARY_DOC_CURRENCY BA_BALANCE_CURR,
+                SYSDATE BA_DATE,
+                (SELECT SUM (invoice.ohopnamt_doc)
+                    FROM orderhdr_all invoice
+                  WHERE     ba.billing_account_id = invoice.billing_account_id
+                        AND invoice.ohstatus IN ('IN', 'FC')
+                        AND invoice.OHDUEDATE < (TRUNC (SYSDATE) - :GRACE_PERIOD))
+                    BA_OVERDUE_AMNT,
+                  INV.DOCUMENT_CURRENCY BA_OVERDUE_CURR,
+                  (SELECT DECODE (PT.SHNAME, 'C', NULL, 'PARTNER')
+                    FROM CUSTOMER_ALL CA, PARTY_TYPE PT
+                    WHERE CA.PARTY_TYPE_ID = PT.PARTY_TYPE_ID AND
+                    INV.CUSTOMER_ID = CA.CUSTOMER_ID) AS ORIGINATOR,
+                EXTDOC.REF_OHXACT AS DN_INVOICE_REF
+            FROM ORDERHDR_ALL INV
+                INNER JOIN CUSTOMER_ALL CUST
+                        ON CUST.CUSTOMER_ID = INV.CUSTOMER_ID
+                INNER JOIN CCONTACT_ALL CC
+                        ON CC.CUSTOMER_ID = INV.CUSTOMER_ID
+                        AND CC.CUSTOMER_ID = CUST.CUSTOMER_ID
+                INNER JOIN BILLING_ACCOUNT BA
+                        ON (    INV.BILLING_ACCOUNT_ID IS NOT NULL
+                            AND BA.CUSTOMER_ID        = INV.CUSTOMER_ID
+                            AND BA.BILLING_ACCOUNT_ID = INV.BILLING_ACCOUNT_ID)
+                        OR (    INV.BILLING_ACCOUNT_ID IS NULL
+                            AND BA.CUSTOMER_ID  = INV.CUSTOMER_ID
+                            AND BA.PRIMARY_FLAG = 'X')
+                INNER JOIN PAYMENT_ALL PUA
+                        ON PUA.CUSTOMER_ID = INV.CUSTOMER_ID
+                INNER JOIN PAYMENTTYPE_ALL PTA
+                        ON PTA.PAYMENT_ID = PUA.PAYMENT_TYPE
+                INNER JOIN BILLCYCLE_ACTUAL_VIEW BAV
+                        ON BAV.CUSTOMER_ID = CUST.CUSTOMER_ID
+                INNER JOIN BILLCYCLES BC
+                        ON BAV.BILLCYCLE = BC.BILLCYCLE
+                INNER JOIN PRICEGROUP_ALL PGA
+                        ON PGA.PRGCODE = CUST.PRGCODE
+                INNER JOIN PAYMENT_CONDITION PCON
+                        ON PCON.PAYMENT_CONDITION_ID = INV.PAYMENT_CONDITION_ID
+                INNER JOIN TERMS_ALL TA
+                        ON TA.TERMCODE = PCON.TERMCODE
+                INNER JOIN BILLING_ACCOUNT ADDRESSBA
+                        ON ADDRESSBA.CUSTOMER_ID = INV.CUSTOMER_ID
+                INNER JOIN CUSTOMER_FAMILY CFAL
+                        ON CFAL.CUSTOMER_ID = CUST.CUSTOMER_ID
+                INNER JOIN FAMILY_ALL FAL
+                        ON FAL.FAMILY_ID = CFAL.FAMILY_ID  -- Modified from MAX(FAMILY_ID) to MAX(HISTNO) to reflect correct timely order
+                INNER JOIN CREDIT_SCORE_SCHEME CSSCH       -- Cartesian Product with current schema
+                        ON 1=1
+                INNER JOIN (SELECT CUSTOMER_ID, OHXACT, OHREFNUM, OHDUEDATE
+                              FROM (
+                                    SELECT CUSTOMER_ID, OHXACT, OHREFNUM, OHDUEDATE, RANK() OVER (PARTITION BY CUSTOMER_ID ORDER BY OHDUEDATE, OHXACT ) OLDEST
+                                      FROM ORDERHDR_ALL
+                                      WHERE OHSTATUS = 'IN'
+                                        AND OHOPNAMT_DOC > 0
+                                        AND CUSTOMER_ID >= :MIN_CUSTOMER_ID
+                                        AND CUSTOMER_ID <=  :MAX_CUSTOMER_ID
+                                    )
+                              WHERE OLDEST = 1) OLDEST_INV
+                        ON OLDEST_INV.CUSTOMER_ID = CUST.CUSTOMER_ID
+                  LEFT JOIN EXTERNAL_DOCUMENT_REF_VIEW EXTDOC
+                        ON EXTDOC.OHXACT = INV.OHXACT
+          WHERE CUST.CUSTOMER_ID >= :MIN_CUSTOMER_ID
+            AND CUST.CUSTOMER_ID <= :MAX_CUSTOMER_ID
+            AND INV.CUSTOMER_ID >= :MIN_CUSTOMER_ID
+            AND INV.CUSTOMER_ID <= :MAX_CUSTOMER_ID
+            AND (   INV.OHDUEDATE < (TRUNC (SYSDATE) - :GRACE_PERIOD)
+                OR (INV.OHSTATUS='DN' AND CUST.COLLECTION_IND='X' AND :COLLECTIBLE_TYPE = 'I')
+                )
+            AND (   :COLLECTIBLE_TYPE <> 'I'
+                OR NOT EXISTS (SELECT 1
+                                  FROM EXTERNAL_DOCUMENT_REF_VIEW
+                                WHERE OHXACT = INV.OHXACT
+                                  AND SEQNO > 1)
+                )
+            AND     (INV.OHXACT, INV.CUSTOMER_ID) NOT IN (SELECT OHXACT, CUSTOMER_ID
+                                                            FROM DCH_COLLECTIBLE_CTRL
+                                                          WHERE CUSTOMER_ID >= :MIN_CUSTOMER_ID
+                                                            AND CUSTOMER_ID <=  :MAX_CUSTOMER_ID)
+                AND (   (
+                            (   INV.OHSTATUS IN ('IN', 'DN')
+                              OR INV.OHSTATUS = 'IC' AND INV.OHDOCSTATUS = 'AP')
+                          AND INV.BUSINESS_UNIT_ID = :BU_ID)
+                      OR
+                        (    INV.OHSTATUS IN ('IN', 'FC', 'DN')
+                          AND CUST.BUSINESS_UNIT_ID = :BU_ID)
+                    )
+                AND INV.OHOPNAMT_GL > 0
+                AND INV.LOCKED IS NULL
+                AND :MINIMUM_AMOUNT <= (
+                CASE
+                  WHEN (:COLLECTIBLE_TYPE = 'I') THEN
+                    (INV.OHOPNAMT_GL)
+                  WHEN (:COLLECTIBLE_TYPE = 'B') THEN
+                    (SELECT SUM (INVOICE.OHOPNAMT_GL)
+                        FROM ORDERHDR_ALL INVOICE
+                      WHERE BA.BILLING_ACCOUNT_ID = INVOICE.BILLING_ACCOUNT_ID
+                            AND INVOICE.OHSTATUS IN ('IN', 'FC')
+                            AND INVOICE.OHDUEDATE < (TRUNC (SYSDATE) - :GRACE_PERIOD))
+                  WHEN (:COLLECTIBLE_TYPE = 'C') THEN
+                    (SELECT SUM (INVOICE.OHOPNAMT_GL)
+                        FROM ORDERHDR_ALL INVOICE
+                      WHERE CUST.CUSTOMER_ID = INVOICE.CUSTOMER_ID
+                            AND INVOICE.OHSTATUS IN ('IN', 'FC')
+                            AND INVOICE.OHDUEDATE < (TRUNC (SYSDATE) - :GRACE_PERIOD))
+                END )
+                AND :BU_ID IN (CUST.BUSINESS_UNIT_ID, INV.BUSINESS_UNIT_ID)
+                AND (((   CUST.DUNNING_FLAG IS NULL
+                      OR (CUST.DUNNING_FLAG = 'X' AND 'Y' = :EXEMPT_FLAG))
+                      AND :COLLECTIBLE_TYPE in ('I','C'))
+                OR  ((    BA.DUNNING_FLAG = 'X'
+                      OR (BA.DUNNING_FLAG IS NULL AND 'Y' = :EXEMPT_FLAG))
+                      AND :COLLECTIBLE_TYPE in ('B')))
+                AND (   INV.COMPLAINT IS NULL
+                      OR INV.COMPLAINT <> 'X'
+                      OR (INV.COMPLAINT = 'X' AND 'Y' = :DISPUTE_FLAG))
+                AND CFAL.HISTNO = (SELECT MAX (HISTNO)
+                                        FROM CUSTOMER_FAMILY XXX
+                                      WHERE XXX.CUSTOMER_ID = CUST.CUSTOMER_ID
+                                        AND XXX.VALID_FROM <= SYSDATE)
+                AND (   (FAL.FAMILY_GROUP_ID IN
+                            (:FG_01,
+                              :FG_02,
+                              :FG_03,
+                              :FG_04,
+                              :FG_05,
+                              :FG_06,
+                              :FG_07,
+                              :FG_08,
+                              :FG_09,
+                              :FG_10))
+                      OR (:ALL_FAMILY_GROUPS = 1))
+                AND ADDRESSBA.PRIMARY_FLAG = 'X'
+                AND (   ( (    :COLLECTIBLE_TYPE in ('I','B')
+                            AND (   (    BA.CONTACT_SEQNO IS NOT NULL
+                                    AND BA.CONTACT_SEQNO = CC.CCSEQ)
+                                OR (BA.CONTACT_SEQNO IS NULL AND CC.CCBILL = 'X'))))
+                      OR (    :COLLECTIBLE_TYPE = 'C'
+                          AND (   (    ADDRESSBA.CONTACT_SEQNO IS NOT NULL
+                                  AND ADDRESSBA.CONTACT_SEQNO = CC.CCSEQ)
+                              OR (ADDRESSBA.CONTACT_SEQNO IS NULL AND CC.CCBILL = 'X'))))
+                AND PUA.SEQ_ID =
+                        (SELECT MAX (AUP.SEQ_ID)
+                          FROM PAYMENT_ALL AUP
+                          WHERE     AUP.CUSTOMER_ID = INV.CUSTOMER_ID
+                                AND AUP.ENTDATE <= SYSDATE))
+          SELECT DISTINCT
+                CUST_BUSINESS_UNIT_ID,
+                CUSTOMER_ID,
+                CUSTCODE,
+                CUSTNUM,
+                CSCURBALANCE,
+                CURRENCY,
+                BILLCYCLE,
+                PRGCODE,
+                CSACTIVATED,
+                CSTYPE,
+                COUNTRY,
+                COSTCENTER_ID,
+                CSLEVEL,
+                AREA_ID,
+                AGE,
+                CSCLIMIT,
+                CSCREDIT_SCORE,
+                CCNAME,
+                CCTN_AREA,
+                CCSMSNO,
+                CCEMAIL,
+                CCSTREET,
+                CCSTREETNO,
+                CCZIP,
+                CCCITY,
+                CCLANGUAGE,
+                TERMCODE,
+                PAYMENTNAME,
+                PAYMENTCODE,
+                OHXACT,
+                OHREFNUM,
+                BILLING_ACCOUNT_ID,
+                BILLING_ACCOUNT_CODE,
+                OHDUEDATE,
+                OHENTDATE,
+                OHINVAMT_DOC,
+                OHOPNAMT_DOC,
+                DOCUMENT_CURRENCY,
+                COMPLAINT,
+                COMPLAINT_DATE,
+                PRGNAME,
+                CSTYPE_DES,
+                PAYMENTNAME,
+                SHNAME,
+                DESCRIPTION,
+                BILLING_ACCOUNT_NAME,
+                CCLINE1,
+                CCLINE2,
+                CCLINE3,
+                CCLINE4,
+                CCLINE5,
+                CCLINE6,
+                NULL,
+                SHDES,
+                INV_BUSINESS_UNIT_ID,
+                CCFNAME,
+                CCLNAME,
+                NULL,
+                NULL,
+                NULL,
+                NULL,
+                BIRTHDATE,
+                INVOICE_OPEN_OVERDUE_AMOUNT,
+                CUSTOMER_OVERDUE_AMOUNT,
+                OLDEST_INV_DUEDATE,
+                SYSDATE,
+                INVOICE_ZERO_AMT_IND,
+                NUMCONTRACTS,
+                OPENINVOICES,
+                OLDEST_INV_KEY,
+                OLDEST_INV_PKEY,
+                OHSTATUS,
+                TERMNAME,
+                FAMILY_GROUP_ID,
+                CSCREDIT_SCORE,
+                CSCREDIT_PROVIDER,
+                CSCREDIT_DATE,
+                CSCREDIT_PROCESS,
+                CSCREDIT_USER,
+                CSCLIMIT_O_TR1,
+                CSCLIMIT_O_TR2,
+                CSCLIMIT_O_TR3,
+                DUNNING_MODE,
+                CSCREDIT_REMARK,
+                CURRENT_SCHEME_TYPE,
+                BA_BALANCE_AMNT,
+                BA_BALANCE_CURR,
+                BA_DATE,
+                BA_OVERDUE_AMNT,
+                BA_OVERDUE_CURR,
+                ORIGINATOR,
+                DN_INVOICE_REF
+            FROM PRESELECT_INV
+          WHERE (   OHSTATUS IN ('IN', 'DN')
+                  OR OHSTATUS = 'IC' AND OHDOCSTATUS = 'AP')
+            AND INV_BUSINESS_UNIT_ID = :BU_ID
+            AND BILLING_ACCOUNT_ID IS NOT NULL
+          UNION
+          SELECT DISTINCT
+                CUST_BUSINESS_UNIT_ID,
+                CUSTOMER_ID,
+                CUSTCODE,
+                CUSTNUM,
+                CSCURBALANCE,
+                CURRENCY,
+                BILLCYCLE,
+                PRGCODE,
+                CSACTIVATED,
+                CSTYPE,
+                COUNTRY,
+                COSTCENTER_ID,
+                CSLEVEL,
+                AREA_ID,
+                AGE,
+                CSCLIMIT,
+                CSCREDIT_SCORE,
+                CCNAME,
+                CCTN_AREA,
+                CCSMSNO,
+                CCEMAIL,
+                CCSTREET,
+                CCSTREETNO,
+                CCZIP,
+                CCCITY,
+                CCLANGUAGE,
+                NULL,
+                PAYMENTNAME,
+                PAYMENTCODE,
+                OHXACT,
+                OHREFNUM,
+                NULL,
+                NULL,
+                OHDUEDATE,
+                OHENTDATE,
+                OHINVAMT_DOC,
+                OHOPNAMT_DOC,
+                DOCUMENT_CURRENCY,
+                COMPLAINT,
+                COMPLAINT_DATE,
+                PRGNAME,
+                CSTYPE_DES,
+                PAYMENTNAME,
+                SHNAME,
+                DESCRIPTION,
+                NULL,
+                CCLINE1,
+                CCLINE2,
+                CCLINE3,
+                CCLINE4,
+                CCLINE5,
+                CCLINE6,
+                NULL,
+                SHDES,
+                INV_BUSINESS_UNIT_ID,
+                CCFNAME,
+                CCLNAME,
+                NULL,
+                NULL,
+                NULL,
+                NULL,
+                BIRTHDATE,
+                INVOICE_OPEN_OVERDUE_AMOUNT,
+                CUSTOMER_OVERDUE_AMOUNT,
+                OLDEST_INV_DUEDATE,
+                SYSDATE,
+                INVOICE_ZERO_AMT_IND,
+                NUMCONTRACTS,
+                OPENINVOICES,
+                OLDEST_INV_KEY,
+                OLDEST_INV_PKEY,
+                OHSTATUS,
+                TERMNAME,
+                FAMILY_GROUP_ID,
+                CSCREDIT_SCORE,
+                CSCREDIT_PROVIDER,
+                CSCREDIT_DATE,
+                CSCREDIT_PROCESS,
+                CSCREDIT_USER,
+                CSCLIMIT_O_TR1,
+                CSCLIMIT_O_TR2,
+                CSCLIMIT_O_TR3,
+                DUNNING_MODE,
+                CSCREDIT_REMARK,
+                CURRENT_SCHEME_TYPE,
+                BA_BALANCE_AMNT,
+                BA_BALANCE_CURR,
+                BA_DATE,
+                BA_OVERDUE_AMNT,
+                BA_OVERDUE_CURR,
+                ORIGINATOR,
+                DN_INVOICE_REF
+            FROM PRESELECT_INV
+          WHERE OHSTATUS IN ('IN', 'FC', 'DN')
+            AND CUST_BUSINESS_UNIT_ID  = :BU_ID
+            AND BILLING_ACCOUNT_ID IS NULL
+          ORDER BY 2, BILLING_ACCOUNT_ID
+          ]]>
+        </Query>
+
+        <Controls>
+          <CUSTOMER_ID>CUSTOMER_KEY</CUSTOMER_ID>
+          <CUSTNUM>CUSTOMER_PKEY</CUSTNUM>
+          <OHXACT>INVOICE_KEY</OHXACT>
+          <OHREFNUM>INVOICE_PKEY</OHREFNUM>
+          <BILLING_ACCOUNT_ID>BILLING_ACCOUNT_KEY</BILLING_ACCOUNT_ID>
+          <BILLING_ACCOUNT_CODE>BILLING_ACCOUNT_PKEY</BILLING_ACCOUNT_CODE>
+        </Controls>
+
+        <!-- BASE PART - BEGIN -->
+        <Attribute Name="RECORD_TYPE">
+          <SQL_QUERY_COLUMN>0</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>200</CIR_PART_ID>
+          <CIR_FIELD_ID>315</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>602</CIR_ATTRIBUTE_ID>
+          <USE_VARIABLE>RECORD_TYPE</USE_VARIABLE>
+        </Attribute>
+
+        <Attribute Name="BUS_UNIT_ID">
+          <SQL_QUERY_COLUMN>1</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>200</CIR_PART_ID>
+          <CIR_FIELD_ID>315</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>491</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="FAMILY_GROUP_ID">
+          <SQL_QUERY_COLUMN>74</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>200</CIR_PART_ID>
+          <CIR_FIELD_ID>315</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>303</CIR_ATTRIBUTE_ID>
+        </Attribute>
+        <!-- BASE PART - END -->
+
+        <!-- COLLECTIBLE PART - BEGIN -->
+        <Attribute Name="COLLECTIBLE_TYPE">
+          <SQL_QUERY_COLUMN>0</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>201</CIR_PART_ID>
+          <CIR_FIELD_ID>320</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>600</CIR_ATTRIBUTE_ID>
+          <USE_VARIABLE>COLLECTIBLE_TYPE</USE_VARIABLE>
+        </Attribute>
+
+        <Attribute Name="TRANSACT_USER">
+          <SQL_QUERY_COLUMN>0</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>201</CIR_PART_ID>
+          <CIR_FIELD_ID>320</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>601</CIR_ATTRIBUTE_ID>
+          <USE_VARIABLE>MODULE_NAME</USE_VARIABLE>
+        </Attribute>
+
+        <Attribute Name="TRANSACTION_DATE">
+          <SQL_QUERY_COLUMN>66</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>201</CIR_PART_ID>
+          <CIR_FIELD_ID>319</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="ORIGINATOR">
+          <SQL_QUERY_COLUMN>91</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>201</CIR_PART_ID>
+          <CIR_FIELD_ID>320</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1135</CIR_ATTRIBUTE_ID>
+        </Attribute>
+        <!-- COLLECTIBLE PART - END -->
+
+
+        <!-- CUSTOMER PART - BEGIN -->
+        <Attribute Name="CUSTOMER_EXTERNAL_KEY">
+          <SQL_QUERY_COLUMN>3</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>332</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>603</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CUSTOMER_KEY">
+          <SQL_QUERY_COLUMN>2</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>332</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>37</CIR_ATTRIBUTE_ID>
+          <KEY>TRUE</KEY>
+        </Attribute>
+
+        //CUSTOMER_PKEY
+        <Attribute Name="CUSTOMER_PKEY">
+          <SQL_QUERY_COLUMN>4</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>332</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>403</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CUSTOMER_BALANCE">
+          <SQL_QUERY_COLUMN>5</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>322</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>5</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CUSTOMER_BALANCE_DATE">
+          <SQL_QUERY_COLUMN>66</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>323</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CUSTOMER_CURRENCY">
+          <SQL_QUERY_COLUMN>6</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>322</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>7</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="OVERDUE_INVOICE_AMOUNT">
+          <SQL_QUERY_COLUMN>64</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>354</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>5</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CURRENCY_KEY">
+          <SQL_QUERY_COLUMN>6</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>354</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>7</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CURRENCY_PKEY_CUSTOMER">
+          <SQL_QUERY_COLUMN>6</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>354</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>437</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CUSTOMER_OVERDUE_DATE">
+          <SQL_QUERY_COLUMN>66</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>355</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CUST_BUS_UNIT_ID">
+          <SQL_QUERY_COLUMN>1</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>324</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>491</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CUST_BUS_UNIT_PKEY">
+          <SQL_QUERY_COLUMN>1</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>324</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>492</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="NUMBER_OF_CONTRACTS">
+          <SQL_QUERY_COLUMN>68</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>332</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>605</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="NUMBER_OF_OPEN_INVOICES">
+          <SQL_QUERY_COLUMN>69</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>332</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>604</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="OLDEST_INVOICE_KEY">
+          <SQL_QUERY_COLUMN>70</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>332</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>762</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="OLDEST_INVOICE_PKEY">
+          <SQL_QUERY_COLUMN>71</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>332</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>763</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="BILL_CYCLE">
+          <SQL_QUERY_COLUMN>7</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>332</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>410</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="GROUP">
+          <SQL_QUERY_COLUMN>8</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>332</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>606</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="ACTIVATION_DATE">
+          <SQL_QUERY_COLUMN>9</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>352</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="STATUS">
+          <SQL_QUERY_COLUMN>10</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>352</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>607</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="COUNTRY">
+          <SQL_QUERY_COLUMN>11</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>83</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="REGION">
+          <SQL_QUERY_COLUMN>12</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>608</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="DIVISION">
+          <SQL_QUERY_COLUMN>13</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>609</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="AREA">
+          <SQL_QUERY_COLUMN>14</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>610</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="AGE">
+          <SQL_QUERY_COLUMN>15</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>332</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>611</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CREDIT_LIMIT">
+          <SQL_QUERY_COLUMN>16</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>326</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>5</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CREDIT_LIMIT_CURRENCY">
+          <SQL_QUERY_COLUMN>6</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>326</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>7</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CREDIT_LIMIT_CURRENCY_PKEY">
+          <SQL_QUERY_COLUMN>6</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>326</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>437</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CUST_CREDIT_LIMIT_DATE">
+          <SQL_QUERY_COLUMN>66</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>327</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CREDIT_SCORE_DESCRIPTION">
+          <SQL_QUERY_COLUMN>17</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>331</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>625</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CCNAME">
+          <SQL_QUERY_COLUMN>18</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>332</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>250</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CONTACT_NUMBER">
+          <SQL_QUERY_COLUMN>19</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>614</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="SMS_NUMBER">
+          <SQL_QUERY_COLUMN>20</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>615</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="EMAIL">
+          <SQL_QUERY_COLUMN>21</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>616</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CCCITY">
+          <SQL_QUERY_COLUMN>25</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>254</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CCZIP">
+          <SQL_QUERY_COLUMN>24</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>253</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CCSTREET">
+          <SQL_QUERY_COLUMN>22</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>748</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CCSTREETNO">
+          <SQL_QUERY_COLUMN>23</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>749</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="LANGUAGE_KEY">
+          <SQL_QUERY_COLUMN>26</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>332</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>341</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="LANGUAGE_DESC">
+          <SQL_QUERY_COLUMN>26</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>332</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>633</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="LNG_PKEY">
+          <SQL_QUERY_COLUMN>26</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>332</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>419</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="PAYMENT_CODE">
+          <SQL_QUERY_COLUMN>29</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>333</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>626</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="PAYMENT_TERMS">
+          <SQL_QUERY_COLUMN>27</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>333</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>617</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="STATUS_DESC">
+          <SQL_QUERY_COLUMN>42</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>332</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>660</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="GROUP_DESC">
+          <SQL_QUERY_COLUMN>41</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>332</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>661</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="BILL_CYCLE_DESC">
+          <SQL_QUERY_COLUMN>45</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>332</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>662</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="PAYMENT_DESC">
+          <SQL_QUERY_COLUMN>28</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>333</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>631</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="PAYMENT_TERM_DESC">
+          <SQL_QUERY_COLUMN>73</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>333</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>632</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="BILL_STARTDATE">
+          <SQL_QUERY_COLUMN>66</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>353</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CCLINE1">
+          <SQL_QUERY_COLUMN>47</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>635</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CCLINE2">
+          <SQL_QUERY_COLUMN>48</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>636</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CCLINE3">
+          <SQL_QUERY_COLUMN>49</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>637</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CCLINE4">
+          <SQL_QUERY_COLUMN>50</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>638</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CCLINE5">
+          <SQL_QUERY_COLUMN>51</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>639</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CCLINE6">
+          <SQL_QUERY_COLUMN>52</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>640</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CUSTOMER_BIRTHDATE">
+          <SQL_QUERY_COLUMN>62</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>357</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CCFNAME">
+          <SQL_QUERY_COLUMN>56</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>251</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CCLNAME">
+          <SQL_QUERY_COLUMN>57</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>325</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>252</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CUSTOMER_OLD_OVERDUE_DATE">
+          <SQL_QUERY_COLUMN>65</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>202</CIR_PART_ID>
+          <CIR_FIELD_ID>358</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <!-- CUSTOMER PART - END -->
+
+        <!-- INVOICE PART - BEGIN -->
+        <Attribute Name="INVOICE_KEY">
+          <SQL_QUERY_COLUMN>30</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>347</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>618</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="INVOICE_PKEY">
+          <SQL_QUERY_COLUMN>31</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>347</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>619</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="INVOICE_AMOUNT">
+          <SQL_QUERY_COLUMN>36</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>341</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>5</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CURRENCY_INVOICE_341">
+          <SQL_QUERY_COLUMN>38</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>341</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>7</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CURRENCY_PKEY_INVOICE">
+          <SQL_QUERY_COLUMN>38</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>341</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>437</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="INVOICE_AMOUNT_DATE">
+          <SQL_QUERY_COLUMN>66</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>343</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="INVOICE_OPEN_AMOUNT">
+          <SQL_QUERY_COLUMN>37</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>348</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>5</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CURRENCY_INVOICE_348">
+          <SQL_QUERY_COLUMN>38</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>348</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>7</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CURRENCY_PKEY_437">
+          <SQL_QUERY_COLUMN>38</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>348</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>437</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="OPEN_AMOUNT_DATE">
+          <SQL_QUERY_COLUMN>66</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>349</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="OPEN_AMOUNT_ZERO_IND">
+          <SQL_QUERY_COLUMN>67</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>347</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>613</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CURRENCY">
+          <SQL_QUERY_COLUMN>38</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>350</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>7</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CURRENCY_PKEY">
+          <SQL_QUERY_COLUMN>38</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>350</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>437</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="BILLING_ACCOUNT_KEY">
+          <SQL_QUERY_COLUMN>32</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>344</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>620</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="BILLING_ACCOUNT_NAME">
+          <SQL_QUERY_COLUMN>46</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>344</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>634</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="BILLING_ACCOUNT_PKEY">
+          <SQL_QUERY_COLUMN>33</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>344</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>624</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="BUS_UNIT_ID_491">
+          <SQL_QUERY_COLUMN>55</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>418</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>491</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="TERMCODE">
+          <SQL_QUERY_COLUMN>27</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>391</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>664</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="TERMS_PKEY">
+          <SQL_QUERY_COLUMN>44</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>391</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>665</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="PAYMENTTYPE_PKEY">
+          <SQL_QUERY_COLUMN>29</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>391</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>667</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="INVOICE_DUE_DATE">
+          <SQL_QUERY_COLUMN>34</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>345</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="INVOICE_ENTRY_DATE">
+          <SQL_QUERY_COLUMN>35</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>346</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="OPEN_OVERDUE_AMOUNT">
+          <SQL_QUERY_COLUMN>63</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>350</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>5</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="OPEN_OVERDUE_DATE">
+          <SQL_QUERY_COLUMN>66</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>351</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="INVOICE_DOC_TYPE">
+          <SQL_QUERY_COLUMN>72</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>347</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>413</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="DN_INVOICE_REF">
+          <SQL_QUERY_COLUMN>92</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>203</CIR_PART_ID>
+          <CIR_FIELD_ID>478</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>767</CIR_ATTRIBUTE_ID>
+        </Attribute>
+        <!-- INVOICE PART - END -->
+
+        <!-- CREDIT SCORE PART - BEGIN -->
+
+        <Attribute Name="CREDIT_SCORE_DESCRIPTION_ID">
+          <SQL_QUERY_COLUMN>75</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>207</CIR_PART_ID>
+          <CIR_FIELD_ID>525</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>625</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CREDIT_SCORE_PROVIDER">
+          <SQL_QUERY_COLUMN>76</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>207</CIR_PART_ID>
+          <CIR_FIELD_ID>525</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>853</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CREDIT_SCORE_DATE">
+          <SQL_QUERY_COLUMN>77</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>207</CIR_PART_ID>
+          <CIR_FIELD_ID>516</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CREDIT_SCORE_PROCESS">
+          <SQL_QUERY_COLUMN>78</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>207</CIR_PART_ID>
+          <CIR_FIELD_ID>525</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>855</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CREDIT_SCORE_USER">
+          <SQL_QUERY_COLUMN>79</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>207</CIR_PART_ID>
+          <CIR_FIELD_ID>525</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>856</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CREDIT_SCORE_TR1">
+          <SQL_QUERY_COLUMN>80</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>207</CIR_PART_ID>
+          <CIR_FIELD_ID>525</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>857</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CREDIT_SCORE_TR2">
+          <SQL_QUERY_COLUMN>81</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>207</CIR_PART_ID>
+          <CIR_FIELD_ID>525</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>858</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CREDIT_SCORE_TR3">
+          <SQL_QUERY_COLUMN>82</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>207</CIR_PART_ID>
+          <CIR_FIELD_ID>525</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>859</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CREDIT_DUNNING_MODE">
+          <SQL_QUERY_COLUMN>83</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>207</CIR_PART_ID>
+          <CIR_FIELD_ID>525</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>860</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CREDIT_SCORE_REMARK">
+          <SQL_QUERY_COLUMN>84</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>207</CIR_PART_ID>
+          <CIR_FIELD_ID>525</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>861</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="CREDIT_SCORE_SCHEME_TYPE">
+          <SQL_QUERY_COLUMN>85</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>207</CIR_PART_ID>
+          <CIR_FIELD_ID>525</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>854</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <!-- CREDIT SCORE PART - END -->
+
+        <!-- BILLING ACCOUNT PART - BEGIN -->
+
+        <Attribute Name="BILLING_ACCOUNT_BALANCE_AMNT">
+          <SQL_QUERY_COLUMN>86</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>208</CIR_PART_ID>
+          <CIR_FIELD_ID>606</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>5</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="BILLING_ACCOUNT_BALANCE_CURR">
+          <SQL_QUERY_COLUMN>87</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>208</CIR_PART_ID>
+          <CIR_FIELD_ID>606</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>7</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="BILLING_ACCOUNT_BALANCE_DATE">
+          <SQL_QUERY_COLUMN>88</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>208</CIR_PART_ID>
+          <CIR_FIELD_ID>607</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="BILLING_ACCOUNT_OVERDUE_AMNT">
+          <SQL_QUERY_COLUMN>89</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>208</CIR_PART_ID>
+          <CIR_FIELD_ID>608</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>5</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="BILLING_ACCOUNT_OVERDUE_CURR">
+          <SQL_QUERY_COLUMN>90</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>208</CIR_PART_ID>
+          <CIR_FIELD_ID>608</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>7</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="BILLING_ACCOUNT_OVERDUE_DATE">
+          <SQL_QUERY_COLUMN>88</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>208</CIR_PART_ID>
+          <CIR_FIELD_ID>609</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>1</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="BA_BILLING_ACCOUNT_KEY">
+          <SQL_QUERY_COLUMN>32</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>208</CIR_PART_ID>
+          <CIR_FIELD_ID>610</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>620</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="BA_BILLING_ACCOUNT_NAME">
+          <SQL_QUERY_COLUMN>46</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>208</CIR_PART_ID>
+          <CIR_FIELD_ID>610</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>634</CIR_ATTRIBUTE_ID>
+        </Attribute>
+
+        <Attribute Name="BA_BILLING_ACCOUNT_PKEY">
+          <SQL_QUERY_COLUMN>33</SQL_QUERY_COLUMN>
+          <CIR_PART_ID>208</CIR_PART_ID>
+          <CIR_FIELD_ID>610</CIR_FIELD_ID>
+          <CIR_ATTRIBUTE_ID>624</CIR_ATTRIBUTE_ID>
+        </Attribute>
+        <!-- BILLING ACCOUNT PART - END -->
+
+      </Statement>
+    </DCHCollectible>

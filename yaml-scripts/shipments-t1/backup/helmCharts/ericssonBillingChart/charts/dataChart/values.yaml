@@ -1,0 +1,147 @@
+# Default values for dataChart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Allowed: 1
+replicaCount: 1
+
+imageCredentials:
+  data:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  data-init:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+
+images:
+  data:
+    name: "eric-bss-eb-data"
+    tag: "22.15.12"
+  data-init:
+    name: "eric-bss-eb-printcfg"
+    tag: "22.15.12"
+  data-monitor:
+    name: "eric-bss-eb-data-monitor"
+    tag: "22.15.12"
+
+restartPolicy: Always
+
+metadataName: eric-bss-eb-data
+
+livenessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 1
+
+dataConfigFile:
+  enable: false
+  mepHandling:
+  # - { mep: "", mode: "R", syncMode: "N" }
+  # - { mep: "", mode: "T", syncMode: "N" }
+  globalBcDefinition:
+  #  - { mep: "", bcComType: "" }
+  dataUserDefinition:
+  #  - { user: "", userName: "", host: "", application: "" }
+  userRestrictionDefinition:
+  #  - { user: "" }
+  # Defines how many messages will be collected per transaction.
+  transactionCollection : 100
+  # Defines how long to wait (milliseconds) for the subsequent message before the transaction is to be completed
+  # (only when transactionCollection is greater than 1).
+  timeout : 1000
+  # Defines the connection time-out (milliseconds) of inter-DaTA threads in case of write operations.
+  interDataConnectTimeout : 5000
+  # Dummy message profile for replication to alternate DaTA server (ADS).
+  messageADSProfile: 210
+  # Dummy message profile for replication to primary DaTA server (PDS).
+  messagePDSProfile: 713
+
+dataMonitor:
+  # The duration that candidates for a lease need to wait before forcing acquisition of the lease.
+  leaseDurationSeconds : 330
+  # The maximum expected time (seconds) for the takeover process.
+  takeOverTimeoutPeriod : 600
+  # The keepAliveScaleFactor is used to calculate keepAlivePeriod - the time after which DaTA
+  # will automatically terminate unless it receives a new keep alive message from the DaTA monitor.
+  # Example keepAlivePeriod = INT((leaseDurationSeconds – gracePeriod) * keepAliveScaleFactor)
+  keepAliveScaleFactor : 0.95
+  # The retryScaleFactor is used to calculate retryPeriod - the time span after which
+  # the DaTA monitor shall renew the K8s lease.
+  # Example : retryPeriod = INT(keepAlivePeriod * retryScaleFactor)
+  retryScaleFactor  : 0.2
+
+# Wait period dataHA to make sure its services are up and running before trying to connect
+waitPeriodSeconds: 5
+
+# Grace period for pod termination, which is used to shut down DATA gracefully.
+terminationGracePeriodSeconds: 30
+
+# Set external IP for service, or let it be set by load balancer
+loadBalancerIP: ""
+
+# In case an inspection of the DaTA Volumes is needed but the DaTA pod is in error status,
+# set maintenanceMode=true and restart the DaTA pod.
+# In the maintenance mode, the pod will be started with all volumes mounted, but without DaTA running.
+# Instead, a sleep command is executed: sleep 36000
+maintenanceMode: false
+
+envVariables:
+  #DATA_INTER_SEND_RETRY
+  #Specifies the time interval in which an inter-DaTA thread tries to reconnect to a remote DaTA process that failed
+  dataInterSendRetry: 500
+  #DATA_NON_PERSIST_Q_MAX_BUF_SIZE
+  #Maximum buffer size for memory based queues (kBytes)
+  dataNonPersistQMaxBufSize: 128000
+  #DATA_SOCKET_BUFFER_SIZE
+  #Optional: Specifies the socket buffer size. DaTA default/minimum value is 16004096
+  dataSocketBufferSize: ""
+  #DATA_USE_PERSISTENT_BC_CC
+  #If set, messages of communication type BC and CC messages are stored in persistent queues which use UNIX files.
+  #This setting overrules the default setting (transient) to reduce the number of UNIX files and increase performance.
+  dataUsePersistentBcCc:
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+
+#A local nodeSelector definition has priority over the global definition above.
+#nodeSelector: {}
+
+# A local affinity definition has priority over the global definition.
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 50
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - eric-bss-eb-data
+        topologyKey: kubernetes.io/hostname
+    - weight: 50
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - eric-bss-eb-data
+        topologyKey: topology.kubernetes.io/zone
+
+tnsnames:
+  bscsdb: '{{ tpl .Values.global.tnsnames.bscsdb . }}'
+
+sqlnet:
+  ora: '{{ tpl .Values.global.sqlnet.ora . }}'

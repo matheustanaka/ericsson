@@ -1,0 +1,1165 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-oab-ordermanagementserver.xml
+data:
+  Registry_OAB_OrderManagementServer.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+    <ComponentRegistry>
+        <!-- OAB Settings -->
+        <Node name="Action Adaptor Settings">
+            <!-- SOI Servers Settings -->
+            <Node name="SOI Servers Connection Settings">
+                <!-- CIL Settings -->
+                <!-- OMS Server Settings, node name is used for server identification -->
+                <Node name="OMS">
+                    <KeyValue key="ServerUsername" value="OAB" />
+                    <KeyValue key="PoolSize" type="Integer" value="10" />
+                    <KeyValue key="SCOPE" value="INTERNAL"
+                        comment="Decides whether an external or OMS internal SOI will be used. Possible values are EXTERNAL / INTERNAL." />
+                </Node>
+                <!-- OMS Settings -->
+            </Node>
+            <!-- SOI Servers Settings -->
+
+            <!-- Abstract Cil Action Settings -->
+            <Node name="Abstract Cil Action Settings">
+                <KeyValue key="BusinessUnitAcronym"
+                      value="BU_ID"/>
+                <KeyValue key="DealerIdAcronym"
+                      value="DEALER_ID"/>
+                <KeyValue key="ProcessAcronym"
+                      value="PROCESS"/>
+                <KeyValue key="UserAcronym"
+                      value="USER"/>
+                <KeyValue key="ProcessNamePrefixOMS"
+                      value="OMS"/>
+              <KeyValue key="CoreVersionBSCS"
+                      value="R4"
+                      comment="The name of the core version of BSCS, whose value must be: R1, R2, R3 or R4. If not set, R4 is used." />
+            </Node>
+            <!-- Abstract Cil Action Settings -->
+
+            <!-- Execution Settings -->
+            <Node name="Execution Settings">
+                <KeyValue key="MaxRetries"
+                      type="Integer"
+                      value="5"
+                      comment="Maximum number of execution retries" />
+                <KeyValue key="WaitTime"
+                      type="Integer"
+                      value="500"
+                      comment="Milliseconds between each execution retry." />
+                <KeyValue key="ApplyToAllContractsDefaultValue"
+                      type="Boolean"
+                      value="true"
+                      comment="Is the default value that shall be used in case the Action Parameter APPLY_TO_ALL_CONTRACTS is not filled during the workflow definition." />
+            </Node>
+            <!-- Execution Settings -->
+
+            <!-- Finalization Settings -->
+            <Node name="Finalization Settings">
+                <KeyValue key="MaxRetries"
+                      type="Integer"
+                      value="6"/>
+                <KeyValue key="WaitTime"
+                      type="Integer"
+                      value="600"
+                      comment="Milliseconds between each finalization try." />
+            </Node>
+            <!-- Finalization Settings -->
+
+            <!-- Action Settings -->
+            <Node name="Action Settings">
+
+                <!-- Contract Action -->
+                <Node name="Create Contract">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.contract.bscs.CreateContractAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                                  <!--
+                            <KeyValue key="ContractTypePublicKey"
+                                  value="NOS"
+                                  comment="Public key of the contract type, see table CONTRACT_TYPE." />
+                                   -->
+                            <KeyValue key="CosActionInitialize"
+                                  value="i"
+                                  comment="Action to perform 'Initialize first version'" />
+                            <KeyValue key="CosActionActive"
+                                  value="a"
+                                  comment="Action to perform 'Active parameter'" />
+                            <KeyValue key="TemplateID"
+                                  type="Integer"
+                                  value="0"
+                                  comment="Templante identifier" />
+                            <KeyValue key="Retention"
+                                  type="Integer"
+                                  value="0"
+                                  comment="Retention mode" />
+                                <KeyValue key="ResType"
+                                  type="Integer"
+                                  value="2"
+                                  comment="1 - Port ; 2 - Storage Medium" />
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+
+                <Node name="Activate Contract">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.contract.bscs.ActivateContractAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                            <KeyValue key="Status"
+                                  type="Integer"
+                                  value="2"
+                                  comment="New status contract: activation = 2, suspension = 3, deactive = 4" />
+                            <KeyValue key="StatusReason"
+                                  type="Integer"
+                                  value="1"
+                                  comment="Reason for the new status: 1 -> activating, 2 -> suspending, 3 -> deactivating
+                                                       4 -> reactivating, 5 -> replacement, 6 -> onhold, 7 -> interested" />
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+
+                <Node name="Suspend Contract">
+                    <KeyValue key="ImplementationClass"
+                        type="String"
+                        value="com.lhs.wab.action.contract.bscs.ChangeContractStatusAction"
+                        comment="" />
+
+                    <!-- Action Internal Attributes -->
+                    <Node name="Internal Attributes">
+                        <KeyValue key="SoiName"
+                              type="String"
+                              value="CIL"
+                              comment="" />
+                        <KeyValue key="SoiVersion"
+                              type="String"
+                              value="7"
+                              comment="null" />
+                        <KeyValue key="Status"
+                              type="Integer"
+                              value="3"
+                              comment="New status contract: activation = 2, suspension = 3, deactive = 4" />
+                        <KeyValue key="StatusReason"
+                              type="Integer"
+                              value="-1"
+                              comment="Default reason for the new status: 1 -> activating, 2 -> suspending, 3 -> deactivating
+                                                   4 -> reactivating, 5 -> replacement, 6 -> onhold, 7 -> interested" />
+                    </Node>
+                    <!-- Action Internal Attributes -->
+                </Node>
+
+                <Node name="Deactivate Contract">
+                    <KeyValue key="ImplementationClass"
+                        type="String"
+                        value="com.lhs.wab.action.contract.bscs.ChangeContractStatusAction"
+                        comment="" />
+
+                    <!-- Action Internal Attributes -->
+                    <Node name="Internal Attributes">
+                        <KeyValue key="SoiName"
+                              type="String"
+                              value="CIL"
+                              comment="" />
+                        <KeyValue key="SoiVersion"
+                              type="String"
+                              value="7"
+                              comment="null" />
+                        <KeyValue key="Status"
+                              type="Integer"
+                              value="4"
+                              comment="New status contract: activation = 2, suspension = 3, deactive = 4" />
+                        <KeyValue key="StatusReason"
+                              type="Integer"
+                              value="-1"
+                              comment="Default reason for the new status: 1 -> activating, 2 -> suspending, 3 -> deactivating
+                                                   4 -> reactivating, 5 -> replacement, 6 -> onhold, 7 -> interested" />
+                    </Node>
+                    <!-- Action Internal Attributes -->
+                </Node>
+
+
+                <Node name="Change Rate Plan">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.contract.bscs.ChangeRatePlan"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+
+                <Node name="Change Service Package">
+                    <KeyValue key="ImplementationClass"
+                        type="String"
+                        value="com.lhs.wab.action.contract.bscs.ChangeServicePackage"
+                        comment="Action class to change the service package." />
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  type="String"
+                                  value="CIL"
+                                  comment="" />
+                            <KeyValue key="SoiVersion"
+                                  type="String"
+                                  value="7"
+                                  comment="null" />
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+
+                <Node name="Takeover Contract">
+                    <KeyValue key="ImplementationClass"
+                        type="String"
+                        value="com.lhs.wab.action.contract.bscs.TakeoverContractAction"
+                        comment="" />
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  type="String"
+                                  value="CIL"
+                                  comment="" />
+                            <KeyValue key="SoiVersion"
+                                  type="String"
+                                  value="7"
+                                  comment="null" />
+                            <KeyValue key="StatusReason"
+                                  type="Integer"
+                                  value="2"
+                                  comment="Default reason for the contract takeover" />
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+                <!--f00381344:Action to cover storage medium and directory number replace from CX including DN Import, and HLR change -->
+                <Node name="Replace Contract Resource">
+                    <KeyValue key="ImplementationClass"
+                        type="String"
+                        value="com.lhs.wab.action.resource.bscs.CXReplaceResourceAction"
+                        comment="" />
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  type="String"
+                                  value="CIL"
+                                  comment="" />
+                            <KeyValue key="SoiVersion"
+                                  type="String"
+                                  value="7"
+                                  comment="null" />
+                                <KeyValue key="ResType"
+                                  type="Integer"
+                                  value="2"
+                                  comment="2 - Storage Medium" />
+                        </Node>
+                        <!-- Action Internal Attributes -->
+                </Node>
+
+
+                <!-- Action used for BSCS contracts ! -->
+                <Node name="Change Friends And Family">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.contract.bscs.ChangeFriendsAndFamilyAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+
+                <!-- Action used for CS contracts ! -->
+                <Node name="Change Family And Friends">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.contract.bscs.ChangeFamilyAndFriendsAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+
+                <Node name="Convert Bonus Points">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.contract.bscs.ConvertBonusPointAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                            <KeyValue key="RpListCode"
+                                  value="RP"/>
+                            <KeyValue key="FupListCode"
+                                  value="FUP"/>
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+
+                <Node name="Check Contract Market And Device">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.contract.bscs.CheckContractMarketDevice"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+                <!-- Contract Action -->
+
+                <!-- Resource Action -->
+                <Node name="Replace SIM Card">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.resource.bscs.ReplaceSimCardAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                                <KeyValue key="ResType"
+                                  type="Integer"
+                                  value="2"
+                                  comment="1 - Port ; 2 - Storage Medium" />
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+
+                <Node name="Replace Telephone Number">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.resource.bscs.ReplacePhoneNumberAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                                <KeyValue key="Retention"
+                                  type="Integer"
+                                  value="1"
+                                  comment="1 = with hold" />
+                            <KeyValue key="Status"
+                                  value="r"
+                                  comment="Resource status: w - ordered, r - reserved" />
+                            <KeyValue key="ResType"
+                                  value="D"
+                                  comment="Resource type: S - Storage Medium, P - Port, D - Directory Number, C - Closed User Group" />
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+
+                <Node name="Reserve Directory Number">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.resource.bscs.ResourceReserveAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                            <KeyValue key="Status"
+                                  value="w"
+                                  comment="Resource status: w - ordered, r - reserved" />
+                            <KeyValue key="ResType"
+                                  value="D"
+                                  comment="Resource type: S - Storage Medium, P - Port, D - Directory Number, C - Closed User Group" />
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+
+                <Node name="Free Directory Number">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.resource.bscs.ResourceFreeAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                            <KeyValue key="Status"
+                                  value="r"
+                                  comment="Resource status: w - ordered, r - reserved" />
+                            <KeyValue key="ResType"
+                                  value="D"
+                                  comment="Resource type: S - Storage Medium, P - Port, D - Directory Number, C - Closed User Group" />
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+
+                <!-- PN 00296478 - BEGIN -->
+                <Node name="Reserve SIM Card">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.resource.bscs.ResourceReserveAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                            <KeyValue key="Status"
+                                  value="w"
+                                  comment="Resource status: w - ordered, r - reserved" />
+                            <KeyValue key="ResType"
+                                  value="S"
+                                  comment="Resource type: S - Storage Medium, P - Port, D - Directory Number, C - Closed User Group" />
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+
+                <Node name="Free Reserved SIM Card">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.resource.bscs.ResourceFreeAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                            <KeyValue key="Status"
+                                  value="r"
+                                  comment="Resource status: w - ordered, r - reserved" />
+                            <KeyValue key="ResType"
+                                  value="S"
+                                  comment="Resource type: S - Storage Medium, P - Port, D - Directory Number, C - Closed User Group" />
+                        </Node>
+                </Node>
+                <!-- PN 00296478 - END -->
+
+                <!-- Resource Action -->
+
+                <!-- Service Actions -->
+                <Node name="Activate Service">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.service.bscs.ActivateServiceByContractAction"/>
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                            <KeyValue key="CosPendingStatus"
+                                  type="Integer"
+                                  value="2"
+                                  comment="Activated Service Status" />
+                        </Node>
+                        <!-- Action Internal Attributes -->
+                </Node>
+
+                <Node name="Deactivate Service">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.service.bscs.DeactivateServiceByContractAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                            <KeyValue key="CosPendingStatus"
+                                  type="Integer"
+                                  value="4"
+                                  comment="Deactivated Service Status" />
+                        </Node>
+                        <!-- Action Internal Attributes -->
+                </Node>
+
+                <Node name="Suspend Service">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.service.bscs.SuspendServiceByContractAction"/>
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                            <KeyValue key="CosPendingStatus"
+                                  type="Integer"
+                                  value="3"
+                                  comment="Suspend Service Status" />
+                        </Node>
+                        <!-- Action Internal Attributes -->
+                </Node>
+
+                <Node name="Assign New Service">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.service.bscs.AssignNewServiceAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                            <KeyValue key="CosActionActive"
+                                  value="a"
+                                  comment="Action to perform 'Active parameter'" />
+                            <KeyValue key="Retention"
+                                  type="Integer"
+                                  value="0"
+                                  comment="Retention mode" />
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+
+                <!-- PN 00295672 BEGIN -->
+                <Node name="Check Service Resources">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.service.bscs.CheckServiceResourcesAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+                <!-- PN 00295672 END -->
+                <!-- Service Actions -->
+
+                <!-- Address Actions -->
+                <Node name="Check Address">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.address.bscs.CheckAddressAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+
+                <Node name="Change Address">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.address.bscs.ChangeAddressAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                        </Node>
+                        <Node name="Retry Attributes">
+                           <KeyValue key="NumOfRetries" value="5" type="Integer" />
+                           <!-- list of order types in which this action shall be considered for retry -->
+                           <Node name="SupressedErrorTypes">
+                               <Node name="ComponentExceptions">
+                                   <KeyValue key="CatchAll" value="false" type="Boolean"/>
+                                   <!-- change address: list of component exception error codes which shall lead to a retry -->
+                                   <KeyValue key="FUNC_FRMWK_SRV.id0468" value=""/>        <!-- Invalid public Key -->
+                               </Node>
+                               <Node name="SystemExceptions">
+                                   <KeyValue key="CatchAll" value="false" type="Boolean"/>
+                                   <!-- change address: list of system exception error codes which shall lead to a retry -->
+                                   <KeyValue key="FUNC_FRMWK_CMN.id0221" value=""/>        <!-- Server not available -->
+                               </Node>
+                           </Node>
+                         </Node>
+                        <!-- Action Internal Attributes -->
+                </Node>
+                <!-- Address Actions -->
+
+                <!-- Create Customer Action -->
+                <Node name="Create Customer">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.customer.bscs.CreateCustomerAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                            <KeyValue key="Status"
+                                  value="a"/>
+                            <KeyValue key="PaymentTypeSequenceNumber"
+                                  type="Integer"
+                                  value="0"/>
+                            <KeyValue key="ReasonCodeForStatusChange"
+                                  type="Integer"
+                                  value="1"/>
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+                <!-- Create Customer Action -->
+                <!-- Update Customer Action -->
+                <Node name="Update Customer">
+                    <KeyValue key="ImplementationClass" value="com.lhs.wab.action.customer.bscs.UpdateCustomerAction" />
+
+                    <Node name="Internal Attributes">
+                        <KeyValue key="SoiName" value="CIL"  />
+                        <KeyValue key="SoiVersion" value="7"  />
+                    </Node>
+                    <Node name="Retry Attributes">
+                        <KeyValue key="NumOfRetries" value="5" type="Integer" />
+                        <!-- list of order types in which this action shall be considered for retry -->
+                        <Node name="SupressedErrorTypes">
+                            <Node name="ComponentExceptions">
+                                <KeyValue key="CatchAll" value="false" type="Boolean"/>
+                                <!-- change address: list of component exception error codes which shall lead to a retry -->
+                                <KeyValue key="FUNC_FRMWK_SRV.id0468" value=""/>        <!-- Invalid public Key -->
+                            </Node>
+                            <Node name="SystemExceptions">
+                                <KeyValue key="CatchAll" value="false" type="Boolean"/>
+                                <!-- change address: list of system exception error codes which shall lead to a retry -->
+                                <KeyValue key="FUNC_FRMWK_CMN.id0221" value=""/>        <!-- Server not available -->
+                            </Node>
+                        </Node>
+                    </Node>
+                </Node>
+                <!-- Update Customer Action -->
+                <!-- Complete Order Action -->
+                <Node name="Complete Order">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.generic.CompleteOrderAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiServer"
+                                  value="CIL"/>
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                            <KeyValue key="WorkflowStatus"
+                                  value="6"/>
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+                <!-- Complete Order Action -->
+
+                <!-- Generic Actions -->
+                <Node name="Order Status Update">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.generic.StatusUpdateAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <!-- PN 00283280 -->
+                            <KeyValue key="SoiServer"
+                                  value="OMS"/>
+                            <KeyValue key="SoiName"
+                                  value="OMI"/>
+                            <KeyValue key="SoiVersion"
+                                  value="1"/>
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+
+                <Node name="Assign Task Workgroup">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.generic.AssignTaskWorkgroupAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <!-- PN 00283280 -->
+                            <KeyValue key="SoiServer"
+                                  value="OMS"/>
+                            <KeyValue key="SoiName"
+                                  value="OMI"/>
+                            <KeyValue key="SoiVersion"
+                                  value="2"/>
+                            <KeyValue key="SoiNameWMS"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersionWMS"
+                                  value="7"/>
+                        </Node>
+                        <!-- Action Internal Attributes -->
+
+                </Node>
+                <!-- Generic Actions -->
+
+                <!--  Task Actions -->
+                <Node name="Check Pending Request">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.taskmanagement.bscs.CheckPendingRequestAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <!-- PN 00295665 -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                        value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                      value="7"/>
+                        <!-- PN 00296140 - The Event below is not generated anymore in case there is pending request
+                                           but a new boolean context variable PENDING_REQUEST is set and must be checked -->
+                            <KeyValue key="Event"
+                                      value="ContinueWorkflow"/>
+                            <KeyValue key="WaitTime"
+                                  type="Integer"
+                                  value="30"
+                                  comment="Timeout in seconds to wait for pending requests to be executed by GMD" />
+                            <KeyValue key="MaxRetries"
+                                  type="Integer"
+                                  value="1"
+                                  comment="Max retries to wait for pending requests" />
+                        </Node>
+                </Node>
+                <!--  Task Actions -->
+
+                <!-- Note Actions -->
+                <Node name="Create SMS">
+                    <!-- Change the implementation class case the instalation will use BSCS to send the SMS -->
+    <!--                <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.note.bscs.CreateSMSAction"/>  -->
+
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.note.generic.CreateSMSAction"/>
+
+                        <Node name="Internal Attributes">
+                            <KeyValue key="OutputDirectory"
+                                      value="h:temp"/>
+                            <KeyValue key="OutputFilePrefix"
+                                      value="SMS"/>
+                            <KeyValue key="SoiName"
+                                        value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                      value="7"/>
+                            <KeyValue key="Sender"
+                                      value="111"/>
+                            <KeyValue key="Subject"
+                                      value="Order Rejection SMS"/>
+                            <KeyValue key="Protocol"
+                                      value="SMS"/>
+                            <KeyValue key="UseTransient"
+                                      value="Y"/>
+                        </Node>
+
+
+                </Node>
+
+                <Node name="Create Email">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.note.generic.CreateEmailAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="OutputDirectory"
+                                      value="h:temp"/>
+                            <KeyValue key="OutputFilePrefix"
+                                      value="EMAIL"/>
+                            <KeyValue key="SoiName"
+                                        value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                      value="7"/>
+                            <KeyValue key="UseTransient"
+                                      value="Y"/>
+                        </Node>
+
+                </Node>
+
+                <!-- PN 00295614 BEGIN -->
+                <Node name="Check Notification Data">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.note.CheckNotificationDataAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                        value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                      value="7"/>
+                            <KeyValue key="SMSService"
+                                      type="Integer"
+                                      value="2"/>
+                            <KeyValue key="TelephonyService"
+                                      type="Integer"
+                                      value="3"/>
+                        </Node>
+
+                </Node>
+                <!-- PN 00295614 END -->
+
+                <Node name="Create Letter">
+                        <!-- The usage of BSCS to create letter through implementation class below
+                             is not ready yet and cannot be used at this moment. -->
+                        <KeyValue key="ImplementationClass"
+                                value="com.lhs.wab.action.note.bscs.CreateLetterAction" />
+
+                        <!--KeyValue key="ImplementationClass"
+                                  value="com.lhs.wab.action.note.generic.CreateLetterAction"/-->
+
+                                  <!-- Action Internal Attributes -->
+                                  <Node name="Internal Attributes">
+                                          <KeyValue key="OutputDirectory"
+                                                        value="h:temp"/>
+                                      <KeyValue key="OutputFilePrefix"
+                                                        value="LETTER"/>
+                                      <KeyValue key="SoiName"
+                                                        value="CIL"/>
+                                      <KeyValue key="SoiVersion"
+                                                        value="7"/>
+                                      <KeyValue key="DocumentType"
+                                                        value="CLT"/>
+                                      <KeyValue key="UseTransient"
+                                                           value="Y"/>
+                              </Node>
+                </Node>
+                <!-- Note Actions -->
+
+                <!-- Start immediate billing Action -->
+                <Node name="Immediate billing">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.finance.bscs.ImmediateBilling"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                            <KeyValue key="RequestType"
+                                  value="B"
+                                  comment="Specifies a billing request" />
+                            <KeyValue key="RequestSubType"
+                                  value="I"
+                                  comment="Immediate request" />
+                        </Node>
+                </Node>
+                <!-- Start immediate billing Action -->
+
+                <!-- Move of a large account member Action -->
+                <Node name="Move LA Member">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.customer.bscs.MoveLargeAccountMember"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                            <KeyValue key="ActionCheck"
+                                  type="Boolean"
+                                  value="false"
+                                  comment="Initiate a transaction validation instead of transaction commit" />
+                        </Node>
+                </Node>
+                <!-- Move of a large account member Action -->
+
+                <!-- Check the move of a large account member Action -->
+                <Node name="Check Move LA Member">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.customer.bscs.MoveLargeAccountMember"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                            <KeyValue key="ActionCheck"
+                                  type="Boolean"
+                                  value="true"
+                                  comment="Initiate a transaction validation instead of transaction commit" />
+                        </Node>
+                </Node>
+                <!-- Check the move of a large account member Action -->
+
+                <!-- Status change of the billing account Action -->
+                <Node name="Status change of the billing account">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.finance.bscs.StatusChangeOfPrimaryBillingAccount"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                            <KeyValue key="CreationMode"
+                                  type="Boolean"
+                                  value="false"
+                                  comment="Billing Account is updated" />
+                            <KeyValue key="ActionCheck"
+                                  type="Boolean"
+                                  value="false"
+                                  comment="Initiate a transaction validation instead of transaction commit" />
+                        </Node>
+                </Node>
+                <!-- Status change of the billing account Action -->
+
+                <!-- Check Status change of the billing account Action -->
+                <Node name="Check Status change of the billing account">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.finance.bscs.StatusChangeOfPrimaryBillingAccount"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                            <KeyValue key="CreationMode"
+                                  type="Boolean"
+                                  value="false"
+                                  comment="Billing Account is updated" />
+                            <KeyValue key="ActionCheck"
+                                  type="Boolean"
+                                  value="true"
+                                  comment="Initiate a transaction validation instead of transaction commit" />
+                        </Node>
+                </Node>
+                <!-- Check Status change of the billing account Action -->
+
+                <!-- Get Credit Scoring Action -->
+                <Node name="UpdateCreditScoring">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.customer.bscs.GetCreditScoreAction"/>
+                    <Node name="Internal Attributes">
+                        <KeyValue key="SoiServer"
+                                  value="CIL"/>
+                        <KeyValue key="SoiName"
+                              value="CIL"/>
+                        <KeyValue key="SoiVersion"
+                              value="7"/>
+                    </Node>
+                </Node>
+                <!-- Get Credit Scoring Action -->
+
+
+
+                <!-- Time out action for Timeout timer -->
+                <Node name="Time out">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.TimeoutAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                        </Node>
+                </Node>
+                <!-- Time out action for Timeout timer -->
+
+
+
+
+
+
+
+                <Node name="Create Memo">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.note.bscs.CreateMemoAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                        value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                      value="7"/>
+                            <KeyValue key="TicklerCode"
+                                      value="SYSTEM"
+                                      comment="Memo type (formerly: tickler code) (SYSTEM, etc)" />
+                             <KeyValue key="TicklerShDes"
+                                      value="OMS Tickler"/>
+                             <KeyValue key="TicklerStatus"
+                                      value="OPEN"
+                                      comment="Memo status: NOTE || OPEN || CLOSED" />
+                             <KeyValue key="TicklerPriority"
+                                      type="Integer"
+                                      value="5"
+                                      comment="Priority (from 1-9)" />
+                        </Node>
+
+                </Node>
+
+                <Node name="Create Followup Memo">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.note.bscs.CreateFollowupMemoAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                        value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                      value="7"/>
+                            <KeyValue key="TicklerCode"
+                                      value="SYSTEM"
+                                      comment="Memo type (formerly: tickler code) (SYSTEM, etc)" />
+                             <KeyValue key="TicklerShDes"
+                                      value="OMS Tickler"/>
+                             <KeyValue key="TicklerStatus"
+                                      value="OPEN"
+                                      comment="Memo status: NOTE || OPEN || CLOSED" />
+                             <KeyValue key="TicklerPriority"
+                                      type="Integer"
+                                      value="5"
+                                      comment="Priority (from 1-9)" />
+                             <KeyValue key="FollowupCode"
+                                      value=""
+                                      comment="The code of action, that follow-up user has to do" />
+                             <KeyValue key="FollowupUser"
+                                      value="OAB"
+                                      comment="The memo follow-up user" />
+                        </Node>
+                </Node>
+
+            <Node name="Change Service Parameter">
+                <KeyValue key="ImplementationClass"
+                    value="com.lhs.wab.action.service.bscs.ChangeServiceParameterAction"/>
+
+                    <!-- Action Internal Attributes -->
+                    <Node name="Internal Attributes">
+                        <KeyValue key="SoiName"
+                              value="CIL"/>
+                        <KeyValue key="SoiVersion"
+                              value="7"/>
+                    </Node>
+            </Node>
+
+                <Node name="Add Contracts To Large Account Node">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.customer.bscs.AddContractsToLargeAccountNodeAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                        </Node>
+                </Node>
+                <Node name="Add Sub Nodes With Contracts">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.customer.bscs.AddSubNodesWithContractsAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                        </Node>
+                </Node>
+                <Node name="Add Promotions To Large Account Node">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.customer.bscs.AddPromotionsToLargeAccountNodeAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                        </Node>
+                </Node>
+                <Node name="Add Free Unit Contracts To Large Account Node">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.customer.bscs.AddFreeUnitContractsToLargeAccountNodeAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiName"
+                                  value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                  value="7"/>
+                        </Node>
+                </Node>
+
+                <!-- Sample Web Service Action  -->
+                <Node name="SampleWebServiceAction">
+                    <KeyValue key="ImplementationClass"
+                        value="com.lhs.wab.action.webservices.GenericWebServiceAction"/>
+
+                        <!-- Action Internal Attributes -->
+                        <Node name="Internal Attributes">
+                            <KeyValue key="SoiServer"
+                                        value="OMS"/>
+                            <KeyValue key="SoiName"
+                                      value="CIL"/>
+                            <KeyValue key="SoiVersion"
+                                      value="7"/>
+                    <KeyValue key="WsdlUriConfigurableSuffix"
+                      value=".wsdl"
+                      comment="Identify the URI suffix used by the web service server" />
+                            <!--
+                               This shall be set when web service requires
+                               user authentication.
+                               -->
+                            <!-- User to execute BSCS web services -->
+                             <KeyValue key="WebServiceUser"
+                                      value="CAB"/>
+                            <!-- Password to execute BSCS web services -->
+                             <KeyValue key="WebServicePassword"
+                                      value="SYSADM"/>
+                        </Node>
+                    </Node>
+
+            </Node>
+            <!-- Action Settings -->
+            <!-- Note Actions Bundle Settings -->
+            <Node name="Note Actions Bundle Settings">
+                <!-- Base name for notes resource bundle (without file extension, i.e., xml) -->
+                <KeyValue key="ResourceBundle"
+                          value="OABNoteBundle"/>
+            </Node>
+            <!-- Note Actions Bundle Settings -->
+
+        </Node>
+        <!-- OAB Settings -->
+    </ComponentRegistry>

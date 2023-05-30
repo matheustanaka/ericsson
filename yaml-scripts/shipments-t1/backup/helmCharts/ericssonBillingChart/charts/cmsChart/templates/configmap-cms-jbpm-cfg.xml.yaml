@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-jbpm-cfg.xml
+data:
+  jbpm.cfg.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <jbpm-configuration>
+        <process-engine-context>
+            <job-executor threads="{{ .Values.debtColl.jbpmCfg.jobExecutor.threads }}" idle="{{ .Values.debtColl.jbpmCfg.jobExecutor.idle }}" idle-max="{{ .Values.debtColl.jbpmCfg.jobExecutor.idleMax }}" lock="{{ .Values.debtColl.jbpmCfg.jobExecutor.lock }}" jobsPerTransaction="{{ .Values.debtColl.jbpmCfg.jobExecutor.jobsPerTransaction }}" minWaitTime="{{ .Values.debtColl.jbpmCfg.jobExecutor.minWaitTime }}" jobsToMinWaitTime="{{ .Values.debtColl.jbpmCfg.jobExecutor.jobsToMinWaitTime }}" />
+            <string name="jbpm.date.format" value="{{ .Values.debtColl.jbpmCfg.jobExecutor.jbpmDateFormat }}"/>
+            <string name="jbpm.duedatetime.format" value="{{ .Values.debtColl.jbpmCfg.jobExecutor.jbpmDuedatetimeFormat }}"/>
+
+            <log-classes-configuration>
+                <Activity />
+                <ActivityBehavior />
+                <Task />
+                <Decision />
+                <ProcessInstance />
+                <!-- by default the variable log is disable due performance issue  -->
+                <!-- <Variable /> -->
+            </log-classes-configuration>
+        </process-engine-context>
+
+        <import resource="jbpm.default.cfg.xml" />
+        <import resource="jbpm.businesscalendar.cfg.xml" />
+        <import resource="jbpm.tx.hibernate.cfg.xml" />
+        <import resource="jbpm.jpdl.cfg.xml" />
+
+    </jbpm-configuration>

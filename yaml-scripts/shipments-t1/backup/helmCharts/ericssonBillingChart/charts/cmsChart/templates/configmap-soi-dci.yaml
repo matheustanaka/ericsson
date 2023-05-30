@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-soi-dci
+data:
+  DCI_2.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE SOI PUBLIC "SOIDefinition.dtd" "SOIDefinition.dtd">
+    <SOI soiName="DCI" soiVersion="2">
+        <COMMAND cmdVersion="CMD_2" cmdName="COLLECTIONS_EVENT.CREATE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLLECTIBLE.CREATE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_PLAN_INSTALLMENT_HISTORY.READ" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_PLAN_TEMPLATE.CREATE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_PLAN_TEMPLATE.READ" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_PLAN_TEMPLATE.WRITE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_PLAN_TEMPLATE.DELETE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_PLAN_TEMPLATE.SEARCH" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_PLAN.WRITE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_PLAN.READ" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_PLAN.SEARCH" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="PAYMENT_PLAN_INSTALLMENT.WRITE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLLECTION_AGENCY.WRITE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLLECTION_AGENCY.DELETE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLLECTION_AGENCY.READ" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLLECTION_AGENCIES.SEARCH" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLL_AGENCY_CONTACT.WRITE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLL_AGENCY_CONTACT.DELETE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="WORKLOAD_ASSIGNMENT.READ" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLL_AGENCY_COMM.CALCULATE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="AGENCY_EVENT.CREATE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLL_AGENCY_COMM_RULE.WRITE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLL_AGENCY_COMM_RULE.READ" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLL_AGENCY_COMM_RULE.DELETE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLL_AGENCY_ASSIGNMENT.WRITE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLL_AGENCY_ASSIGNMENTS.SEARCH" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLL_AGENCY_COMMISSION.WRITE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLL_AGENCY_COMMISSIONS.SEARCH" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLLECTION_AGENCY.EXPORT" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLL_AGENCY_FIXED_COSTS.SEARCH" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLL_AGENCY_FIXED_COST.WRITE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLLECTION_FEE.CREATE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLLECTION_FEE.WRITE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLLECTION_FEE.READ" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLLECTION_FEE.DELETE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLLECTION_FEES.SEARCH" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLLECTION_FEE_ITEM.DELETE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="INTEREST_RATE.CREATE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="INTEREST_RATE.READ" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="INTEREST_RATE.DELETE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="INTEREST_RATE.WRITE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="INTEREST_RATES.SEARCH" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="COLLECTION_FEE_HISTORY.READ" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="INTEREST_RATE_HISTORY.READ" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="BATCH_JOB_COLL_AGENCY_ASSIGNMENTS.SEARCH" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="TIER.CREATE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="TIER.READ" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="TIER.DELETE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="TIER.WRITE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="TIER.SEARCH" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="TIER_ASSIGNMENT.READ" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="TIER_ASSIGNMENT.CREATE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="TIER_ASSIGNMENT.WRITE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="TIER_ASSIGNMENT.DELETE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="TIER_ASSIGNMENT_RESTRICTION.CREATE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="TIER_ASSIGNMENT_RESTRICTION.DELETE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="TIER_ASSIGNMENT_RESTRICTION.WRITE" webService="yes" />
+        <COMMAND cmdVersion="CMD_1" cmdName="CONTRACT_PRODUCT_OFFERING.READ" />
+    </SOI>

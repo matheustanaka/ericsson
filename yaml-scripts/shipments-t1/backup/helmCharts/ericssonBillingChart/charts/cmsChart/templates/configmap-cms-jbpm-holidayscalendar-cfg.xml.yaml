@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-jbpm-holidayscalendar-cfg.xml
+data:
+  {{ if .Values.debtColl.jbpmCfg.holidayscalendar_cfg_xml }}
+    jbpm.holidayscalendar.cfg.xml: |
+{{ .Values.debtColl.jbpmCfg.holidayscalendar_cfg_xml | indent 6 }}
+  {{ else }}
+    jbpm.holidayscalendar.cfg.xml: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <jbpm-configuration>
+        <process-engine-context>
+      <!--************************************
+          * Example of single-calendar setup *
+          ************************************ -->
+          <business-calendar>
+            <holiday period="25/12/2015"/>
+            <holiday period="05/05/2015"/>
+            <holiday period="02/09/2015"/>
+            <holiday period="29/01/2015"/>
+          </business-calendar>
+
+      <!--*************************************
+          * Example of multi-calendar setup *
+          *************************************
+
+          In a multi-calendar setup jBPM is able to work with several configurations of holidays, grouped
+          together by the "calendar" element. Each calendar, in the other hand, is linked to an external entity
+          through the "external-entity-key" attribute of the "business-calendar" element. The value of this
+          attribute represents the key search of an entity whose value must match the calendar "id" attribute
+          and must be available in jBPM's execution context.
+
+          <business-calendar external-entity-key="BUSINESS_UNIT_KEY">
+            <calendar id="1">
+               <holiday period="25/12/2015"/>
+               <holiday period="05/05/2015"/>
+            </calendar>
+            <calendar id="2">
+               <holiday period="02/09/2015"/>
+               <holiday period="05/05/2015"/>
+               <holiday period="29/01/2015"/>
+            </calendar>
+          </business-calendar>
+      -->
+        </process-engine-context>
+      </jbpm-configuration>
+  {{ end }}

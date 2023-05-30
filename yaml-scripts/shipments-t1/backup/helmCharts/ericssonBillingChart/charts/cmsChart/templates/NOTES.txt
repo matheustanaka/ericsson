@@ -1,0 +1,2 @@
+This CMS deployment has to be installed before the Customer Center CX or
+the Configuration Management ADMX client is deployed.

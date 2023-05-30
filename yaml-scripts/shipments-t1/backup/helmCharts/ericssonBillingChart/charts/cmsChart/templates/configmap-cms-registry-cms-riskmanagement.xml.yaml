@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-cms-riskmanagement.xml
+data:
+  Registry_CMS_RiskManagement.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+
+    <ComponentRegistry>
+
+        <Node name="CMS Settings">
+
+            <KeyValue key="ExternalBlackListSearcherName" type="String" value="" comment="The class name of an external blacklist searcher implementing the ExternalBlackListSearcherI interface. A null value indicates that the black list data will be retrieved from the BLACKLIST database table of BSCS."/>
+            <KeyValue key="ExternalPaymentAuthenticatorName" type="String" value="" comment="The external corba server to bind to for Payment Authentication. A null value indicates that an internal payment authenticator class will be used."/>
+            <KeyValue key="CreditScoreType" type="String" comment="Valid values are Synchronous and Asynchronous." value="Asynchronous"/>
+            <KeyValue key="PerformCreditCardValidation" type="Boolean" comment="Switch for enabling credit card validation." value="false"/>
+            <KeyValue key="ExternalCreditScorerName" type="String" value="" comment="The external corba server to bind to for credit scoring. A null value indicates that an internal credit score class will be used."/>
+
+        </Node><!-- CMS Settings -->
+
+    </ComponentRegistry>

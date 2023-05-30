@@ -1,0 +1,84 @@
+# Default values for gmdrrsChart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+imageCredentials:
+  eric-bss-eb-gmdrrs:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+
+images:
+  eric-bss-eb-gmdrrs:
+    name: "eric-bss-eb-gmdrrs"
+    tag: "22.15.12"
+
+replicaCount: 2
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 5Gi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+service:
+  clusterPort: 1726
+  nodePort:
+
+gmdrrsDeployment:
+  startParameters: "-srv AUT_GMD -t WARNING"
+
+gmdrrsRacSetup:
+  waitTime: 500
+  totalWaitTime: 30
+  numAttempts: 60
+
+# Set external IP for service, or let it be set by load balancer
+loadBalancerIP: ""
+
+# To generate tracefiles, it is necessary set the tracefile name in the variables below.
+# These files will be stored in the log PVC.
+tracingAndLogging:
+  # dtaTracefile: "dta.gmdrrs.trc"
+  dtaTracefile: ""
+  # dxlTracefile: "dxl.gmdrrs.trc"
+  dxlTracefile: ""
+  # udrTracefile: "udr.gmdrrs.trc"
+  udrTracefile: ""
+
+#A local nodeSelector definition has priority over the global definition.
+nodeSelector: {}
+
+# A local affinity definition has priority over the global definition.
+# affinity: {}
+# Example:
+# affinity:
+#   nodeAffinity:
+#     preferredDuringSchedulingIgnoredDuringExecution:
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1a
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1b
+
+#Example:
+#nodeSelector:
+#  kubernetes.io/hostname: "<hostname>"
+
+tnsnames:
+  bscsdb: '{{ tpl .Values.global.tnsnames.bscsdb . }}'
+
+sqlnet:
+  ora: '{{ tpl .Values.global.sqlnet.ora . }}'

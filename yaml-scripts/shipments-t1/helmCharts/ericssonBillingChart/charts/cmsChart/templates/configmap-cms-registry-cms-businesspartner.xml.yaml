@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-cms-businesspartner.xml
+data:
+  Registry_CMS_BusinessPartner.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+
+    <ComponentRegistry>
+
+        <Node name="CMS Settings">
+            <KeyValue key="minimumAge" value="0" type="Integer" comment="The customer minimum age. Used in validateBirthDate() the validation of the birthday of a Party"/>
+            <KeyValue key="PasswordDefault" type="Boolean" value="false" comment="true if there should be a default initialisation for the password (feature code FC 5) each time a new customer is created"/>
+            <KeyValue key="BankCreationAllowed" type="Boolean" value="false" comment="True if a new bank can be added. This flag is only evaluated, if BANKDATAHANDLING has the value A."/>
+            <KeyValue key="SUPPORT_TAX_EXEMPTION_ON_TAX_CODE" type="Boolean" value="true" comment="True if the specific tax can be applied to the tax exemption."/>
+            <KeyValue key="SUPPORT_TAX_EXEMPTION_ON_JURISDICTION_TYPE" type="Boolean" value="true" comment="True if jurisdiction type can be applied to the tax exemption."/>
+
+            <KeyValue key="MatchCodeGenerationStrategy" value="0" type="Integer" comment="Strategy how the match code of an address is generated. 0: last name only, 1: first name and last name, 2: last name and first name, 3: first name, last name or company name if company name is set, 4: last name, first name or company name if company name is set, 5: last name or company name if company name is set."/>
+            <KeyValue key="UseLastBillDateExemption" type="Boolean" value="false" comment="Considers the max date between the parent of LA's EffectiveDate and the member's LBC date when USE_LAST_BILL_DATE is true in CUSTOMER_HIERARCHY.WRITE command when changing the LA of a member." />
+
+            <!--
+            OCCs are not created in the iX Billing
+            <KeyValue key="IS_OCC_RATEPLAN_MANDATORY" type="Boolean" value="true" comment="True if a OCC rate plan is mandatory for a customer."/>
+            -->
+            <KeyValue key="DefaultDeposit" value="0" type="Float" comment="The default value of deposit for the new customer. Must not be a negative value."/>
+            <KeyValue key="DefaultLimit" value="0" type="Float" comment="The default value of limit for the new customer. Must not be a negative value."/>
+
+            <KeyValue key="TransferFeesToPaymentResponsible" type="Boolean" value="true" comment="True if existing fees should be transfered to the payment responsible in case of an inactivation of the coresponding billing account. "/>
+            <KeyValue key="TransferFeesBackOnPaymentResponsibility" type="Boolean" value="true" comment="True if existing fees (transfered previously) should be transfered back to the primary billing account of the affected LA memeber in case of gaining payment responsibility again. "/>
+
+            <KeyValue key="DefaultPartyRole" value="CSSubscriber" comment="This will be the default party role for the new customer in case of a CS deployment mode only. "/>
+            <KeyValue key="AddressRolesEnabled" value="URS" comment="Address roles enabled (see ADDRESSROLES.READ). A combination of values: R, I, C, P, D, S, U. Billing Address Role (B) and Mailing Address Role (E) are always enabled. Arabic localization roles (A and F) are enabled by default when license for PC 22694 is active."/>
+            <!-- PN 00390516 -->
+            <KeyValue key="HideCustomerPasswordInTickler" type="Boolean" value="false" comment="True if the customer password should be hidden in tickler, false to display it. "/>
+            <!-- PN 00385951 -->
+            <KeyValue key="CreatePaymentArrangementAssignmentTickler" type="Boolean" value="false" comment="True if a tickler for paymentarrangementassignment changes should be created "/>
+
+            <KeyValue key="LegacyValidationEnabled" type="Boolean" value="true" comment="Determines whether the legacy function should be validated. For example, the command CUSTOMER.WRITE may perform an additional validation during a customer group change, and set the validation result in the output. The result will not affect the command's execution but the value of CUSTOMER_GROUP_CHECK_RESULT in the result set."/>
+                <Node name="Action Coverage">
+                    <!-- customer activation covers all other actions -->
+                    <KeyValue key="CUSTOMER_ACTIVATION" value="*" comment="Action ID: 46"    />
+                    <KeyValue key="CUSTOMER_DATA_CHANGE" value="" comment="Action ID: 42"    />
+                    <KeyValue key="CUSTOMER_ATTRIBUTE_CHANGE" value="" comment="Action ID: 62"    />
+                    <KeyValue key="TAX_PARAM_CHANGE" value="" comment="Action ID: 50"    />
+                    <KeyValue key="FAMILY_ASSIGNMENT" value="" comment="Action ID: 47"    />
+                    <KeyValue key="CUSTOMER_BILLCYCLE_CHANGE" value="" comment="Action ID: 53"/>
+                    <KeyValue key="CUSTOMER_LA_STRUCTURE_CHANGE" value="" comment="Action ID: 56"/>
+                </Node>
+            <Node name="Action Creation">
+                <!-- configures for each request whether a request is written or not -->
+                <KeyValue key="CUSTOMER_ACTIVATION" type="Boolean" value="true" comment="true: request is created, false: no request is created"    />
+                <KeyValue key="CUSTOMER_DATA_CHANGE" type="Boolean" value="false" comment="true: request is created, false: no request is created"    />
+                <KeyValue key="CUSTOMER_ATTRIBUTE_CHANGE" type="Boolean" value="true" comment="true: request is created, false: no request is created"    />
+                <KeyValue key="TAX_PARAM_CHANGE" type="Boolean" value="true" comment="true: request is created, false: no request is created"    />
+                <KeyValue key="FAMILY_ASSIGNMENT" type="Boolean" value="true" comment="true: request is created, false: no request is created"    />
+                <KeyValue key="CUSTOMER_BILLCYCLE_CHANGE" type="Boolean" value="true" comment="true: request is created, false: no request is created"    />
+                <KeyValue key="CUSTOMER_LA_STRUCTURE_CHANGE" type="Boolean" value="true" comment="true: request is created, false: no request is created"    />
+            </Node>
+
+            <Node name="DuplicateCustomerCheck">
+                <!-- Criteria based on customer level to be used for the customer duplicate check -->
+                <!-- defect 328766/d NiJ, adding new criteria : FirstName, MiddleInitial -->
+               <KeyValue key="CaseSensitive" type="Boolean" value="false" comment="Flag whether duplicate customer check should be case sensitive or case insensitive"    />
+               <Node name="Subscriber">
+                   <Node name="Flat">
+                       <KeyValue key="Criteria" comment="Flat Subscriber criterion. A comma seperated list where the following values are allowed: Name, LastName, FirstName, MiddleInitial, LastNameMatchCode, Zip, City, Birthdate, IDDocumentType, IDDocumentNo, CompanyRegistrationNo, TaxRegistrationNo" value="LastName"/>
+                       <KeyValue key="AddrRoles" comment="Adress roles criterion (see ADDRESSROLES.READ). A comma seperated list where the following values are allowed : B,R,E,I,C,P,D,S,U" value="B"/>
+                   </Node>
+                   <Node name="1">
+                       <KeyValue key="Criteria" comment="Criterion for LA root. A comma seperated list where the following values are allowed: Name, LastName, FirstName, MiddleInitial, LastNameMatchCode, Zip, City, Birthdate, IDDocumentType, IDDocumentNo, CompanyRegistrationNo, TaxRegistrationNo" value="CompanyRegistrationNo"/>
+                       <KeyValue key="AddrRoles" comment="Adress roles criterion (see ADDRESSROLES.READ). A comma seperated list where the following values are allowed : B,R,E,I,C,P,D,S,U" value="B"/>
+                   </Node>
+                   <Node name="2">
+                       <KeyValue key="Criteria" comment="Criterion for LA member level 2. A comma seperated list where the following values are allowed: NAme, LastName, FirstName, MiddleInitial, LastNameMatchCode, Zip, City, Birthdate, IDDocumentType, IDDocumentNo, CompanyRegistrationNo, TaxRegistrationNo" value="CompanyRegistrationNo"/>
+                       <KeyValue key="AddrRoles" comment="Adress roles criterion (see ADDRESSROLES.READ). A comma seperated list where the following values are allowed : B,R,E,I,C,P,D,S,U" value="B"/>
+                   </Node>
+                   <Node name="3,4,5">
+                       <KeyValue key="Criteria" comment="Criterion for LA members. A comma seperated list where the following values are allowed: NAme, LastName, FirstName, MiddleInitial, LastNameMatchCode, Zip, City, Birthdate, IDDocumentType, IDDocumentNo, CompanyRegistrationNo, TaxRegistrationNo" value="LastName"/>
+                       <KeyValue key="AddrRoles" comment="Adress roles criterion (see ADDRESSROLES.READ). A comma seperated list where the following values are allowed : B,R,E,I,C,P,D,S,U" value="B"/>
+                   </Node>
+                   <Node name="*">
+                       <KeyValue key="Criteria" comment="Criterion for LA members. A comma seperated list where the following values are allowed: NAme, LastName, FirstName, MiddleInitial, LastNameMatchCode, Zip, City, Birthdate, IDDocumentType, IDDocumentNo, CompanyRegistrationNo, TaxRegistrationNo" value="LastName"/>
+                       <KeyValue key="AddrRoles" comment="Adress roles criterion (see ADDRESSROLES.READ). A comma seperated list where the following values are allowed : B,R,E,I,C,P,D,S,U" value="B"/>
+                   </Node>
+               </Node>
+               <Node name="Dealer">
+                   <Node name="1">
+                       <KeyValue key="Criteria" comment="Criterion for LA root. A comma seperated list where the following values are allowed: Name LastName, FirstName, MiddleInitial, LastNameMatchCode, Zip, City, Birthdate, IDDocumentType, IDDocumentNo, CompanyRegistrationNo, TaxRegistrationNo" value="Name"/>
+                       <KeyValue key="AddrRoles" comment="Adress roles criterion (see ADDRESSROLES.READ). A comma seperated list where the following values are allowed : B,R,E,I,C,P,D,S,U" value="B"/>
+                   </Node>
+                   <Node name="2,3,4,5">
+                       <KeyValue key="Criteria" comment="Criterion for LA members A comma seperated list where the following values are allowed: Name, LastName, FirstName, MiddleInitial, LastNameMatchCode, Zip, City, Birthdate, IDDocumentType, IDDocumentNo, CompanyRegistrationNo, TaxRegistrationNo" value="Name"/>
+                       <KeyValue key="AddrRoles" comment="Adress roles criterion (see ADDRESSROLES.READ). A comma seperated list where the following values are allowed : B,R,E,I,C,P,D,S,U" value="B"/>
+                   </Node>
+                   <Node name="*">
+                       <KeyValue key="Criteria" comment="Criterion for LA members A comma seperated list where the following values are allowed: Name, LastName, FirstName, MiddleInitial, LastNameMatchCode, Zip, City, Birthdate, IDDocumentType, IDDocumentNo, CompanyRegistrationNo, TaxRegistrationNo" value="Name"/>
+                       <KeyValue key="AddrRoles" comment="Adress roles criterion (see ADDRESSROLES.READ). A comma seperated list where the following values are allowed : B,R,E,I,C,P,D,S,U" value="B"/>
+                   </Node>
+               </Node>
+               <Node name="Business partner">
+                   <Node name="Flat">
+                       <KeyValue key="Criteria" comment="Business Partner criterion. A comma seperated list where the following values are allowed: Name, LastName, FirstName, MiddleInitial, LastNameMatchCode, Zip, City, Birthdate, IDDocumentType, IDDocumentNo, CompanyRegistrationNo, TaxRegistrationNo" value="Name"/>
+                       <KeyValue key="AddrRoles" comment="Adress roles criterion (see ADDRESSROLES.READ). A comma seperated list where the following values are allowed : B,R,E,I,C,P,D,S,U" value="B"/>
+               </Node>
+               </Node>
+               <!-- defect 328766/d NiJ -->
+               <KeyValue key="DuplicateCheckDefaultResultSetSize" value="50" type="Integer" comment="Duplicate check default result set size"/>
+               <!-- 328766/d -->
+            </Node> <!-- DuplicateCustomerCheck -->
+
+            <Node name="TAPRecordAggregation">
+                <Node name="ImsiRange">
+                    <KeyValue key="ImsiMinLength" comment="Minimum number of digits of the roaming partner's IMSI numbers" type="Integer" value="14"/>
+                    <KeyValue key="ImsiMaxLength" comment="Maximum number of digits of the roaming partner's IMSI numbers" type="Integer" value="15"/>
+                </Node>
+            </Node>
+
+        </Node><!-- CMS Settings -->
+
+    </ComponentRegistry>

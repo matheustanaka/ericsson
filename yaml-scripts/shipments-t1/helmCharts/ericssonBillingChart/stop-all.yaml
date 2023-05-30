@@ -1,0 +1,177 @@
+########################################################################
+#
+# ATTENTION!
+#
+# This file is just a sample file that must be adapted to the individual
+# installation before using it.
+#
+########################################################################
+
+# Stop all running EB pods
+# This is a YAML-formatted file.
+# Stop pods by setting their replicaCount to 0
+
+# Note that for deployments supporting a range of pods, each pod of the
+# range must be explicitly specified by its name and its replicaCount
+# must be set accordingly.
+
+eric-bss-eb-admx:
+  replicaCount: "0"
+eric-bss-eb-ax:
+  replicaCount: "0"
+eric-bss-eb-bp:
+  replicaCount: "0"
+eric-bss-eb-cpx:
+  replicaCount: "0"
+eric-bss-eb-cx:
+  replicaCount: "0"
+eric-bss-eb-dcx:
+  replicaCount: "0"
+eric-bss-eb-wex:
+  replicaCount: "0"
+
+eric-bss-eb-cms:
+  replicaCount: "0"
+eric-bss-eb-ff:
+  replicaCount: "0"
+eric-bss-eb-ns:
+  replicaCount: "0"
+eric-bss-eb-pms:
+  replicaCount: "0"
+eric-bss-eb-sms:
+  replicaCount: "0"
+eric-bss-eb-wfmssupporttool:
+  replicaCount: "0"
+
+eric-bss-eb-gmdcom:
+  replicaCount: "0"
+eric-bss-eb-gmdext:
+  gmdextDeployments:
+    - name: "gmdextsender"
+      replicaCount: "0"
+    - name: "gmdextreceiver"
+      replicaCount: "0"
+eric-bss-eb-gmdlrd:
+  replicaCount: "0"
+eric-bss-eb-gmdrec:
+  replicaCount: "0"
+eric-bss-eb-gmdres:
+  replicaCount: "0"
+eric-bss-eb-gmdresdata:
+  replicaCount: "0"
+eric-bss-eb-gmdrrs:
+  replicaCount: "0"
+
+eric-bss-eb-vmdrep:
+  replicaCount: "0"
+
+eric-bss-eb-fih:
+  fihDeployments:
+    - name: "all"
+      replicaCount: "0"
+    - name: "rap"
+      replicaCount: "0"
+eric-bss-eb-aih:
+  replicaCount: "0"
+eric-bss-eb-prih:
+  prihDeployments:
+    - name: "prih-00-pod"
+      replicaCount: "0"
+eric-bss-eb-rih:
+  rihDeployments:
+    - name: "rih-00-pod"
+      replicaCount: "0"
+eric-bss-eb-cch:
+  replicaCount: "0"
+eric-bss-eb-eoh:
+  eohDeployments:
+    - name: "nomap"
+      replicaCount: "0"
+eric-bss-eb-evh:
+  replicaCount: "0"
+eric-bss-eb-rlh:
+  rlhDeployments:
+    - name: "l-o-a3"
+      replicaCount: "0"
+      startParameters: ""
+    - name: "bcg-1"
+      replicaCount: "0"
+      startParameters: ""
+    - name: "bcg-13"
+      replicaCount: "0"
+      startParameters: ""
+    - name: "bcg-14"
+      replicaCount: "0"
+      startParameters: ""
+    - name: "bcg-15"
+      replicaCount: "0"
+      startParameters: ""
+    - name: "bcg-16"
+      replicaCount: "0"
+      startParameters: ""
+    #- name: "bcg-1-iotaggr"
+    #  replicaCount: "0"
+    #  startParameters: ""
+    #- name: "bcg-13-iotaggr"
+    #  replicaCount: "0"
+    #  startParameters: ""
+    #- name: "bcg-14-iotaggr"
+    #  replicaCount: "0"
+    #  startParameters: ""
+    #- name: "bcg-15-iotaggr"
+    #  replicaCount: "0"
+    #  startParameters: ""
+    #- name: "bcg-16-iotaggr"
+    #  replicaCount: "0"
+    #  startParameters: ""
+eric-bss-eb-foh:
+  replicaCount: "0"
+eric-bss-eb-bsh:
+  replicaCount: "0"
+
+eric-bss-eb-bch:
+  bchDeployments:
+    - name: "a0"
+      replicaCount: "0"
+    - name: "a1"
+      replicaCount: "0"
+    - name: "a2"
+      replicaCount: "0"
+    - name: "a3"
+      replicaCount: "0"
+    - name: "h30"
+      replicaCount: "0"
+eric-bss-eb-cdh:
+  cdhDeployments:
+    - name: "a0"
+      replicaCount: "0"
+    - name: "a1"
+      replicaCount: "0"
+    - name: "a2"
+      replicaCount: "0"
+    - name: "h30"
+      replicaCount: "0"
+
+eric-bss-eb-crhgen:
+  replicaCount: "0"
+
+eric-bss-eb-bgh:
+  replicaCount: "0"
+
+eric-bss-eb-crheva:
+  replicaCount: "0"
+
+eric-bss-eb-dch:
+  replicaCount: "0"
+
+eric-bss-eb-dih:
+  replicaCount: "0"
+
+eric-bss-eb-diuh:
+  replicaCount: "0"
+
+eric-bss-eb-tools:
+  replicaCount: "0"
+
+eric-bss-eb-data:
+  replicaCount: "0"

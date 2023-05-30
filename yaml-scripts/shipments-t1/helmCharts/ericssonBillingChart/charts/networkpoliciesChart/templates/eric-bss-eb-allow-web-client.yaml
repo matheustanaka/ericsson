@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: eric-bss-eb-allow-web-client
+spec:
+  podSelector:
+    matchLabels:
+      eric-bss-eb-network-web-client: 'true'
+  policyTypes:
+    - Egress
+    - Ingress
+  ingress:
+    - ports:
+        - port: 8080
+          protocol: TCP
+  egress:
+    - to:
+        - ipBlock:
+            cidr: {{ .Values.forgerock.cidr }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.forgerock.amPort }}

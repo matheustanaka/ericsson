@@ -1,0 +1,258 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-soi-asi
+data:
+  ASI_3.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE SOI PUBLIC "SOIDefinition.dtd" "SOIDefinition.dtd">
+    <SOI soiName="ASI" soiVersion="3">
+
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="OCC_SERVICES.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="APPLICATION_MODULE.SEARCH"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="USER_MAPPING.DELETE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="USER_MAPPING.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="USER_MAPPING.WRITE"/>
+
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AVAILABLE_FUNCTIONS.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AVAILABLE_FUNCTION.WRITE"/>
+
+
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="SYS_SETTING.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="SYSTEM_SETTING.WRITE"/>
+
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="SESSION.CHANGE"/>
+
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="BUS_LINE.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="BUS_LINE.DELETE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="BUS_LINE.CREATE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="BUS_LINE.WRITE"/>
+
+        <COMMAND cmdVersion="CMD_1_0" cmdName="BUS_UNIT.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="BUS_UNIT.CREATE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="BUS_UNIT.WRITE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="BUS_UNIT.DELETE"/>
+
+        <COMMAND cmdVersion="CMD_1_0" cmdName="PAE_CONFIG.READ"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="PAE_CONFIG.WRITE"/>
+
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AMOUNT_THRESHOLD.DELETE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AMOUNT_THRESHOLD.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AMOUNT_THRESHOLD.SEARCH"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AMOUNT_THRESHOLD.WRITE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AUTHORITY_CLASS.DELETE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AUTHORITY_CLASS.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AUTHORITY_CLASS.SEARCH"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AUTHORITY_CLASS.WRITE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="CURR_HISTORY.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="CURRENCY.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_2" cmdName="CURRENCY_EXCHANGE.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_2" cmdName="CURRENCY_EXCHANGE.WRITE"/>
+        <COMMAND cmdVersion="CMD_CMA_2" cmdName="CURRENCY_EXCHANGE.DELETE"/>
+        <COMMAND cmdVersion="CMD_CMA_2" cmdName="CURRENCY_EXCHANGE.CREATE"/>
+        <COMMAND cmdVersion="CMD_CMA_2" cmdName="CURRENCY_EXCHANGE.SEARCH" webService="yes"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="CURRENCY.CREATE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="CURRENCY.WRITE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="CURRENCY.DELETE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="CURRENCY.SEARCH" webService="yes"/>
+
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="LANGUAGE.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="LANGUAGE.SEARCH"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="LANGUAGE.CREATE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="LANGUAGE.DELETE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="LANGUAGE.WRITE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="REGION.CREATE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="REGION.WRITE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="REGION.DELETE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="REGION.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="REGION.SEARCH"/>
+
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="CONV_RATE_TYPE.READ"/>
+
+        <COMMAND cmdVersion="CMD_1_0" cmdName="MAJOR_CURRENCY.READ"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="MAJOR_CURRENCY.DELETE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="MAJOR_CURRENCY.CREATE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="MAJOR_CURRENCY.WRITE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="MAJOR_CURRENCY.SEARCH" webService="yes"/>
+
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="MARKET.READ"/>
+
+        <COMMAND cmdVersion="CMD_1_0" cmdName="ACCOUNT_FINDER.CREATE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="ACCOUNT_FINDER.READ"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="ACCOUNT_FINDER.DELETE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="ACCOUNT_FINDER.WRITE"/>
+
+        <COMMAND cmdVersion="CMD_1_0" cmdName="CS_CLUSTER.READ"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="CS_CLUSTER.WRITE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="CS_CLUSTER.DELETE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="CS_CLUSTER.CREATE"/>
+
+        <COMMAND cmdVersion="CMD_1_0" cmdName="SDP_INSTANCE.CREATE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="SDP_INSTANCE.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="SDP_INSTANCE.DELETE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="SDP_INSTANCE.WRITE"/>
+
+        <COMMAND cmdVersion="CMD_1_0" cmdName="SYSTEM_CONFIGURATION.READ"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="SYSTEM_CONFIGURATION.WRITE"/>
+
+
+        <COMMAND cmdName="ROUNDING_RULES.READ" cmdVersion="CMD_1_0"/>
+
+        <COMMAND cmdName="HOLIDAY_BUSINESS_UNIT.WRITE" cmdVersion="CMD_1_0"/>
+        <COMMAND cmdName="HOLIDAYS.READ" cmdVersion="CMD_1_0"/>
+
+
+        <COMMAND cmdName="MARKET_BUSINESS_UNIT.ADD" cmdVersion="CMD_1_0"/>
+
+        <COMMAND cmdName="ROUNDING_RULE.CREATE" cmdVersion="CMD_1_0"/>
+        <COMMAND cmdName="ROUNDING_RULE.WRITE" cmdVersion="CMD_1_0"/>
+        <COMMAND cmdName="ROUNDING_RULE.DELETE" cmdVersion="CMD_1_0"/>
+
+        <COMMAND cmdName="BILL_CYCLE_BUSINESS_UNIT.WRITE" cmdVersion="CMD_1_0" />
+        <COMMAND cmdName="BILL_MEDIUM_BUSINESS_UNIT.ADD" cmdVersion="CMD_1_0" />
+        <COMMAND cmdName="BILL_MEDIUM_BUSINESS_UNIT.WRITE" cmdVersion="CMD_1_0" />
+        <COMMAND cmdName="BILL_MEDIUM_BUSINESS_UNIT.REMOVE" cmdVersion="CMD_1_0" />
+
+        <COMMAND cmdName="DATA_PROTECTION_RIGHTS.WRITE" cmdVersion="CMD_1_0" webService="yes"/>
+        <COMMAND cmdName="DATA_PROTECTION_RIGHTS.CREATE" cmdVersion="CMD_1_0" webService="yes"/>
+        <COMMAND cmdName="DATA_PROTECTION_RIGHTS.SEARCH" cmdVersion="CMD_1_0" webService="yes"/>
+    </SOI>
+
+  ASI_4.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE SOI PUBLIC "SOIDefinition.dtd" "SOIDefinition.dtd">
+    <SOI soiName="ASI" soiVersion="4">
+
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="OCC_SERVICES.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="APPLICATION_MODULE.SEARCH"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="USER_MAPPING.DELETE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="USER_MAPPING.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="USER_MAPPING.WRITE"/>
+
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AVAILABLE_FUNCTIONS.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AVAILABLE_FUNCTION.WRITE"/>
+
+
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="SYS_SETTING.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="SYSTEM_SETTING.WRITE"/>
+
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="SESSION.CHANGE"/>
+
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="BUS_LINE.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="BUS_LINE.DELETE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="BUS_LINE.CREATE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="BUS_LINE.WRITE"/>
+
+        <COMMAND cmdVersion="CMD_2_0" cmdName="BUS_UNIT.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="BUS_UNIT.CREATE"/>
+        <COMMAND cmdVersion="CMD_2_0" cmdName="BUS_UNIT.WRITE" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="BUS_UNIT.DELETE"/>
+
+        <COMMAND cmdVersion="CMD_1_0" cmdName="PAE_CONFIG.READ"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="PAE_CONFIG.WRITE"/>
+
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AMOUNT_THRESHOLD.DELETE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AMOUNT_THRESHOLD.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AMOUNT_THRESHOLD.SEARCH"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AMOUNT_THRESHOLD.WRITE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AUTHORITY_CLASS.DELETE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AUTHORITY_CLASS.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AUTHORITY_CLASS.SEARCH"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="AUTHORITY_CLASS.WRITE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="CURR_HISTORY.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_CMA_2" cmdName="CURRENCY.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_CMA_2" cmdName="CURRENCY_EXCHANGE.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_2" cmdName="CURRENCY_EXCHANGE.WRITE"/>
+        <COMMAND cmdVersion="CMD_CMA_2" cmdName="CURRENCY_EXCHANGE.DELETE"/>
+        <COMMAND cmdVersion="CMD_CMA_2" cmdName="CURRENCY_EXCHANGE.CREATE" webService="yes"/>
+        <COMMAND cmdVersion="CMD_CMA_2" cmdName="CURRENCY_EXCHANGE.SEARCH" webService="yes"/>
+        <COMMAND cmdVersion="CMD_CMA_2" cmdName="CURRENCY.CREATE" webService="yes"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="CURRENCY.WRITE" webService="yes"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="CURRENCY.DELETE"/>
+        <COMMAND cmdVersion="CMD_CMA_2" cmdName="CURRENCY.SEARCH" webService="yes"/>
+
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="LANGUAGE.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="LANGUAGE.SEARCH"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="LANGUAGE.CREATE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="LANGUAGE.DELETE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="LANGUAGE.WRITE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="REGION.CREATE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="REGION.WRITE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="REGION.DELETE"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="REGION.READ"/>
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="REGION.SEARCH"/>
+
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="CONV_RATE_TYPE.READ"/>
+
+        <COMMAND cmdVersion="CMD_1_0" cmdName="MAJOR_CURRENCY.READ"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="MAJOR_CURRENCY.DELETE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="MAJOR_CURRENCY.CREATE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="MAJOR_CURRENCY.WRITE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="MAJOR_CURRENCY.SEARCH" webService="yes"/>
+
+        <COMMAND cmdVersion="CMD_CMA_1" cmdName="MARKET.READ"/>
+
+        <COMMAND cmdVersion="CMD_1_0" cmdName="ACCOUNT_FINDER.CREATE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="ACCOUNT_FINDER.READ"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="ACCOUNT_FINDER.DELETE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="ACCOUNT_FINDER.WRITE"/>
+
+        <COMMAND cmdVersion="CMD_1_0" cmdName="CS_CLUSTER.READ"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="CS_CLUSTER.WRITE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="CS_CLUSTER.DELETE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="CS_CLUSTER.CREATE"/>
+
+        <COMMAND cmdVersion="CMD_1_0" cmdName="SDP_INSTANCE.CREATE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="SDP_INSTANCE.READ" webService="yes"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="SDP_INSTANCE.DELETE"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="SDP_INSTANCE.WRITE"/>
+
+        <COMMAND cmdVersion="CMD_1_0" cmdName="SYSTEM_CONFIGURATION.READ"/>
+        <COMMAND cmdVersion="CMD_1_0" cmdName="SYSTEM_CONFIGURATION.WRITE"/>
+
+
+        <COMMAND cmdName="ROUNDING_RULES.READ" cmdVersion="CMD_1_0"/>
+
+        <COMMAND cmdName="HOLIDAY_BUSINESS_UNIT.WRITE" cmdVersion="CMD_1_0"/>
+        <COMMAND cmdName="HOLIDAYS.READ" cmdVersion="CMD_1_0"/>
+
+
+        <COMMAND cmdName="MARKET_BUSINESS_UNIT.ADD" cmdVersion="CMD_1_0"/>
+
+        <COMMAND cmdName="ROUNDING_RULE.CREATE" cmdVersion="CMD_1_0"/>
+        <COMMAND cmdName="ROUNDING_RULE.WRITE" cmdVersion="CMD_1_0"/>
+        <COMMAND cmdName="ROUNDING_RULE.DELETE" cmdVersion="CMD_1_0"/>
+
+        <COMMAND cmdName="BILL_CYCLE_BUSINESS_UNIT.WRITE" cmdVersion="CMD_1_0" />
+        <COMMAND cmdName="BILL_MEDIUM_BUSINESS_UNIT.ADD" cmdVersion="CMD_1_0" />
+        <COMMAND cmdName="BILL_MEDIUM_BUSINESS_UNIT.WRITE" cmdVersion="CMD_1_0" />
+        <COMMAND cmdName="BILL_MEDIUM_BUSINESS_UNIT.REMOVE" cmdVersion="CMD_1_0" />
+
+        <COMMAND cmdName="DATA_PROTECTION_RIGHTS.WRITE" cmdVersion="CMD_1_0" webService="yes"/>
+        <COMMAND cmdName="DATA_PROTECTION_RIGHTS.CREATE" cmdVersion="CMD_1_0" webService="yes"/>
+        <COMMAND cmdName="DATA_PROTECTION_RIGHTS.SEARCH" cmdVersion="CMD_1_0" webService="yes"/>
+
+        <COMMAND cmdName="AVAILABLE_BGH_PLUGINS.READ" cmdVersion="CMD_1_0" webService="yes"/>
+        <COMMAND cmdName="CHARGE_DETAIL_MODELS.READ" cmdVersion="CMD_1_0" webService="yes"/>
+        <COMMAND cmdName="BILL_MEDIUM.WRITE" cmdVersion="CMD_1_0" webService="yes"/>
+        <COMMAND cmdName="BILL_MEDIUM.DELETE" cmdVersion="CMD_1_0" webService="yes"/>
+        <COMMAND cmdName="BILL_MEDIUM.CREATE" cmdVersion="CMD_1_0" webService="yes"/>
+
+        <COMMAND cmdName="NETWORK.CREATE" cmdVersion="CMD_1_0" webService="yes"/>
+        <COMMAND cmdName="NETWORK.READ" cmdVersion="CMD_1_0" webService="yes"/>
+        <COMMAND cmdName="NETWORK.SEARCH" cmdVersion="CMD_1_0" webService="yes"/>
+        <COMMAND cmdName="NETWORK.WRITE" cmdVersion="CMD_1_0" webService="yes"/>
+        <COMMAND cmdName="NETWORK.DELETE" cmdVersion="CMD_1_0" webService="yes"/>
+
+        <COMMAND cmdName="CONTRACT_GROUP.NEW" cmdVersion="CMD_1_0" webService="yes"/>
+        <COMMAND cmdName="CONTRACT_GROUPS.READ" cmdVersion="CMD_1_0" webService="yes"/>
+
+        <COMMAND cmdName="IMPORT_CHANNEL.READ" cmdVersion="CMD_1_0" webService="yes"/>
+
+        <COMMAND cmdName="ANONYMIZATION_RULE.READ" cmdVersion="CMD_1_0" webService="yes"/>
+        <COMMAND cmdName="ANONYMIZATION_RULE.DELETE" cmdVersion="CMD_1_0" webService="yes"/>
+        <COMMAND cmdName="ANONYMIZATION_RULE.CREATE" cmdVersion="CMD_1_0" webService="yes"/>
+        <COMMAND cmdName="ANONYMIZATION_RULE.WRITE" cmdVersion="CMD_1_0" webService="yes"/>
+
+        <COMMAND cmdName="NUMBERING_PLAN.READ" cmdVersion="CMD_1_0" webService="yes"/>
+    </SOI>

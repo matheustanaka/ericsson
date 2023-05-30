@@ -1,0 +1,735 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-cms-taskmanagement.xml
+data:
+  Registry_CMS_TaskManagement.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+    <ComponentRegistry>
+        <Node name="CMS Settings">
+            <Node name="Task Management Settings">
+                <!-- FSP 280481 -->
+                <Node name="Porting Request Handling">
+                    <Node name="PortingRequestSearch" >
+                        <KeyValue key="MaxResultSetSize"    type="Integer"    value="500"/>
+                        <KeyValue key="DefaultResultSetSize" type="Integer" value="50"    />
+                        <KeyValue key="DefaultOutput" value="PORTING_REQUEST_ID, EXTERNAL_REQUEST_ID,STATUS,REASON,REQUEST_TYPE_ID,PORTING_DATE,DN_ID,DIRNUM,NPCODE,DN_STATUS,HMCODE,CS_ID, CS_ID_PUB, CS_CODE, CO_ID, CO_ID_PUB,BU_ID,SOURCE_PLCODE,TARGET_PLCODE, TRANSMIT_DATE,ERROR_CODE,ERROR_DES, MOD_USER, MOD_DATE, CREATION_USER, CREATION_DATE"/>
+                        <KeyValue key="BaseTable" value="PORTING_REQUEST" />
+                        <KeyValue key="BaseTableAlias"    value="R" />
+                        <KeyValue key="DefaultNumberOfCharactersBeforeWildcard" type="Integer" value="3" />
+                        <KeyValue key="FromClauseOrder" value="PORTING_REQUEST_BASE B, PORTING_REQUEST R"/>
+                        <Node name="Attributes">
+                            <Node name="PORTING_REQUEST_ID">
+                                <KeyValue key="SelectClause" value="R.REQUEST_ID"/>
+                                <KeyValue key="ConditionWhereClause"    value="R.REQUEST_ID"/>
+                            </Node>
+                            <Node name="EXTERNAL_REQUEST_ID">
+                                <KeyValue key="SelectClause" value="B.EXTERNAL_REQUEST_ID"/>
+                                <KeyValue key="ConditionWhereClause"    value="B.EXTERNAL_REQUEST_ID"/>
+                                 <Node name="FromClauses">
+                                    <KeyValue key="PORTING_REQUEST_BASE B" value=""/>
+                                    <KeyValue key="PORTING_REQUEST_EXT E" value=""/>
+                                </Node>
+                                <Node name="JoinWhereClauses">
+                                    <Node name="InputAttributes">
+                                        <KeyValue key="B.REQUEST_ID=R.REQUEST_ID" value=""/>
+                                        <KeyValue key="E.REQUEST_ID(+)=R.REQUEST_ID" value=""/>
+                                    </Node>
+                                </Node>
+                            </Node>
+
+                            <Node name="STATUS">
+                                <KeyValue key="SelectClause" value="R.STATUS"/>
+                                <KeyValue key="ConditionWhereClause"    value="R.STATUS"/>
+                            </Node>
+                            <Node name="REQUEST_TYPE_ID">
+                                <KeyValue key="SelectClause" value="R.ACTION_ID"/>
+                                <KeyValue key="ConditionWhereClause"    value="R.ACTION_ID"/>
+                            </Node>
+                            <Node name="PORTING_DATE">
+                                <KeyValue key="SelectClause" value="R.PORTING_DATE"/>
+                            </Node>
+                             <Node name="PORTING_DATE_FROM">
+                                <KeyValue key="ConditionWhereClause"    value="R.PORTING_DATE"/>
+                                 <KeyValue key="Operator" value="&gt;="/>
+                            </Node>
+                             <Node name="PORTING_DATE_TO">
+                                <KeyValue key="ConditionWhereClause"    value="R.PORTING_DATE"/>
+                                 <KeyValue key="Operator" value="&lt;"/>
+                            </Node>
+                            <Node name="CREATION_DATE_FROM">
+                                <KeyValue key="ConditionWhereClause"    value="R.ENTRY_DATE"/>
+                                 <KeyValue key="Operator" value="&gt;="/>
+                            </Node>
+                             <Node name="CREATION_DATE_TO">
+                                <KeyValue key="ConditionWhereClause"    value="R.ENTRY_DATE"/>
+                                 <KeyValue key="Operator" value="&lt;="/>
+                            </Node>
+                            <Node name="REASON">
+                                <KeyValue key="SelectClause" value="DECODE(R.STATUS,'l',NVL2(E.REASON_ID,E.REASON_ID,R.REASON_ID), R.REASON_ID)"/>
+                                <KeyValue key="ConditionWhereClause"    value="R.REASON_ID"/>
+                            </Node>
+                            <Node name="DN_ID">
+                                <KeyValue key="SelectClause" value="R.DN_ID"/>
+                                <KeyValue key="ConditionWhereClause"    value="R.DN_ID"/>
+                            </Node>
+                            <Node name="DIRNUM">
+                                <KeyValue key="SelectClause" value="DECODE(R.STATUS,'l',NVL2(R.DN_ID,D.DN_NUM,E.DN_NUM),D.DN_NUM)"/>
+                                <KeyValue key="ConditionWhereClause"    value="NVL2(R.DN_ID,D.DN_NUM,E.DN_NUM)"/>
+                                <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                                <Node name="FromClauses">
+                                    <KeyValue key="DIRECTORY_NUMBER D" value=""/>
+                                </Node>
+                                <Node name="JoinWhereClauses">
+                                    <Node name="InputAttributes">
+                                        <KeyValue key="D.DN_ID(+)=R.DN_ID" value=""/>
+                                    </Node>
+                                    <Node name="OutputAttributes">
+                                        <KeyValue key="D.DN_ID(+)=R.DN_ID" value=""/>
+                                    </Node>
+                                </Node>
+                            </Node>
+                             <Node name="NPCODE">
+                                <KeyValue key="SelectClause" value="DECODE(R.STATUS,'l',NVL2(R.DN_ID,D.DIRNUM_NPCODE,E.NPCODE),D.DIRNUM_NPCODE)"/>
+                                <KeyValue key="ConditionWhereClause"    value="D.DIRNUM_NPCODE"/>
+                                <Node name="FromClauses">
+                                    <KeyValue key="DIRECTORY_NUMBER D" value=""/>
+                                </Node>
+                                <Node name="JoinWhereClauses">
+                                    <Node name="InputAttributes">
+                                        <KeyValue key="D.DN_ID=R.DN_ID" value=""/>
+                                    </Node>
+                                    <Node name="OutputAttributes">
+                                        <KeyValue key="D.DN_ID(+)=R.DN_ID" value=""/>
+                                    </Node>
+                                </Node>
+                            </Node>
+                            <Node name="DN_STATUS">
+                                <KeyValue key="SelectClause" value="D.DN_STATUS"/>
+                                <KeyValue key="ConditionWhereClause"    value="D.DN_STATUS"/>
+                                <Node name="FromClauses">
+                                    <KeyValue key="DIRECTORY_NUMBER D" value=""/>
+                                </Node>
+                                <Node name="JoinWhereClauses">
+                                    <Node name="InputAttributes">
+                                        <KeyValue key="D.DN_ID=R.DN_ID" value=""/>
+                                    </Node>
+                                    <Node name="OutputAttributes">
+                                        <KeyValue key="D.DN_ID(+)=R.DN_ID" value=""/>
+                                    </Node>
+                                </Node>
+                            </Node>
+                            <Node name="HMCODE">
+                                <KeyValue key="SelectClause" value="DECODE(R.STATUS,'l',NVL2(R.HMCODE,R.HMCODE,E.HMCODE),R.HMCODE)"/>
+                                <KeyValue key="ConditionWhereClause"    value="R.HMCODE"/>
+                            </Node>
+
+                            <Node name="CS_ID">
+                                <KeyValue key="SelectClause" value="R.CUSTOMER_ID"/>
+                                <KeyValue key="ConditionWhereClause"    value="R.CUSTOMER_ID"/>
+                            </Node>
+                            <Node name="CS_ID_PUB">
+                                <KeyValue key="SelectClause" value="CS.CUSTNUM"/>
+                                <KeyValue key="ConditionWhereClause"    value="CS.CUSTNUM"/>
+                                <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                                <Node name="FromClauses">
+                                    <KeyValue key="CUSTOMER_ALL CS" value=""/>
+                                </Node>
+                                <Node name="JoinWhereClauses">
+                                    <Node name="InputAttributes">
+                                        <KeyValue key="R.CUSTOMER_ID=CS.CUSTOMER_ID(+)" value=""/>
+                                    </Node>
+                                </Node>
+                            </Node>
+                            <Node name="CS_CODE">
+                                <KeyValue key="SelectClause" value="CS.CUSTCODE"/>
+                                <KeyValue key="ConditionWhereClause"    value="CS.CUSTCODE"/>
+                                <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                           </Node>
+                            <Node name="CO_ID">
+                                <KeyValue key="SelectClause" value="DECODE(R.STATUS,'l',NVL2(R.CO_ID,R.CO_ID,E.CO_ID), R.CO_ID)"/>
+                                <KeyValue key="ConditionWhereClause"    value="R.CO_ID"/>
+                            </Node>
+                            <Node name="CO_ID_PUB">
+                                <KeyValue key="SelectClause" value="CO.CO_CODE"/>
+                                <KeyValue key="ConditionWhereClause"    value="CO.CO_CODE"/>
+                                <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                                <Node name="FromClauses">
+                                    <KeyValue key="CONTRACT_ALL CO" value=""/>
+                                </Node>
+                                <Node name="JoinWhereClauses">
+                                    <Node name="InputAttributes">
+                                        <KeyValue key="R.CO_ID=CO.CO_ID(+)" value=""/>
+                                    </Node>
+                                </Node>
+                            </Node>
+                            <Node name="BU_ID">
+                                <KeyValue key="SelectClause" value="NVL2(R.CO_ID,CO.BUSINESS_UNIT_ID,CS.BUSINESS_UNIT_ID)"/>
+                                <KeyValue key="ConditionWhereClause"    value="CS.BUSINESS_UNIT_ID"/>
+                                <KeyValue key="Operator" value="IN" />
+                           </Node>
+
+                            <Node name="SOURCE_PLCODE">
+                                <KeyValue key="SelectClause" value="DECODE(R.STATUS,'l',NVL2(R.SOURCE_PLCODE,R.SOURCE_PLCODE,E.SRC_PLCODE),R.SOURCE_PLCODE)"/>
+                                <KeyValue key="ConditionWhereClause"    value="R.SOURCE_PLCODE"/>
+                            </Node>
+                            <Node name="TARGET_PLCODE">
+                                <KeyValue key="SelectClause" value="DECODE(R.STATUS,'l',NVL2(R.TARGET_PLCODE,R.TARGET_PLCODE,E.DEST_PLCODE),R.TARGET_PLCODE)"/>
+                                <KeyValue key="ConditionWhereClause"    value="R.TARGET_PLCODE"/>
+                            </Node>
+
+                            <Node name="TRANSMIT_DATE">
+                                <KeyValue key="SelectClause" value="R.TRANSMIT_DATE"/>
+                                <KeyValue key="ConditionWhereClause"    value="R.TRANSMIT_DATE"/>
+                            </Node>
+
+                            <Node name="CREATION_DATE">
+                                <KeyValue key="SelectClause" value="R.ENTRY_DATE"/>
+                            </Node>
+                            <Node name="CREATION_USER">
+                                <KeyValue key="SelectClause" value="R.ENTRY_USER"/>
+                            </Node>
+                            <Node name="MOD_DATE">
+                                <KeyValue key="SelectClause" value="R.LASTMOD_DATE"/>
+                            </Node>
+                            <Node name="MOD_USER">
+                                <KeyValue key="SelectClause" value="R.LASTMOD_USER"/>
+                            </Node>
+                            <Node name="ERROR_CODE">
+                                <KeyValue key="SelectClause" value="R.ERROR_CODE"/>
+                            </Node>
+                            <Node name="ERROR_DES">
+                                <KeyValue key="SelectClause" value="R.ERROR_DES"/>
+                            </Node>
+                        </Node>
+                    </Node>
+                </Node>
+
+                <!-- feature 00276491_cms -->
+                <Node name="Concurrent Request Handling">
+                    <KeyValue key="isEnabled" type="Boolean" value="true" comment="false = for testing purpose the concurrent request handling can be disabled"/>
+                    <KeyValue key="isSimulated" type="Boolean" value="false" comment="true = for testing purpose the conflict resolution can be simulated"/>
+                    <KeyValue key="isNotified" type="Boolean" value="true" comment="false = for testing purpose the notification through DaTA can be diabled."/>
+                    <KeyValue key="externalProcessToCMS" type="String" value="CMS" comment="PROCESS acting in the name of the external application. For example contract blocking initiated by CS."/>
+                    <Node name="ConcurrentRequestSearch" >
+                        <KeyValue key="MaxResultSetSize"    type="Integer"    value="500"/>
+                        <KeyValue key="DefaultResultSetSize" type="Integer" value="50"    />
+                        <KeyValue key="DefaultOutput"  value="SEQNO, CS_ID, CS_ID_PUB, CS_CODE, CO_ID, CO_ID_PUB, CREATION_DATE, CREATION_USER, MOD_DATE, MOD_USER, PROCESS, ACTION_ID, COMMAND, GMD_REQUEST_ID, GMD_REQUEST_ID_PUB, GMD_STATUS, VALID_FROM, REASON_ID, PROFILE_ID, SNCODE, SNCODE_PUB, STATUS, USER_REASON"/>
+                        <KeyValue key="BaseTable" value="CONCURRENT_REQUEST" />
+                        <KeyValue key="BaseTableAlias"    value="CR" />
+                        <KeyValue key="DefaultNumberOfCharactersBeforeWildcard" type="Integer" value="3" />
+                        <KeyValue key="FromClauseOrder" value="CONCURRENT_REQUEST CR, GMD_REQUEST_BASE RB"/>
+                        <Node name="Attributes">
+                            <Node name="SEQNO">
+                                <KeyValue key="SelectClause" value="CR.SEQNO"/>
+                                <KeyValue key="ConditionWhereClause"    value="CR.SEQNO"/>
+                            </Node>
+                            <Node name="CS_ID">
+                                <KeyValue key="SelectClause" value="CR.CUSTOMER_ID"/>
+                                <KeyValue key="ConditionWhereClause"    value="CR.CUSTOMER_ID"/>
+                            </Node>
+                            <Node name="CS_ID_PUB">
+                                <KeyValue key="SelectClause" value="CS.CUSTNUM"/>
+                                <KeyValue key="ConditionWhereClause"    value="CS.CUSTNUM"/>
+                                <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                                <Node name="FromClauses">
+                                    <KeyValue key="CUSTOMER_ALL CS" value=""/>
+                                </Node>
+                                <Node name="JoinWhereClauses">
+                                    <Node name="InputAttributes">
+                                        <KeyValue key="CR.CUSTOMER_ID=CS.CUSTOMER_ID" value=""/>
+                                    </Node>
+                                    <Node name="OutputAttributes">
+                                        <KeyValue key="CR.CUSTOMER_ID=CS.CUSTOMER_ID" value=""/>
+                                    </Node>
+                                </Node>
+                            </Node>
+                            <Node name="CS_CODE">
+                                <KeyValue key="SelectClause" value="CS.CUSTCODE"/>
+                                <KeyValue key="ConditionWhereClause"    value="CS.CUSTCODE"/>
+                                <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                                <Node name="FromClauses">
+                                    <KeyValue key="CUSTOMER_ALL CS" value=""/>
+                                </Node>
+                                <Node name="JoinWhereClauses">
+                                    <Node name="InputAttributes">
+                                        <KeyValue key="CR.CUSTOMER_ID=CS.CUSTOMER_ID" value=""/>
+                                    </Node>
+                                    <Node name="OutputAttributes">
+                                        <KeyValue key="CR.CUSTOMER_ID=CS.CUSTOMER_ID" value=""/>
+                                    </Node>
+                                </Node>
+                            </Node>
+                            <Node name="CO_ID">
+                                <KeyValue key="SelectClause" value="CR.CO_ID"/>
+                                <KeyValue key="ConditionWhereClause"    value="CR.CO_ID"/>
+                            </Node>
+                            <Node name="CO_ID_PUB">
+                                <KeyValue key="SelectClause" value="CO.CO_CODE"/>
+                                <KeyValue key="ConditionWhereClause"    value="CO.CO_CODE"/>
+                                <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                                <Node name="FromClauses">
+                                    <KeyValue key="CONTRACT_ALL CO" value=""/>
+                                </Node>
+                                <Node name="JoinWhereClauses">
+                                    <Node name="InputAttributes">
+                                        <KeyValue key="CR.CO_ID=CO.CO_ID" value=""/>
+                                    </Node>
+                                    <Node name="OutputAttributes">
+                                        <KeyValue key="CR.CO_ID=CO.CO_ID" value=""/>
+                                    </Node>
+                                </Node>
+                            </Node>
+                            <Node name="BU_ID">
+                                <KeyValue key="SelectClause" value="CO.BUSINESS_UNIT_ID"/>
+                                <KeyValue key="ConditionWhereClause"    value="CO.BUSINESS_UNIT_ID"/>
+                                <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                                <Node name="FromClauses">
+                                    <KeyValue key="CONTRACT_ALL CO" value=""/>
+                                </Node>
+                                <Node name="JoinWhereClauses">
+                                    <Node name="InputAttributes">
+                                        <KeyValue key="CR.CO_ID=CO.CO_ID" value=""/>
+                                    </Node>
+                                </Node>
+                            </Node>
+                            <Node name="FROM_CREATION_DATE">
+                                <KeyValue key="SelectClause" value="CR.CREATION_DATE"/>
+                                <KeyValue key="Operator"    value="&lt;="/>
+                                 <KeyValue key="ConditionWhereClause" value="CR.CREATION_DATE"/>
+                            </Node>
+                            <Node name="UNTIL_CREATION_DATE">
+                                <KeyValue key="SelectClause" value="CR.CREATION_DATE"/>
+                                <KeyValue key="Operator"    value="&gt;="/>
+                                 <KeyValue key="ConditionWhereClause" value="CR.CREATION_DATE"/>
+                            </Node>
+                            <Node name="FROM_MOD_DATE">
+                                <KeyValue key="SelectClause" value="CR.MOD_DATE"/>
+                                <KeyValue key="Operator"    value="&lt;="/>
+                                 <KeyValue key="ConditionWhereClause" value="CR.MOD_DATE"/>
+                            </Node>
+                            <Node name="UNTIL_MOD_DATE">
+                                <KeyValue key="SelectClause" value="CR.MOD_DATE"/>
+                                <KeyValue key="Operator"    value="&gt;="/>
+                                 <KeyValue key="ConditionWhereClause" value="CR.MOD_DATE"/>
+                            </Node>
+                            <Node name="CREATION_DATE">
+                                <KeyValue key="SelectClause" value="CR.CREATION_DATE"/>
+                            </Node>
+                            <Node name="CREATION_USER">
+                                <KeyValue key="SelectClause" value="CR.CREATION_USER"/>
+                            </Node>
+                            <Node name="MOD_DATE">
+                                <KeyValue key="SelectClause" value="CR.MOD_DATE"/>
+                            </Node>
+                            <Node name="MOD_USER">
+                                <KeyValue key="SelectClause" value="CR.MOD_USER"/>
+                            </Node>
+                            <Node name="PROCESS">
+                                <KeyValue key="SelectClause" value="CR.PROCESS"/>
+                                <KeyValue key="ConditionWhereClause"    value="CR.PROCESS"/>
+                            </Node>
+                            <Node name="ACTION_ID">
+                                <KeyValue key="SelectClause" value="CR.ACTION_ID"/>
+                                <KeyValue key="ConditionWhereClause"    value="CR.ACTION_ID"/>
+                                <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                            </Node>
+                            <Node name="COMMAND">
+                                <KeyValue key="SelectClause" value="CR.COMMAND"/>
+                                <KeyValue key="ConditionWhereClause"    value="CR.COMMAND"/>
+                            </Node>
+                            <Node name="GMD_REQUEST_ID">
+                                <KeyValue key="SelectClause" value="CR.GMD_REQUEST_ID"/>
+                                <KeyValue key="ConditionWhereClause"    value="CR.GMD_REQUEST_ID"/>
+                            </Node>
+                            <Node name="GMD_REQUEST_ID_PUB">
+                                <KeyValue key="SelectClause" value="RB.REQUEST_CODE"/>
+                                <KeyValue key="ConditionWhereClause"    value="RB.REQUEST_CODE"/>
+                                <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                                <Node name="FromClauses">
+                                    <KeyValue key="GMD_REQUEST_BASE RB" value=""/>
+                                </Node>
+                                <Node name="JoinWhereClauses">
+                                    <Node name="InputAttributes">
+                                        <KeyValue key="CR.GMD_REQUEST_ID=RB.REQUEST_ID (+)" value=""/>
+                                    </Node>
+                                    <Node name="OutputAttributes">
+                                        <KeyValue key="CR.GMD_REQUEST_ID=RB.REQUEST_ID (+)" value=""/>
+                                    </Node>
+                                </Node>
+                            </Node>
+                            <Node name="GMD_STATUS">
+                                <KeyValue key="SelectClause" value="CR.GMD_STATUS"/>
+                                <KeyValue key="ConditionWhereClause"    value="CR.GMD_STATUS"/>
+                            </Node>
+                            <Node name="VALID_FROM">
+                                <KeyValue key="SelectClause" value="CR.VALID_FROM"/>
+                                <KeyValue key="ConditionWhereClause"    value="CR.VALID_FROM"/>
+                            </Node>
+                            <Node name="REASON_ID">
+                                <KeyValue key="SelectClause" value="CR.RS_ID"/>
+                                <KeyValue key="ConditionWhereClause"    value="CR.RS_ID"/>
+                            </Node>
+                             <Node name="USER_REASON">
+                                 <KeyValue key="SelectClause"    value="CR.USER_REASON"/>
+                            </Node>
+                            <Node name="PROFILE_ID">
+                                <KeyValue key="SelectClause" value="CR.PROFILE_ID"/>
+                                <KeyValue key="ConditionWhereClause"    value="CR.PROFILE_ID"/>
+                            </Node>
+                            <Node name="SNCODE">
+                                <KeyValue key="SelectClause" value="CR.SNCODE"/>
+                                <KeyValue key="ConditionWhereClause"    value="CR.SNCODE"/>
+                            </Node>
+                            <Node name="SNCODE_PUB">
+                                <KeyValue key="SelectClause" value="SN.SHDES"/>
+                                <KeyValue key="ConditionWhereClause"    value="SN.SHDES"/>
+                                <KeyValue key="SupportsWildcardSearch"    type="Boolean"    value="true"/>
+                                <Node name="FromClauses">
+                                    <KeyValue key="MPUSNTAB SN" value=""/>
+                                </Node>
+                                <Node name="JoinWhereClauses">
+                                    <Node name="InputAttributes">
+                                        <KeyValue key="CR.SNCODE=SN.SNCODE (+)" value=""/>
+                                    </Node>
+                                    <Node name="OutputAttributes">
+                                        <KeyValue key="CR.SNCODE=SN.SNCODE (+)" value=""/>
+                                    </Node>
+                                </Node>
+                            </Node>
+                            <Node name="STATUS">
+                                <KeyValue key="SelectClause" value="CR.STATUS"/>
+                                <KeyValue key="ConditionWhereClause"    value="CR.STATUS"/>
+                            </Node>
+                             <Node name="BU_USER">
+                                  <KeyValue key="Operator" value="IN" />
+                                  <KeyValue key="ConditionWhereClause" value="CU.BUSINESS_UNIT_ID in (SELECT BUSINESS_UNIT_ID FROM ROLES_BUSUNIT where ROLE_ID " />
+                            </Node>
+                             <Node name="ROLE_IDS">
+                                  <KeyValue key="Operator" value="IN" />
+                                  <KeyValue key="ConditionWhereClause" value="CO.SCCODE IS NULL OR CO.SCCODE in (SELECT SCCODE FROM ROLE_MARKETS where ROLE_ID " />
+                            </Node>
+                        </Node>
+                    </Node>
+                </Node>
+
+                <KeyValue key="pendingGMDStati" value="GMD_REQUEST_ERROR,GMD_REQUEST_INSERTED,GMD_REQUEST_VENDOR_PROCESSING,GMD_REQUEST_QUEUED,GMD_REQUEST_RESPONSE_ARRIVED,GMD_REQUEST_INSERTED_BYPASSED,GMD_REQUEST_BP_INSERTED,GMD_REQUEST_INSERTED_MISSING_LICENSE,GMD_REQUEST_QUEUED_MISSING_LICENSE,GMD_REQUEST_INSERTED_BYPASSED_MISSING_LICENSE"/>
+                <KeyValue key="GMD_REQUEST_RESPONSE_ARRIVED" type="Integer" value="14"/>
+                <KeyValue key="GMD_REQUEST_FAILED_IN_GMD" type="Integer" value="12"/>
+                <KeyValue key="GMD_REQUEST_FAILED" type="Integer" value="11"/>
+                <KeyValue key="GMD_REQUEST_QUEUED" type="Integer" value="10"/>
+                <KeyValue key="GMD_REQUEST_CANCELED" type="Integer" value="9"/>
+                <KeyValue key="GMD_REQUEST_NOTIFY_OK" type="Integer" value="8"/>
+                <KeyValue key="GMD_REQUEST_NOTIFY_FAILED" type="Integer" value="7"/>
+                   <KeyValue key="GMD_REQUEST_VENDOR_PROCESSING" type="Integer" value="4"/>
+                <KeyValue key="GMD_REQUEST_INSERTED" type="Integer" value="2"/>
+                <KeyValue key="GMD_REQUEST_ERROR" type="Integer" value="1"/>
+                <KeyValue key="GMD_REQUEST_INSERTED_BYPASSED" type="Integer" value="15"/>
+                <KeyValue key="GMD_REQUEST_BP_INSERTED" type="Integer" value="16"/>
+                <!-- Begin PN 00346179 -->
+                <KeyValue key="GMD_REQUEST_INSERTED_MISSING_LICENSE" type="Integer" value="-2"/>
+                <KeyValue key="GMD_REQUEST_QUEUED_MISSING_LICENSE" type="Integer" value="-10"/>
+                <KeyValue key="GMD_REQUEST_INSERTED_BYPASSED_MISSING_LICENSE" type="Integer" value="-15"/>
+                <!-- End PN 00346179 -->
+
+
+                <KeyValue key="GMD_REQUEST_UPDATE_PURCHASED_BUNDLE" type="Integer" value="57"/>
+
+
+                <KeyValue key="exclusiveActions" value="CONTRACT_ACTIVATION,CONTRACT_DEACTIVATION,CONTRACT_REACTIVATION,CONTRACT_SUSPENSION,CONTRACT_TRANSITION,PRODUCT_RESOURCE_CHANGE,CARRIER_CHANGE, AGREEMENT_ACTIVATION"/>
+
+                <Node name="CONTRACT_RATING_OPTION_CHANGE">
+                  <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+                  <KeyValue key="actionId" type="Integer" value="69"/>
+                </Node>
+            <Node name="CONTRACT_PARAMETERS_SET">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+                      <KeyValue key="actionId" type="Integer" value="34"/>
+                </Node>
+                <Node name="GLOBAL_IOT_ADDITION">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+                      <KeyValue key="actionId" type="Integer" value="35"/>
+                </Node>
+                <Node name="INVISIBLE_NUMBER_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+                <KeyValue key="actionId" type="Integer" value="36"/>
+                </Node>
+                <Node name="GROUP_MAINTAINANCE_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+                <KeyValue key="actionId" type="Integer" value="37"/>
+            </Node>
+                <Node name="SL_CHANGE_TRIAL_DATE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+                <KeyValue key="actionId" type="Integer" value="38"/>
+                </Node>
+                <Node name="SERVICE_PACKAGE_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="true"/>
+                <KeyValue key="actionId" type="Integer" value="39"/>
+                </Node>
+                <Node name="SERVICE_PROFILE_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="40"/>
+                </Node>
+                <Node name="MAIN_DN_FLAG_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="41"/>
+                </Node>
+                <Node name="CUSTOMER_DATA_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="42"/>
+        </Node>
+         <!-- feature  240721  -->
+         <Node name="PRODUCTELEMENT_ATTR_ADDITION">
+             <KeyValue key="actionId" type="Integer" value="44"/>
+              <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            </Node>
+        <Node name="PRODUCTELEMENT_ATTR_SET">
+            <KeyValue key="actionId" type="Integer" value="45"/>
+                   <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            </Node>
+            <!-- end   240721  -->
+         <!-- Begin feature 236065_cms -->
+         <Node name="CUSTOMER_ACTIVATION">
+              <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+          <KeyValue key="actionId" type="Integer" value="46"/>
+            </Node>
+          <Node name="FAMILY_ASSIGNMENT">
+            <KeyValue key="allowsMultipleObjects" type="Boolean" value="true"/>
+              <KeyValue key="actionId" type="Integer" value="47"/>
+            </Node>
+          <Node name="TAX_PARAM_CHANGE">
+              <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+                <KeyValue key="actionId" type="Integer" value="50"/>
+           </Node>
+        <!-- End feature 236065_cms -->
+        <!-- defect 234100_cms NIJ -->
+             <Node name="PRODUCTELEMENT_INTERROGATION">
+             <KeyValue key="actionId" type="Integer" value="24"/>
+              <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            </Node>
+            <!-- 234100_cms -->
+                <Node name="GROUP_MEMBERSHIP_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="true"/>
+            <KeyValue key="actionId" type="Integer" value="23"/>
+                </Node>
+                <!-- 237639/d LET -->
+                <Node name="GROUP_MEMBERSHIP_SUSPENSION">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="true"/>
+            <KeyValue key="actionId" type="Integer" value="45"/>
+                </Node>
+                <Node name="GROUP_MEMBERSHIP_DELETION">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="true"/>
+            <KeyValue key="actionId" type="Integer" value="22"/>
+            </Node>
+                <Node name="GROUP_MEMBERSHIP_REGISTER">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="true"/>
+            <KeyValue key="actionId" type="Integer" value="21"/>
+                </Node>
+                <Node name="MICROCELL_ADDITION">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="18"/>
+                </Node>
+                <Node name="MICROCELL_DELETION">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="19"/>
+                </Node>
+                <Node name="RATE_PLAN_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="16"/>
+                </Node>
+                <Node name="PRODUCTELEMENT_RESOURCE_PROPERTY_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="true"/>
+            <KeyValue key="actionId" type="Integer" value="12"/>
+                </Node>
+                <Node name="PRODUCTELEMENT_PARAMETER_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="true"/>
+            <KeyValue key="actionId" type="Integer" value="11"/>
+                </Node>
+                <Node name="PRODUCTELEMENT_STATUS_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="10"/>
+                </Node>
+                <Node name="PRODUCTELEMENT_DELETION">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="true"/>
+            <KeyValue key="actionId" type="Integer" value="9"/>
+                </Node>
+                <Node name="PRODUCTELEMENT_DELETION_FOR_SERVPARAM_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="true"/>
+            <KeyValue key="actionId" type="Integer" value="70"/>
+                </Node>
+                <Node name="PRODUCTELEMENT_ADDITION">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="true"/>
+            <KeyValue key="actionId" type="Integer" value="8"/>
+                </Node>
+                <Node name="CARRIER_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="7"/>
+                </Node>
+                <Node name="PRODUCT_RESOURCE_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="6"/>
+                </Node>
+                <Node name="CONTRACT_TRANSITION">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="5"/>
+                </Node>
+                <Node name="CONTRACT_SUSPENSION">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="4"/>
+                </Node>
+                <Node name="CONTRACT_REACTIVATION">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="3"/>
+                </Node>
+                <Node name="CONTRACT_DEACTIVATION">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="2"/>
+                </Node>
+                <Node name="CONTRACT_ACTIVATION">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="1"/>
+                </Node>
+                <Node name="PRODUCT_DN_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="6001"/>
+                </Node>
+                <Node name="PRODUCT_SM_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="6002"/>
+                </Node>
+                <Node name="PRODUCT_PORT_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="6003"/>
+                </Node>
+                <Node name="PRODUCTELEMENT_PORT_ADDITION">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="13003"/>
+                </Node>
+                <Node name="PRODUCTELEMENT_SM_ADDITION">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="13002"/>
+                </Node>
+                <Node name="PRODUCTELEMENT_DN_ADDITION">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="13001"/>
+                </Node>
+                <Node name="PRODUCTELEMENT_PORT_DELETION">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="14003"/>
+                </Node>
+                <Node name="PRODUCTELEMENT_SM_DELETION">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="14002"/>
+                </Node>
+                <Node name="PRODUCTELEMENT_DN_DELETION">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="14001"/>
+                </Node>
+                <Node name="PORT_SWITCH_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="6004"/>
+                </Node>
+                <Node name="MICROCELL_CHANGE_PARAMETERS">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="20001"/>
+                </Node>
+                <Node name="MICROCELL_CHANGE_NUMBERS">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="20002"/>
+        </Node>
+        <!-- defect 267107_cms NiJ -->
+            <Node name="CONTRACT_ACCOUNT_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+                    <KeyValue key="actionId" type="Integer" value="52"/>
+                </Node>
+                <Node name="CUSTOMER_BILLCYCLE_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="53"/>
+                </Node>
+                <Node name="CONTRACT_CARRY_OVER_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="54"/>
+                </Node>
+                <Node name="CUSTOMER_LA_STRUCTURE_CHANGE">
+                    <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+            <KeyValue key="actionId" type="Integer" value="56"/>
+                </Node>
+        <!-- 267107_cms -->
+
+            <Node name="CONTRACT_SNAPSHOT">
+                <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+                <KeyValue key="actionId" type="Integer" value="61"/>
+            </Node>
+
+            <Node name="CHARGING_REQUEST">
+                <KeyValue key="allowsMultipleObjects" type="Boolean" value="false"/>
+                <KeyValue key="actionId" type="Integer" value="67"/>
+            </Node>
+            <Node name="CONTRACT_TAKEOVER_DEACTIVATION">
+                <KeyValue key="allowsMultipleObjects" type="Boolean" value="false" />
+                <KeyValue key="actionId" type="Integer" value="59" />
+            </Node>
+            <Node name="CONTRACT_TAKEOVER_ACTIVATION">
+                <KeyValue key="allowsMultipleObjects" type="Boolean" value="false" />
+                <KeyValue key="actionId" type="Integer" value="60" />
+            </Node>
+            <!-- end 349275_7_cms -->
+            <Node name="CUSTOMER_ATTRIBUTE_CHANGE">
+                <KeyValue key="allowsMultipleObjects" type="Boolean" value="false" />
+                <KeyValue key="actionId" type="Integer" value="62" />
+            </Node>
+           <Node name="CONTRACT_LIFE_CYCLE_CHANGE">
+                <KeyValue key="allowsMultipleObjects" type="Boolean" value="false" />
+                <KeyValue key="actionId" type="Integer" value="63" />
+            </Node>
+           <Node name="CONTRACT_LANGUAGE_CHANGE">
+                <KeyValue key="allowsMultipleObjects" type="Boolean" value="false" />
+                <KeyValue key="actionId" type="Integer" value="68" />
+            </Node>
+            <Node name="PRODUCT_BUNDLING">
+                <KeyValue key="allowsMultipleObjects" type="Boolean" value="true" />
+                <KeyValue key="actionId" type="Integer" value="30012" />
+            </Node>
+            <Node name="PRODUCT_BUNDLE_CHANGE">
+                <KeyValue key="allowsMultipleObjects" type="Boolean" value="true" />
+                <KeyValue key="actionId" type="Integer" value="30013" />
+            </Node>
+            <Node name="PRODUCT_UNBUNDLING">
+                <KeyValue key="allowsMultipleObjects" type="Boolean" value="true" />
+                <KeyValue key="actionId" type="Integer" value="30014" />
+            </Node>
+           <Node name="SHARED_ACCOUNT_MEMBER_ADD">
+                <KeyValue key="allowsMultipleObjects" type="Boolean" value="true" />
+                <KeyValue key="actionId" type="Integer" value="72" />
+            </Node>
+           <Node name="SHARED_ACCOUNT_MEMBER_REMOVE">
+                <KeyValue key="allowsMultipleObjects" type="Boolean" value="true" />
+                <KeyValue key="actionId" type="Integer" value="73" />
+            </Node>
+
+            <Node name="ADD_MEMBER_THRESHOLD">
+                <KeyValue key="allowsMultipleObjects" type="Boolean" value="true" />
+                <KeyValue key="actionId" type="Integer" value="30015" />
+            </Node>
+
+            <Node name="CHANGE_MEMBER_THRESHOLD">
+                <KeyValue key="allowsMultipleObjects" type="Boolean" value="true" />
+                <KeyValue key="actionId" type="Integer" value="30016" />
+            </Node>
+
+            <Node name="UNSET_MEMBER_THRESHOLD">
+                <KeyValue key="allowsMultipleObjects" type="Boolean" value="true" />
+                <KeyValue key="actionId" type="Integer" value="30017" />
+            </Node>
+
+            <Node name="FREE_UNITS_ELEMENT_CUSTOM">
+                <KeyValue key="allowsMultipleObjects" type="Boolean" value="true"/>
+                <KeyValue key="actionId" type="Integer" value="30018"/>
+            </Node>
+
+        </Node> <!-- Task Management Settings -->
+
+        </Node><!-- CMS Settings -->
+
+    </ComponentRegistry>

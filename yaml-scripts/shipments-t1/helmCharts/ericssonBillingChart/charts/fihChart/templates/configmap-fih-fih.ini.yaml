@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-fih-fih.ini
+data:
+  fih.ini: |
+    LOG_FILTER_LEVEL={{ .Values.fihIni.logFilterLevel }}

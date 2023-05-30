@@ -1,0 +1,168 @@
+# Default values for rihChart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+imageCredentials:
+  init-wait-for-data:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  init-wait-for-xrefs:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  rdh-rih:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  rih:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  rih-init-customized:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+
+images:
+  init-wait-for-data:
+    name: "eric-bss-eb-wait-for-condition"
+    tag: "22.15.12"
+  init-wait-for-xrefs:
+    name: "eric-bss-eb-wait-for-condition"
+    tag: "22.15.12"
+  rdh-rih:
+    name: "eric-bss-eb-rdh"
+    tag: "22.15.12"
+  rih:
+    name: "eric-bss-eb-rih"
+    tag: "22.15.12"
+  rih-init-customized:
+#   Example for customization:
+#    name: bscs/batch-init
+#    directory: /external-files
+    name:
+    tag:
+    directory:
+
+restartPolicy: Always
+
+metadataName: eric-bss-eb
+
+#DATA_RETRY_TIME, DATA_RETRY_TIME_MAX
+#By default, there is no definition for a time interval in which applications try to reconnect to DaTA.
+#If you set the environment variable, the value represents the time interval an application waits
+#until it tries to reconnect to DaTA.
+#Subsequent connection retries are performed under the following conditions:
+# - A double time interval has elapsed and has exceeded a maximum of 60 seconds.
+# - A double time interval has elapsed and the value specified by DATA_RETRY_TIME_MAX has been exceeded
+dataRetry:
+  dataRetryTime:
+  dataRetryTimeMax:
+
+rihDeployments:
+  - name: "rih-00-pod"
+    # Activate this code, to have a node selector for each rih pod:
+    # nodeSelector:
+    #   ericsson.com/rih-node: "yes"
+    # Segmentation: Family Group and Partition parameters:
+    #  -f <family group1>,<family group2> ... or -p <shared memory partition> or "" for no segmentation
+    # segmentationParameters associated to segmentationParameters of linked RDH Instance.
+    # Note that for every family group specified, rdh looks up in which partition it is and then adds all family groups of that partition.
+    rihSegmentationParameters: ""
+    # Number of replicas
+    replicaCount: 1
+    rihContainer:
+      # The names of the rih instances can be freely edited.
+      # Instances can be added or removed to/from this list.
+      - name: "eric-bss-eb-rih-00"
+        # Optional RIH parameters:
+        #  -a <application number>,
+        #  -e (extended error description),
+        #  -i (print version of binary and exits)
+        #  -s <0|1|2|3> (creation of statistical data),
+        #  -t (tracing information to standard output),
+        #  -T<file name> (tracing information written to file)
+        #  -w<working directory> (changes the working directory)
+        startParameters: " -a 0 -t -e "
+        rihResources:
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        # To generate tracefiles, it is necessary set the tracefile name in the variables below.
+        # These files will be stored in the log PVC.
+        tracingAndLogging:
+          bscsErrorTimestamp: ""
+          # dtaTracefile: "dta.rih-00-container.trc"
+          dtaTracefile: ""
+          # dxlTracefile: "dxl.rih-00-container.trc"
+          dxlTracefile: ""
+          # udrTracefile: "udr.rih-00-container.trc"
+          udrTracefile: ""
+    rdhConfiguration:
+      traceLevel: 0
+      useSlave: "-useSlave 0"
+      dataTimeout: "-w -1"
+      optionalParameters: ""
+    rdhResources:
+      limits:
+        cpu: 1
+        memory: 5Gi
+      requests:
+        cpu: 100m
+        memory: 64Mi
+    rdhEnvVariables:
+      shmMaxEnvironments: "20"
+      shmMaxSectors: "10"
+      shmMaxSegments: "1000"
+      shmMinSegmentSize: "65536"
+      tracingAndLogging:
+        bscsErrorTimestamp: ""
+        # dtaTracefile: "dta.rdh-rih.trc"
+        dtaTracefile: ""
+        # dxlTracefile: "dxl.rdh-rih.trc"
+        dxlTracefile: ""
+        # udrTracefile: "udr.rdh-rih.trc"
+        udrTracefile: ""
+
+# PRIH LOG_FILTER_LEVEL = <0|1|2>
+rihLogFilterLevel: 0
+
+#A local nodeSelector definition has priority over the global definition above.
+#nodeSelector: {}
+
+# A local affinity definition has priority over the global definition.
+# affinity: {}
+# Example:
+# affinity:
+#   nodeAffinity:
+#     preferredDuringSchedulingIgnoredDuringExecution:
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1a
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1b
+
+tnsnames:
+  bscsdb: '{{ tpl .Values.global.tnsnames.bscsdb . }}'
+
+sqlnet:
+  ora: '{{ tpl .Values.global.sqlnet.ora . }}'
+

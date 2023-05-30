@@ -1,0 +1,294 @@
+# Default values for cch Chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Allowed: 0,1
+replicaCount: 1
+
+imageCredentials:
+  bds:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  cch:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  init-wait-for-data:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  init-wait-for-grace-period:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  init-wait-for-xrefs:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  rdh-container:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+
+images:
+  bds:
+    name: "eric-bss-eb-bds"
+    tag: "22.15.12"
+  cch:
+    name: "eric-bss-eb-cch"
+    tag: "22.15.12"
+  init-wait-for-data:
+    name: "eric-bss-eb-wait-for-condition"
+    tag: "22.15.12"
+  init-wait-for-grace-period:
+    name: "eric-bss-eb-wait-for-condition"
+    tag: "22.15.12"
+  init-wait-for-xrefs:
+    name: "eric-bss-eb-wait-for-condition"
+    tag: "22.15.12"
+  rdh-container:
+    name: "eric-bss-eb-rdh"
+    tag: "22.15.12"
+
+restartPolicy: Always
+
+metadataName: eric-bss-eb
+
+readinessProbe:
+  # Optional: Number of seconds after the container has started before readiness probe is initiated.
+  # Defaults to 0 seconds. Minimum value is 0.
+  initialDelaySeconds: 10
+  # Optional: How often (in seconds) to perform the probe.
+  # Default to 10 seconds. Minimum value is 1.
+  periodSeconds: 10
+  # Optional: Minimum consecutive successes for the probe to be considered successful after having failed.
+  # Defaults to 1. Minimum value is 1.
+  successThreshold: 1
+  # Optional: When a probe fails, Kubernetes will try failureThreshold times before giving up.
+  # In case of readiness probe the Pod will be marked Unready.
+  # Defaults to 3. Minimum value is 1.
+  failureThreshold: 1
+  # Optional: Number of seconds after which the probe times out.
+  # Defaults to 1 second. Minimum value is 1.
+  timeoutSeconds: 10
+
+cchDeployments:
+  # This key is also the name for the instance, it should also contain segmentation.
+  #
+  # Parameter "segmentationParameters" will be added to rdh, waitForShm and cch start.
+  # So for CCH running for family groups 1 and 2 it should be:
+  # -name: "cch-f1-2"
+  #   segmentationParameters: "-f 1,2"
+  #   nodeSelector:
+  #     kubernetes.io/hostname: <myHostName>
+  # Note that RDH might kind of "autocomplete" family groups based on database setup,
+  # so if a shared memory partition contains family groups 1,2 and you start
+  # RDH with -f 1 it will still run for 1,2.
+  #
+  # Example configuration for separate family groups 1,2 and 3, running with two PODs,
+  # second pod with two cch container but without bds container.
+  # Shared memory segment 1 will contain family groups 1 and 2, shared memory segment 2
+  # will contain family group 3
+  #  - name: "cch-f12-pod"
+  #    segmentationParameters: "-f 1,2"
+  #    cchContainer:
+  #      - name: "cch-00-container"
+  #        startParameters: "-a 0 -t 0"
+  #    bdsContainer:
+  #      - name: "bds-00-container"
+  #        startParameters: "-a 0 -t 0 -r server"
+  #  - name: "cch-f3-pod"
+  #    segmentationParameters: "-f 3"
+  #    cchContainer:
+  #      - name: "cch-10-container"
+  #        startParameters: "-a 0 -t 0"
+  #      - name: "cch-11-container"
+  #        startParameters: "-a 0 -t 0"
+
+  - name: "cch-00-pod"
+    segmentationParameters: ""
+    cchContainer:
+      # The names of the cch instances can be freely edited.
+      # Instances can be added or removed to/from this list.
+      - name: "eric-bss-eb-cch-00"
+        startParameters: "-a 0 -t 0"
+        # To generate tracefiles, it is necessary set the tracefile name in the variables below.
+        # These files will be stored in the log PVC.
+        tracingAndLogging:
+          bscsErrorTimestamp: ""
+          # dtaTracefile: "dta.cch-00-container.trc"
+          dtaTracefile: ""
+          # dxlTracefile: "dxl.cch-00-container.trc"
+          dxlTracefile: ""
+          # udrTracefile: "udr.cch-00-container.trc"
+          udrTracefile: ""
+    bdsContainer:
+      # The names of the bds instances can be freely edited.
+      # Instances can be added or removed to/from this list.
+      - name: "eric-bss-eb-bds-00"
+        startParameters: "-a 0 -t 0 -r server"
+        tracingAndLogging:
+          bscsErrorTimestamp: ""
+          # dtaTracefile: "dta.bds-00-container.trc"
+          dtaTracefile: ""
+          # dxlTracefile: "dxl.bds-00-container.trc"
+          dxlTracefile: ""
+          # udrTracefile: "udr.bds-00-container.trc"
+          udrTracefile: ""
+
+# Grace period for pod termination, used also as grace period for RDH start,
+# RDH is started after waiting this time.
+# During a restart, old and new container are up at the same time, old one
+# shutting down and new one starting up. This period gives terminating rdh
+# time to shut down gracefully.
+terminationGracePeriodSeconds: "60"
+
+cchExtraEnvs:
+  # Trace masks, CAREFUL : MANDATORY length must be 32 characters
+  # 00010000000000000000000000000000  Level 1 Activated
+  # 00100000000000000000000000000000  Level 2 Activated
+  # 01000000000000000000000000000000  Level 3 Activated
+  # 10000000000000000000000000000000  Level 4 Activated
+  # 11110000000000000000000000000000  Level 1,2,3 & 4 Activated
+  # 10000000000000000000000000000001  CCH  Traces Activated with Level 4
+  - name: "COMMON_TRACE_GLOBAL_MASK"
+    value: "00010000000000000000000000000001"
+  - name: "COMMON_TRACE_SPECIFIC_MASK"
+    value: "00010000000000000000000000000001"
+
+#DATA_RETRY_TIME, DATA_RETRY_TIME_MAX
+#By default, there is no definition for a time interval in which applications try to reconnect to DaTA.
+#If you set the environment variable, the value represents the time interval an application waits
+#until it tries to reconnect to DaTA.
+#Subsequent connection retries are performed under the following conditions:
+# - A double time interval has elapsed and has exceeded a maximum of 60 seconds.
+# - A double time interval has elapsed and the value specified by DATA_RETRY_TIME_MAX has been exceeded
+dataRetry:
+  dataRetryTime:
+  dataRetryTimeMax:
+
+cchRacSetup:
+  waitTime: 500
+  totalWaitTime: 30
+  numAttempts: 60
+
+tnsnames:
+  bscsdb: '{{ tpl .Values.global.tnsnames.bscsdb . }}'
+
+sqlnet:
+  ora: '{{ tpl .Values.global.sqlnet.ora . }}'
+
+
+cchRegistry:
+  balance:
+    # Aggregation of negative charges in Balances
+    aggNegCharges: "false"
+    postpaidRemCredit:
+      amount: "10000000"
+      currency: 43
+    appOrder:
+      bundle: 1
+      normal: 2
+      prepaidCredit: 2
+      simpleDiscount: 2
+      spendingControl: 2
+  bundle:
+    alertExpiration: 110
+    alertNearExpiration: 111
+  eventProc:
+    roundCharges: "true"
+  # Trace level of CCH; possible values 0 (no runtime trace) and 1 (runtime trace)
+  tracingLevel: 0
+  extInterface:
+    multiMessage: "true"
+    suppressPubKey: "false"
+  reqHistory:
+    maxNodePerApp: "-1"
+  discounting:
+    # define the strategy and basis for the remaining charge calculation,
+    # possible values are linear, convertFreeAmount convertRemainingAmount
+    remChargeCalc: "convertRemainingAmount"
+  birProcessing:
+    emptyRemarkReasonId: 11
+    defaultRemarkReasonId: 8
+
+cchResources:
+  limits:
+    cpu: 1000m
+    memory: 10Gi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+rdh:
+  traceLevel: 0
+  useSlave: "-useSlave 1"
+  dataTimeout: "-w -1"
+  optionalParameters: ""
+
+rdhResources:
+  limits:
+    cpu: 1
+    memory: 5Gi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+envVariables:
+  shmMaxEnvironments: "20"
+  shmMaxSectors: "10"
+  shmMaxSegments: "1000"
+  shmMinSegmentSize: "65536"
+
+bdsResources:
+  limits:
+    cpu: 1000m
+    memory: 10Gi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+rdhCch:
+  tracingAndLogging:
+    bscsErrorTimestamp: ""
+    # dtaTracefile: "dta.rdh-cch.trc"
+    dtaTracefile: ""
+    # dxlTracefile: "dxl.rdh-cch.trc"
+    dxlTracefile: ""
+    # udrTracefile: "udr.rdh-cch.trc"
+    udrTracefile: ""
+
+# A local nodeSelector definition has priority over a global definition,
+# but will be overwritten by the pod specific nodeSelector above.
+#nodeSelector: {}
+
+# A local affinity definition has priority over the global definition.
+# affinity: {}
+# Example:
+# affinity:
+#   nodeAffinity:
+#     preferredDuringSchedulingIgnoredDuringExecution:
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1a
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1b
+
+
+suffix:

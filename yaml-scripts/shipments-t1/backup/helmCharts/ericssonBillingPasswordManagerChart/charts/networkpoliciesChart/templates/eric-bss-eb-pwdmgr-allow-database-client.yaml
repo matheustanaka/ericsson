@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: eric-bss-eb-pwdmgr-allow-database-client
+spec:
+  podSelector:
+    matchLabels:
+      eric-bss-eb-pwdmgr-network-database-client: 'true'
+  policyTypes:
+    - Egress
+  egress:
+    - ports:
+        - protocol: TCP
+          port: {{ .Values.global.databaseServerPort }}
+        - protocol: UDP
+          port: {{ .Values.global.databaseServerPort }}
+        - protocol: TCP
+          port: {{ .Values.global.rtxDatabaseServerPort }}
+        - protocol: UDP
+          port: {{ .Values.global.rtxDatabaseServerPort }}

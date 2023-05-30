@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: eric-bss-eb-allow-vmd
+spec:
+  podSelector:
+    matchLabels:
+      eric-bss-eb-network-vmd: 'true'
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-gmd: 'true'
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-gmd: 'true'

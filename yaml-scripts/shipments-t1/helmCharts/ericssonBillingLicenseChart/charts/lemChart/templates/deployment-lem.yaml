@@ -1,0 +1,177 @@
+{{- range $index, $lemDeployment := .Values.lemDeployments }}
+# A deployment is launched for each of the items in the tuple above.
+# Every occurrence of {{ . }} is replaced during each range loop by the current item.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "eric-bss-eb-lem-{{ $lemDeployment.name }}"
+  labels:
+    app: eric-bss-eb-lem
+    chart: {{ template "eric-bss-eb-lem.chart" $ }}
+    {{- include "eric-bss-eb-lem.kubernetesIoInfo" $ | nindent 4 }}
+    heritage: {{ $.Release.Service }}
+spec:
+  replicas: {{ $lemDeployment.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: eric-bss-eb-lem
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: eric-bss-eb-lem
+        eric-bss-eb-network-lem-server: 'true'
+        {{- include "eric-bss-eb-lem.kubernetesIoInfo" $ | nindent 8 }}
+      annotations:
+        {{- include "eric-bss-eb-lem.productInfo" $ | indent 8 }}
+    spec:
+      {{- if $lemDeployment.affinity }}
+      affinity: {{ toYaml $lemDeployment.affinity | nindent 8 }}
+      {{- else if $.Values.global.affinity }}
+      affinity: {{ toYaml $.Values.global.affinity | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- include "eric-bss-eb-lem.checkPodUserLoginData" $ | nindent 8 }}
+      terminationGracePeriodSeconds: {{ $.Values.terminationGracePeriodSeconds }}
+      {{- if $.Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ $.Chart.Name }}-sa
+      {{- end }}
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      containers:
+        - name: lem
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "eric-bss-eb-lem" }}
+          image: "{{ template "eric-bss-eb-lem.registryUrl" $templDict }}/{{ template "eric-bss-eb-lem.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-lem.pullPolicy" $templDict }}
+          livenessProbe:
+            tcpSocket:
+              port: 4322
+            initialDelaySeconds: {{ $.Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ $.Values.livenessProbe.periodSeconds }}
+            successThreshold: {{ $.Values.livenessProbe.successThreshold }}
+            failureThreshold: {{ $.Values.livenessProbe.failureThreshold }}
+            timeoutSeconds: {{ $.Values.livenessProbe.timeoutSeconds }}
+          readinessProbe:
+            tcpSocket:
+              port: 4322
+            initialDelaySeconds: {{ $.Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ $.Values.readinessProbe.periodSeconds }}
+            successThreshold: {{ $.Values.readinessProbe.successThreshold }}
+            failureThreshold: {{ $.Values.readinessProbe.failureThreshold }}
+            timeoutSeconds: {{ $.Values.readinessProbe.timeoutSeconds }}
+          resources:
+            limits:
+              memory: "{{ $.Values.resources.limits.memory }}"
+              cpu: "{{ $.Values.resources.limits.cpu }}"
+            requests:
+              memory: "{{ $.Values.resources.requests.memory }}"
+              cpu: "{{ $.Values.resources.requests.cpu }}"
+          command: ["/bin/bash"]
+          args: ["-c","sed s/{HOSTNAME}/$HOSTNAME/g /licensingsolution/resource/lic_lem/logging.properties >> /licensingsolution/resource/lem/logging.properties && \
+                       mkdir -p {{ $.Values.global.coredumpDirectory }}/lem && \
+                       mkdir -p /log/lem && \
+                       mkdir -p /licensingsolution/resource/lic_lem/license_extension_files/feature_status && \
+                       ${JAVA_HOME}/bin/java \
+                       -cp ${LHS_LIC_RESOURCE}/lic_lem:\
+                       ${LHS_LIC_JAR}/lic_lem.jar:\
+                       ${LHS_LIC_JAR}/lic_cmn.jar:\
+                       ${LHS_LIC_JAR}/lic_cmn_corba.jar:\
+                       ${LHS_LIC_3PP_JAR}/* \
+                       -Djava.util.logging.config.file=${LHS_LIC_RESOURCE}/lem/logging.properties \
+                       -Djava.io.tmpdir=log/lem \
+                       -DOAPort=43221 \
+                       -Djacorb.ior_proxy_host='eric-bss-eb-lem-ior' \
+                       -Xlog:gc*:file={{ $.Values.global.coredumpDirectory }}/lem/${HOSTNAME}_%p_%t.gc \
+                       -XX:HeapDumpPath={{ $.Values.global.coredumpDirectory }}/lem/${HOSTNAME}.hprof \
+                       com.lhs.cmn.lic.lem.Proto \
+                       -COMPNAME lic_lem \
+                       -LHS_LIC_LICENSE_DIR /licensingsolution/resource/lic_lem/license_extension_files \
+                       -SENTINEL_SERVER_HOST ${LSHOST} \
+                       -SENTINEL_SERVER_PORT ${LSPORT} \
+                       -SENTINEL_CUSTOM_LOCK_PORT 4321 \
+                       -IOR_PROVIDER_PORT 4322 \
+                       -STANDALONE ${MODE} \
+                       -CONSOLE off"]
+          env:
+            {{ if $.Values.global.config }}
+            {{ if $.Values.global.config.isStandAlone }}
+            # The standalone mode is only used for internal test.
+            - name: MODE
+              value: "on"
+            - name: LSERVRC
+              value: /licensingsolution/resource/lic_lem/license_extension_files/{{ $.Values.global.config.standaloneLicFile }}
+            {{ end }}
+            {{ end }}
+            - name: LSHOST
+              value: {{ $lemDeployment.rmsServerHost }}
+            - name: LSPORT
+              value: "5093"
+            - name: K8S_ENV
+              value: "true"
+          volumeMounts:
+            - name: lem-properties-volume
+              mountPath: /licensingsolution/resource/lic_lem/lem.properties
+              subPath: lem.properties
+            - name: rmscaffe-properties-volume
+              mountPath: /licensingsolution/resource/lic_lem/rmscaffe.properties
+              subPath: rmscaffe.properties
+            - name: init-logging-properties-volume
+              mountPath: /licensingsolution/resource/lic_lem/logging.properties
+              subPath: logging.properties
+            - name: lem-logging-properties-volume
+              mountPath: /licensingsolution/resource/lem
+            - name: log-volume
+              mountPath: /log
+            - name: coredump-volume
+              mountPath: {{ $.Values.global.coredumpDirectory }}
+            - name: lem-volume
+              mountPath: /licensingsolution/resource/lic_lem/license_extension_files
+          ports:
+            - name: ior-provider
+              containerPort: 4322
+            - name: orb-server-port
+              containerPort: 43221
+            - name: custom-lock
+              containerPort: 4321
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "/licensingsolution/scripts/pre-stop_lem.sh"]
+      {{- if $.Values.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.nodeSelector | nindent 8 }}
+      {{- else if $.Values.global.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+      # Teste Matheus Tanaka
+      tolerations:
+      - key: "nodepool"
+          operator: "Equal"
+          value: "sfppdev"
+          effect: "NoSchedule"
+      volumes:
+        - name: lem-properties-volume
+          configMap:
+            name: eric-bss-eb-lem-lem.properties
+        - name: rmscaffe-properties-volume
+          configMap:
+            name: eric-bss-eb-lem-rmscaffe.properties
+        - name: init-logging-properties-volume
+          configMap:
+            name: eric-bss-eb-lem-logging.properties
+        - name: lem-logging-properties-volume
+          emptyDir: {}
+        - name: log-volume
+          persistentVolumeClaim:
+            claimName: eric-bss-eb-pvc-logs
+        - name: coredump-volume
+          persistentVolumeClaim:
+            claimName: eric-bss-eb-pvc-coredump
+        - name: lem-volume
+          persistentVolumeClaim:
+            claimName: eric-bss-eb-pvc-lem
+
+---
+{{- end}}

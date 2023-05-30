@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-ax-integration.xml
+data:
+  AX_Integration.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+
+    <!-- Accounting Center (AX) / BSCS iX -->
+
+    <ComponentRegistry>
+    <Node name="FUNC_WCLT">
+
+
+        <!-- Jaas context -->
+        <KeyValue key="JaasContext" type="String" value="BSCSContext" comment="JAAS context to be used"/>
+
+        <!-- Location of AboutPageBundle.xml -->
+        <KeyValue key="AboutPageBundle" type="String" value="com.lhs.ax.util.resource.AboutPageBundle" comment="About bundle file path"/>
+
+        <!-- Location of LoginPageBundle.xml -->
+        <KeyValue key="LoginPageBundle" type="String" value="com.lhs.ax.util.resource.LoginPageBundle" comment="About bundle file path"/>
+
+        <!--  Option, whether the legal notice and privacy policy should be displayed before login -->
+        <KeyValue key="EnablePrivacyLegalNotice" type="Boolean" value="{{ .Values.axIntegration.EnablePrivacyLegalNotice }}" comment=""/>
+
+        <!--  URI to privacy policy
+            The custom URI to the complete privacy policy page.
+            If not set, the system default is used: privacyPolicy.
+        -->
+        <KeyValue key="PrivacyPolicy_Uri" type="String" value="{{ .Values.axIntegration.PrivacyPolicy_Uri }}" comment=""/>
+
+        <!--
+          - Error dictionary options:
+            - client: translate server error messages with the ClientErrorDictionary
+            - server (default): display the server error messages on screen
+            - none: don't translate the error messages, display a generic error message
+                    as defined in the ClientErrorDictionary (GlobalErrorMessage)
+        -->
+        <KeyValue key="UseErrorDictionary" type="String" value="client" comment=""/>
+
+        <!-- Client specific error dictionary -->
+        <KeyValue key="ClientErrorDictionary" type="String" value="com/lhs/ax/util/resource/AX_ErrorDictionary" comment=""/>
+
+        <!--
+          - Security check options (they don't affect the login mechanism, login will always be performed):
+            - true: turns security checks on
+            - false: turns security checks off
+        -->
+        <KeyValue key="UseSecurity" type="Boolean" value="true" comment=""/>
+
+        <!--
+          - Copy all context attributes to the request.
+        -->
+        <KeyValue key="copyContextAttributesToRequest" type="Boolean" value="true" comment=""/>
+
+        <!--
+          - URL of the 'Home' link in the horizental navigation bar (used in HNavBar.jsp)
+            - example: if the "Home_Url" key value is "Home.su" and if the base link is "http://localhost:8080/CMS",
+                       then the URL that is opened is "http://localhost:8080/CMS/Home.su"
+            - to construct the home URL without considering the base link, add "//" just before the constant
+        -->
+        <KeyValue key="Home_Url" type="String" value="Home.su" comment=""/>
+
+        <!--
+          - Localization options:
+            - server: USER.READ command is used to get the user locale
+            - browser (default): web browser locale is used
+        -->
+        <KeyValue key="Localization" type="String" value="Browser" comment=""/>
+
+        <KeyValue key="MirroredLayout" value="true" comment="Apply RTL or dextrosinistral text direction and adapts the layout. Possible values: 'true' or 'false'."/>
+        <KeyValue key="MirroredLanguages" value="ar" comment="Apply RTL or dextrosinistral text direction to the comma-separated list of ISO 639-1 language codes"/>
+
+        <KeyValue key="DocumentRootPath" type="String" value="${BSCS_WORKDIR}" comment="Root directory for document references."/>
+
+        <Node name="DocPaymentsTableColorMapping">
+            <KeyValue key="DocumentEntryColor" type="String" value="DATblBlackRowTxt"/>
+            <KeyValue key="CreditMemoDocumentEntryColor" type="String" value="DATblRedRowTxt"/>
+            <KeyValue key="AdvancedPaymentDocumentEntryColor" type="String" value="DATblRedRowTxt"/>
+            <KeyValue key="PaymentCreditEntryColor" type="String" value="DATblBlueRowTxt"/>
+            <KeyValue key="PaymentDebitEntryColor" type="String" value="DATblRedRowTxt"/>
+            <KeyValue key="NegativeValueColor" type="String" value="DATblRedRowTxt"/>
+        </Node>
+
+        <!-- Cached reference data refresh settings -->
+        <Node name="RefreshReferenceDataCache">
+
+            <!-- the settings are valid for all cached reference data -->
+            <KeyValue key="ABSOLUTE" type="Boolean" value="true" comment=""/>
+
+            <!-- refresh period in milliseconds, default is set to 24h (1000 * 60 * 60 * 24) -->
+            <!-- <KeyValue key="PERIOD" type="Integer" value="90000" comment=""/> -->
+
+            <!-- TODO: clarify description
+               - milliseconds on which a refresh is initiated. In case ABSOLUTE flag is set, the next refresh is set on next
+                 midnight plus this value, otherwise on server start plus this value
+            -->
+            <!-- refresh 5 minutes after midnight (1000 * 60 * 5)-->
+            <KeyValue key="START" type="Integer" value="300000" comment=""/>
+        </Node>
+    </Node>
+    </ComponentRegistry>

@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-pms-dl-integration.xml
+data:
+  DL_Integration.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+
+    <!--
+      The settings contained in this file should be checked and adapted to the customer needs
+      when installing the PXSC client.
+      Please read the comments and the related documentation carefully before changing the settings.
+    -->
+
+    <ComponentRegistry>
+
+    <Node name="PMS Settings">
+        <Node name="RateplanElementSettings">
+            <KeyValue key="DEFAULT_INTERVAL_TYPE" type="String" value="M" comment="Type of time interval for the specification of access charges: D=days, M=months"/>
+            <KeyValue key="DEFAULT_INTERVAL" type="Integer" value="1" comment="Time interval for the specification of access charges."/>
+            <KeyValue key="DEFAULT_PROIND" type="String" value="N" comment="Prorate Indicator."/>
+            <KeyValue key="DEFAULT_ADVIND" type="String" value="P" comment="Advance Flag: A=Advance, P=Past"/>
+
+            <KeyValue key="DEFAULT_FRQIND" type="String" value="P" comment="Frequency Indicator: O=One-time, P=Periodic"/>
+
+            <KeyValue key="SET_DEF_RATEPLAN_ELEMENT_DATA_AT_RELEASE" type="Boolean" value="true"
+                      comment="Switch for setting default values of GL account data, jobcost data and taxation data at the release of a rate plan version. true: Default values will be set at release. false: Default values will not be set at release."/>
+
+            <!-- Default taxation data -->
+            <KeyValue key="DEFAULT_ACC_SERVICECATCODE" type="String" value="{{ .Values.dlIntegration.pmsSetting.defaultAccessChargeServiceCatCode }}" comment="Public key (SHDES) of the default service category code for access charges."/>
+            <KeyValue key="DEFAULT_SUB_SERVICECATCODE" type="String" value="{{ .Values.dlIntegration.pmsSetting.defaultSubcriptionChargeServiceCatCode }}" comment="Public key (SHDES) of the default service category code for subscription charges."/>
+            <KeyValue key="DEFAULT_USG_SERVICECATCODE" type="String" value="{{ .Values.dlIntegration.pmsSetting.defaultUsageChargeServiceCatCode }}" comment="Public key (SHDES) of the default service category code for usage charges."/>
+
+            <!-- Default authority class  -->
+            <KeyValue key="DEFAULT_AUTH_CLASS_CODE" type="Integer" value="1" comment="Identifier of the default authoriry class code"/>
+
+            <!-- Default payment method  -->
+            <KeyValue key="DEFAULT_PAYMENT_METHOD" type="Integer" value="1" comment="Default payment method 1: postpaid, 2: prepaid"/>
+            <KeyValue key="DEFAULT_PAYMENT_CONDITION_CHANGEABLE" type="Boolean" value="true" comment="Default payment method can be changed in customer care true: changeable"/>
+
+            <KeyValue key="DEFAULT_CHARGING_SCHEDULE" type="String" value="B" comment="Indicates whether schedule is Cut-off date (domain: C) or Billing cycle related (domain: B)"/>
+            <KeyValue key="DEFAULT_PAYMENT_COND_ONETIME" type="Integer" value="1" comment="Default payment conditions for onetime and recurring charges. Domain: 1-Postpaid charges, 2-Prepaid charges"/>
+            <KeyValue key="DEFAULT_OVW_PERIOD_TYPE" type="String" value="D" comment="Default period type for initial recurring charges. Domain: D-Day(s), M-Month(s)"/>
+            <KeyValue key="DEFAULT_SERVICE_PRIO_CATALOG_SERV" type="String" value="H" comment="Default flag for usage of the highest (99999) or lowest (1) service priority value for Catalogue services"/>
+
+            <!-- Default type of control -->
+            <KeyValue key="DEFAULT_TYPE_OF_CONTROL" type="Integer" value="2" comment="Default type of control. Domain:  1 - Online Control, 2 - Offline Control."/>
+
+            <KeyValue key="DEFAULT_SUB_GL_ACC_PACK_SHDES" type="String" value="{{ .Values.dlIntegration.pmsSetting.defaultSubcriptionChargeGlAccountCatCode }}" comment="Default GL account package for one-time charges. FK: GL_ACCOUNT_PACKAGE.SHDES."/>
+            <KeyValue key="DEFAULT_ACC_GL_ACC_PACK_SHDES" type="String" value="{{ .Values.dlIntegration.pmsSetting.defaultAccessChargeGlAccountCatCode }}" comment="Default GL account package for recurring charges. FK: GL_ACCOUNT_PACKAGE.SHDES."/>
+            <KeyValue key="DEFAULT_USG_GL_ACC_PACK_SHDES" type="String" value="{{ .Values.dlIntegration.pmsSetting.defaultUsageChargeGlAccountCatCode }}" comment="Default GL account package for usage charges. FK: GL_ACCOUNT_PACKAGE.SHDES."/>
+
+            <KeyValue key="DEFAULT_BILLING_IF_SERVICE_SUSPENDED" type="String" value="N" comment="Default flag for billing if service is suspended. N - no, Y - yes"/>
+
+            <KeyValue key="DEFAULT_PRINTACCESSIND" type="String" value="N" comment="Default flag for printing zero amounts for recurring and one time charges. Domain: N - no, Y - yes" />
+        </Node>
+
+        <Node name="ServiceSettings">
+            <Node name="ProductOffering">
+                <KeyValue key="DEFAULT_SERVICE_OFFERING" type="String" value="DEFLT" comment="Public key of the default service offering."/>
+                <KeyValue key="DEFAULT_IMPORT_EXPORT" type="Integer" value="1" comment="Default import/export flag: 0 - import, 1 - export"/>
+                <KeyValue key="DEFAULT_SNMML" type="String" value="N" comment="Default SNMML: Y - a GMD request required to activate service at switch, N - no GMD request requiered."/>
+                <KeyValue key="DEFAULT_ASSOCIATE_DN" type="String" value="N" comment="Default Associate DN: O - directory numbers are optional, M - directory numbers are mandatory, N - don't associate DNs."/>
+                <KeyValue key="DEFAULT_ASSOCIATE_PORTS" type="String" value="N" comment="Default Associate Ports: O - ports are optional, M - ports are mandatory, N - don't associate port."/>
+                <KeyValue key="DEFAULT_ASSOCIATE_CUG" type="String" value="N" comment="Default Associate CUG: O - CUG is optional, M - CUG is mandatory, N - don't associate CUG."/>
+            </Node>
+        </Node>
+
+    </Node>
+
+    </ComponentRegistry>

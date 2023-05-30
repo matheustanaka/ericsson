@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-cms-bscs.xml
+data:
+  Registry_CMS_bscs.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+
+    <ComponentRegistry>
+
+        <Node name="CMS Settings">
+
+            <!-- Settings for Package NativeAccess -->
+            <Node name="NativeAccess Settings">
+                <!-- Pricing Normalized External Charge flag, from BSCSPROJECT.PRICING_NORMALIZATION -->
+                <Node name="PricingNormExtChrg">
+                    <KeyValue key="IR_USAGE_TAXATION_IND" type="String"    value="N" comment="Flag that indicates whether Tax will be applied on external Usage from International Roaming from MPUFHTAB.IR_USAGE_TAXATION"/>
+                    <KeyValue key="IC_USAGE_TAXATION_IND" type="String"    value="N" comment="Flag that indicates whether Tax will be applied on external Usage from Interexchange Carrier from MPUFHTAB.IC_USAGE_TAXATION_IND"/>
+                    <KeyValue key="IR_EXTERNAL_TAX_HANDLING" type="String"    value="I" comment="Indicates how External Tax from International Roaming is handled from MPUFHTAB.IR_EXTERNAL_TAX_HANDLING "/>
+                    <KeyValue key="IC_EXTERNAL_TAX_HANDLING" type="String"    value="I" comment="Indicates how External Tax from Interexchange Carrier is handled from MPUFHTAB.IC_EXTERNAL_TAX_HANDLING"/>
+                </Node>
+            </Node>
+
+        </Node><!-- CMS Settings -->
+
+    </ComponentRegistry>

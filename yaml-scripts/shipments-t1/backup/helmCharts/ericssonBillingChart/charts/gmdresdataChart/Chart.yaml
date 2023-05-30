@@ -1,0 +1,5 @@
+apiVersion: v2
+appVersion: "1.0"
+description: A Helm chart for GMD Response Parser DaTA (gmdresdata)
+name: eric-bss-eb-gmdresdata
+version: 22.15.12+0

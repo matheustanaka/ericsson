@@ -1,0 +1,230 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "eric-bss-eb-sms"
+  labels:
+    app: eric-bss-eb-sms
+    chart: {{ template "eric-bss-eb-sms.chart" . }}
+    {{- include "eric-bss-eb-sms.kubernetesIoInfo" . | nindent 4 }}
+    heritage: {{ .Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-sms.productInfo" . | indent 4 }}
+spec:
+  {{ if eq (int $.Values.replicaCount) 0 }}
+  replicas: 0
+  {{ else }}
+  replicas: 1
+  {{ end }}
+  selector:
+    matchLabels:
+      app: eric-bss-eb-sms
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: eric-bss-eb-sms
+        eric-bss-eb-network-database-client: 'true'
+        eric-bss-eb-network-smsc-client: 'true'
+        eric-bss-eb-network-vault-client: 'true'
+        {{- include "eric-bss-eb-sms.kubernetesIoInfo" . | nindent 8 }}
+      annotations:
+      {{- include "eric-bss-eb-sms.productInfo" . | indent 8 }}
+    spec:
+      terminationGracePeriodSeconds: {{ $.Values.terminationGracePeriodSeconds }}
+      securityContext:
+        {{- include "eric-bss-eb-sms.checkPodUserLoginData" . | nindent 8 }}
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      initContainers:
+        - name: init-sms
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "sms-init" }}
+          image: "{{ template "eric-bss-eb-sms.registryUrl" $templDict }}/{{ template "eric-bss-eb-sms.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-sms.pullPolicy" $templDict }}
+          command: ["/bin/sh"]
+          args: ["-c","sed s/{HOSTNAME}/$HOSTNAME/g /tmp/log4j2.xml >> /lt/log4j2.xml"]
+          volumeMounts:
+          - name: sms-log4j-xml-volume
+            mountPath: /tmp/log4j2.xml
+            subPath: log4j2.xml
+          - name: init-log4j-xml-volume
+            mountPath: /lt
+      {{- if .Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ .Chart.Name }}-sa
+      {{- end }}
+      containers:
+        - name: eric-bss-eb-sms
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "eb-java-sms" }}
+          image: "{{ template "eric-bss-eb-sms.registryUrl" $templDict }}/{{ template "eric-bss-eb-sms.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-sms.pullPolicy" $templDict }}
+          resources:
+            limits:
+              memory: "{{ .Values.resources.limits.memory}}"
+              cpu: "{{ .Values.resources.limits.cpu}}"
+            requests:
+              memory: "{{ .Values.resources.requests.memory}}"
+              cpu: "{{ .Values.resources.requests.cpu}}"
+          env:
+          {{ if .Values.global.databaseTls.enable }}
+          - name: ORA_SEC_WLT
+            value: "/oratns/secret"
+          {{ end }}
+          - name: NLS_LANG
+            value: "{{ .Values.global.nlsLang }}"
+          - name: K8S_ENV
+            value: "true"
+          - name: DATABASE_SERVER_NAME
+            value: "{{ .Values.global.databaseServerName }}"
+          - name: DATABASE_SERVER_PORT
+            value: "{{ .Values.global.databaseServerPort }}"
+          {{ if .Values.global.ebTruststore.secretName }}
+          - name: CERTIFICATE_PATH
+            value: "-Djavax.net.ssl.trustStore=/ssl/{{ .Values.global.ebTruststore.trustStoreName }} \
+                    -Djavax.net.ssl.trustStorePassword={{ .Values.global.ebTruststore.trustStorePassword }}"
+          {{ end }}
+          {{ if not $.Values.global.secretManager.enable }}
+          - name: NO_SECRET_MANAGER
+            value: "true"
+          {{ end }}
+          command: ["/bin/bash"]
+          args: ["-c","ulimit -c unlimited && mkdir -p {{ .Values.global.coredumpDirectory }}/sms && \
+                  mkdir -p /log/sms && \
+                  ${JAVA_HOME}/bin/java {{ .Values.args.javaOpts }} \
+                       {{ .Values.args.javaDebugOpts }} \
+                       ${CERTIFICATE_PATH} \
+                       -cp ${BSCS_RESOURCE}/sms:\
+                       ${BSCS_RESOURCE}/sms/CONF:\
+                       ${BSCS_RESOURCE}:\
+                       ${BSCS_SEC_DIR}:\
+                       ${BSCS_JAR}/smsserver.jar:\
+                       ${BSCS_JAR}/func_util.jar:\
+                       ${BSCS_JAR}/func_frwmwk_cmn.jar:\
+                       ${BSCS_JAR}/func_frwmwk_srv.jar:\
+                       ${BSCS_3PP_JAR}/* \
+                       -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager \
+                       -Dlog4j.configurationFile=/ericssonbilling/resource/sms/log4j2.xml \
+                       -Xlog:gc*:file={{ .Values.global.coredumpDirectory }}/sms/${HOSTNAME}_%p_%t.gc \
+                       -XX:HeapDumpPath={{ .Values.global.coredumpDirectory }}/sms/${HOSTNAME}.hprof \
+                       -Djava.io.tmpdir=/log/sms \
+                       -DWORK=/workdir \
+                       com.lhs.smpp.SMSServer"]
+          volumeMounts:
+          {{ if .Values.global.securityTls.enable }}
+          - name: tls-volume
+            mountPath: "/tls/connect"
+            readOnly: true
+          {{ end }}
+          {{ if .Values.global.databaseTls.enable }}
+          - name: wallet-volume
+            mountPath: "/oratns/secret"
+          {{ end }}
+          {{ if .Values.global.ebTruststore.secretName }}
+          - name: eb-trust-store-volume
+            mountPath: "/ssl"
+            readOnly: true
+          {{ end }}
+          - name: init-log4j-xml-volume
+            mountPath: /ericssonbilling/resource/sms/log4j2.xml
+            subPath: log4j2.xml
+          - name: ctrl-volume
+            mountPath: /workdir/CTRL
+          - name: pwdmgr-security-volume
+            mountPath: /workdir/PWDMGR_SECURITY
+          - name: sms-config-volume
+            mountPath: /workdir/CONF/smsserver.cfg
+            subPath: smsserver.cfg
+          - name: vault-clientcfg-xml-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.xml
+            subPath: vault-clientcfg.xml
+          - name: logs-volume
+            mountPath: /log
+          - name: coredump-volume
+            mountPath: "{{ .Values.global.coredumpDirectory }}"
+          - name: tnsnames-ora-volume
+            mountPath: /oratns/tnsnames.ora
+            subPath: tnsnames.ora
+          - name: sqlnet-ora-volume
+            mountPath: /oratns/sqlnet.ora
+            subPath: sqlnet.ora
+          - name: sms-rootapplicationcontext-sms-server-volume
+            mountPath: /ericssonbilling/resource/sms/CONF/rootApplicationContext-sms-server.xml
+            subPath: rootApplicationContext-sms-server.xml
+          lifecycle:
+            preStop:
+              exec:
+                command: ["rm", "-f", "/workdir/CTRL/SMS*"]
+      {{- if .Values.nodeSelector }}
+      nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector: {{ toYaml .Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity: {{ toYaml .Values.affinity | nindent 8 }}
+      {{- else if .Values.global.affinity }}
+      affinity: {{ toYaml .Values.global.affinity | nindent 8 }}
+      {{- end }}
+      restartPolicy: "{{ .Values.restartPolicy }}"
+      # Teste Matheus Tanaka
+      tolerations:
+      - key: "nodepool"
+          operator: "Equal"
+          value: "sfppdev"
+          effect: "NoSchedule"
+      volumes:
+      {{ if .Values.global.securityTls.enable }}
+      - name: tls-volume
+        secret:
+          secretName: "{{ .Values.global.securityTls.clientSecretName }}"
+          items:
+          - key: {{ .Values.global.securityTls.trustedCertificateKey }}
+            path: certificate.pem
+      {{ end }}
+      {{ if .Values.global.databaseTls.enable }}
+      - name: wallet-volume
+        secret:
+          secretName: "{{ .Values.global.databaseTls.clientSecretName }}"
+      {{ end }}
+      {{ if .Values.global.sms.secretName }}
+      - name: smsc-trust-store-volume
+        secret:
+          secretName: {{ .Values.global.sms.secretName }}
+      {{ end }}
+      {{ if .Values.global.ebTruststore.secretName }}
+      - name: eb-trust-store-volume
+        secret:
+          secretName: {{ .Values.global.ebTruststore.secretName }}
+      {{ end }}
+      - name: ctrl-volume
+        emptyDir: {}
+      - name: pwdmgr-security-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-pwdmgr-security
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-logs
+      - name: coredump-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-coredump
+      - name: tnsnames-ora-volume
+        configMap:
+          name: eric-bss-eb-sms-tnsnames.ora
+      - name: sqlnet-ora-volume
+        configMap:
+          name: eric-bss-eb-sms-sqlnet.ora
+      - name: sms-log4j-xml-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.log4j2xml | default "eric-bss-eb-sms-log4j2.xml" }}
+      - name: sms-config-volume
+        configMap:
+          name: eric-bss-eb-sms-server.cfg
+      - name: vault-clientcfg-xml-volume
+        configMap:
+          name: eric-bss-eb-sms-vault-clientcfg.xml
+      - name: init-log4j-xml-volume
+        emptyDir: {}
+      - name: sms-rootapplicationcontext-sms-server-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.rootApplicationContextSmsServerXml | default "eric-bss-eb-sms-rootapplicationcontext-sms-server.xml" }}

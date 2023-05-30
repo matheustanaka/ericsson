@@ -1,0 +1,98 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-lem-logging.properties
+data:
+  logging.properties: |-
+    ############################################################
+    #  LEM Loggers Standard Settings
+    ############################################################
+
+    handlers = java.util.logging.FileHandler, java.util.logging.ConsoleHandler
+
+    .level = {{ .Values.logging.defaultLogger.logLevel }}
+
+    # java.util.logging.FileHandler.level specifies the default level for the Handler (defaults to Level.ALL).
+    # java.util.logging.FileHandler.filter specifies the name of a Filter class to use (defaults to no Filter).
+    # java.util.logging.FileHandler.formatter specifies the name of a Formatter class to use (defaults to java.util.logging.XMLFormatter)
+    # java.util.logging.FileHandler.encoding the name of the character set encoding to use (defaults to the default platform encoding).
+    # java.util.logging.FileHandler.limit specifies an approximate maximum amount to write (in bytes) to any one file. If this is zero, then there is no limit. (Defaults to no limit).
+    # java.util.logging.FileHandler.count specifies how many output files to cycle through (defaults to 1).
+    # java.util.logging.FileHandler.pattern specifies a pattern for generating the output file name. See below for details. (Defaults to "%h/java%u.log").
+    # java.util.logging.FileHandler.append specifies whether the FileHandler should append onto any existing files (defaults to false).
+
+    # A pattern consists of a string that includes the following special components that will be replaced at runtime:
+    # "/" the local pathname separator
+    # "%t" the system temporary directory
+    # "%h" the value of the "user.home" system property
+    # "%g" the generation number to distinguish rotated logs
+    # "%u" a unique number to resolve conflicts
+    # "%%" translates to a single percent sign "%"
+
+    # default file output is in log/ subdirectory.
+    java.util.logging.FileHandler.pattern = %t/LEM.{HOSTNAME}.system_%u_%g.log
+    java.util.logging.FileHandler.limit = 500000
+    java.util.logging.FileHandler.count = 7
+    java.util.logging.FileHandler.formatter = java.util.logging.SimpleFormatter
+
+    # Limit the message that are printed on the console to INFO and above.
+    java.util.logging.ConsoleHandler.level = INFO
+    java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter
+
+    ############################################################
+    # Level of the logger for CORBA traffic.
+    # FINE:  Each incoming request and result is logged.
+    # FINER: Like FINE but with more details regarding
+    #        version determination.
+    ############################################################
+    com.lhs.cmn.lic.lem.corba.LemIServant.level = {{ .Values.logging.lemIServant.logLevel }}
+
+    ############################################################
+    #   EM Loggers Custom Settings: Feature Handler
+    #
+    # This section configures the feature handler logger
+    # including its dedicated file handler.
+    # Further attributes are not supported.
+    ############################################################
+    FeatureHandlerLog.level = {{ .Values.logging.featureHandler.logLevel }}
+    FeatureHandlerLog.pattern = %t/LEM.{HOSTNAME}.feature_handler_%u_%g.log
+    FeatureHandlerLog.limit = 500000
+    FeatureHandlerLog.count = 7
+    FeatureHandlerLog.formatter = java.util.logging.SimpleFormatter
+
+    ############################################################
+    #   LEM Loggers Custom Settings: License Evaluation Results
+    #
+    # This section configures the license evaluation result
+    # loggers as defined in the license extension files
+    # including the dedicated file handler for each logger.
+    # Further attributes are not supported.
+    ############################################################
+    DefaultResultLog.level = {{ .Values.logging.defaultResult.logLevel }}
+    DefaultResultLog.pattern = %t/LEM.{HOSTNAME}.default_result_%u_%g.log
+    DefaultResultLog.limit = 500000
+    DefaultResultLog.count = 7
+
+    ############################################################
+    #   LEM Loggers Custom Settings: Warnings
+    #
+    # This section configures the warning loggers as defined
+    # in the license extension files including the dedicated
+    # file handler for each logger.
+    # Further attributes are not supported.
+    # Replace <Warning_Logger> with the value of attribute
+    # Warning_Logger in the license extension file.
+    #
+    # I.e. license extension file:
+    #    Warning_Logger = TestWarningLogger
+    #
+    # I.e. logging properties:
+    #    TestWarningLogger.level = INFO
+    #    TestWarningLogger.pattern = %t/LEM.{HOSTNAME}.warnings_%u_%g.log
+    #    TestWarningLogger.limit = 500000
+    #    TestWarningLogger.count = 7
+    ############################################################
+    #<Warning_Logger>.level = INFO
+    #<Warning_Logger>.pattern = %t/LEM.{HOSTNAME}.warnings_%u_%g.log
+    #<Warning_Logger>.limit = 500000
+    #<Warning_Logger>.count = 7

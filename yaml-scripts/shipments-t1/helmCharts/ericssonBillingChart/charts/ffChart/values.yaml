@@ -1,0 +1,135 @@
+# Default values for ffChart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+#
+# Unlike java based servers and clients the configuration
+# naming services are NOT configured by k8sNamingServiceList
+# but its orb.properties AND NAME_SERVICE.LIST within
+# the config-map ff.resource.
+
+imageCredentials:
+  eb-java-ff:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  init-logging-jff:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+
+images:
+  eb-java-ff:
+    name: "eric-bss-eb-jff"
+    tag: "22.15.12"
+  init-logging-jff:
+    name: "eric-bss-eb-init-logging"
+    tag: "22.15.12"
+
+replicaCount: 3
+
+# Grace period for pod termination, which is used to shut down FedFactory gracefully.
+terminationGracePeriodSeconds: "30"
+
+args:
+  javaOpts: "-Xms64M \
+             -Xmx512M \
+             -XX:+UseG1GC \
+             -XX:+HeapDumpOnOutOfMemoryError \
+             -Xlog:safepoint=warning \
+             -Xlog:gc=info \
+             -Dnetworkaddress.cache.ttl=60"
+  javaDebugOpts:
+
+jacorb:
+  log:
+    dumpOutgoingMessages: "off"
+    dumpIncomingMessages: "off"
+  orbConnection:
+    retries: 1
+    retryInterval: 500
+    clientIdleTimeout: 0
+    clientConnectTimeout: 30000
+    clientPendingReplyTimeout: 60000
+  poaConfig:
+    threadPoolMax: 20
+    threadPoolMin: 5
+
+tnsnames:
+  bscsdb: '{{ tpl .Values.global.tnsnames.bscsdb . }}'
+
+sqlnet:
+  ora: '{{ tpl .Values.global.sqlnet.ora . }}'
+
+resources:
+  limits:
+    cpu: 3
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+#A local nodeSelector definition has priority over the global definition above.
+#nodeSelector: {}
+
+# A local affinity definition has priority over the global definition.
+# affinity: {}
+# Example:
+# affinity:
+#   nodeAffinity:
+#     preferredDuringSchedulingIgnoredDuringExecution:
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1a
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1b
+
+
+suffix:
+
+#Parameters used for logging
+logging:
+
+  #Default global logging level
+  #This specifies which kinds of events are logged across all loggers
+  #For any given facility this global level can be overriden by a facility specific level
+  #Note that the ConsoleHandler also has a separate level setting to limit messages printed to the console
+  level: "warn"
+
+  #Settings for SystemLog
+  systemLogLevel: "info"
+
+  #Settings for the NamingServiceCrawler
+  INSCrawlerLevel: "warn"
+
+  #Settings for some internal Java loggers
+  corbaDefaultRpcTransportLevel: "error"
+  corbaDefaultRpcProtocolLevel: "error"
+  corbaDefaultRpcEncodingLevel: "error"
+  corbaCorbaRpcPresentationLevel: "error"
+  corbaCorbaRpcProtocolLevel: "error"
+  loaderLevel: "error"
+  jgroupsLevel: "error"
+  httpClientWireContentLevel: "info"
+  jacorbLevel: "warn"
+
+#Business Config Files - customizable configmaps
+overrideConfigmap:
+  # Default configmap: eric-bss-eb-ff-applicationcontext-jff.xml
+  applicationcontextJffXml:
+  # Default configmap: eric-bss-eb-ff-applicationcontext-sfw-security-openam.xml
+  applicationcontextSfwSecurityOpenamXml:
+  # Default configmap: eric-bss-eb-ff-registry.xml
+  registryXml:
+  # Default configmap: eric-bss-eb-ff-log4j2.xml
+  log4j2xml:

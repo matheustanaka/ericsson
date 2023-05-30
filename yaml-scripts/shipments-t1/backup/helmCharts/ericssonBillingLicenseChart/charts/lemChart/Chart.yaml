@@ -1,0 +1,5 @@
+apiVersion: v2
+appVersion: "1.0"
+description: A Helm chart for License Extendtion Manager
+name: eric-bss-eb-lem
+version: 22.15.12+0

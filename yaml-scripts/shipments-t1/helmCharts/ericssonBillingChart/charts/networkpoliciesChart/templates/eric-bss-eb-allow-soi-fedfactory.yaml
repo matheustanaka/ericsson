@@ -1,0 +1,77 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: eric-bss-eb-allow-soi-fedfactory
+spec:
+  podSelector:
+    matchLabels:
+      eric-bss-eb-network-soi-fedfactory: 'true'
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-soi-gateway: 'true'
+      ports:
+        - port: 24000
+          protocol: TCP
+    - from:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-soi-server: 'true'
+      ports:
+        - port: 24000
+          protocol: TCP
+    - from:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-soi-client: 'true'
+      ports:
+        - port: 24000
+          protocol: TCP
+    - from:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-soi-fedfactory: 'true'
+      ports:
+        - port: 24000
+          protocol: TCP
+  egress:
+    - ports:
+        - port: 24000
+          protocol: TCP
+        - port: {{ .Values.global.databaseServerPort }}
+          protocol: TCP
+        - port: {{ .Values.global.databaseServerPort }}
+          protocol: UDP
+        - port: {{ .Values.forgerock.dsPort }}
+          protocol: TCP
+        - port: {{ .Values.forgerock.dsPort }}
+          protocol: UDP
+    - to:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-soi-ns: 'true'
+      ports:
+        - protocol: TCP
+          port: 2010
+        - protocol: TCP
+          port: 1049
+    - to:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-soi-server: 'true'
+    - to:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-soi-gateway: 'true'
+    - to:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-soi-client: 'true'
+    - to:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-soi-fedfactory: 'true'

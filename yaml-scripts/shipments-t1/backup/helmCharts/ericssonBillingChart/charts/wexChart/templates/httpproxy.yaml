@@ -1,0 +1,35 @@
+{{ if .Values.global.ingress.enabled }}
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: eric-bss-eb-wex-httpproxy
+  annotations:
+    {{ if or .Values.global.ingress.ingressClass.OAM .Values.global.ingress.ingressClass.TRF }}
+    projectcontour.io/ingress.class: {{.Values.global.ingress.ingressClass.OAM | default .Values.global.ingress.ingressClass.TRF}}
+    {{ end }}
+spec:
+  routes:
+    - services:
+        - name: eric-bss-eb-wex-http
+          port: 8443
+          {{ if .Values.global.ingress.caSecret }}
+          validation:
+            caSecret: {{ .Values.global.ingress.caSecret }}
+            subjectName : {{ .Values.global.ingress.subjectName }}
+          {{ end }}
+      timeoutPolicy:
+        response: "{{ .Values.ingress.timeoutPolicy.response }}"
+        idle: "{{ .Values.ingress.timeoutPolicy.idle }}"
+      retryPolicy:
+        count: {{ .Values.ingress.retryPolicy.count }}
+        perTryTimeout: "{{ .Values.ingress.retryPolicy.perTryTimeout }}"
+      loadBalancerPolicy:
+        strategy: Cookie
+      healthCheckPolicy:
+        path: /wex/health
+        host: {{.Values.ingress.healthCheck.host}}
+        intervalSeconds: {{.Values.ingress.healthCheck.intervalSeconds}}
+        timeoutSeconds: {{.Values.ingress.healthCheck.timeoutSeconds }}
+        unhealthyThresholdCount: {{.Values.ingress.healthCheck.unhealthyThresholdCount }}
+        healthyThresholdCount: {{.Values.ingress.healthCheck.healthyThresholdCount }}
+{{ end }}

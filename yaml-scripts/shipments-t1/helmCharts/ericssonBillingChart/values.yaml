@@ -1,0 +1,1038 @@
+# Default values for Ericsson Billing and the global variables for subcharts
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global configuration of the ericssonBilling chart.
+global:
+  imageCredentials:
+    # Conditional, if path names are used in the image registry: Defines the repository path for images pulled from the image registry for every container.
+    # Can also be set per container for the subcharts. Must be set in combination with the URL to locate the images in the image registry.
+    # repoPath: proj-eric-bss-eb-released  # example value
+    repoPath:
+    # Optional: Defines the pull policy used when images are pulled on helm install/upgrade.
+    # Setting it to "Always" may impact operational performance on helm install/upgrade.
+    # pullPolicy: IfNotPresent      # Default value
+    pullPolicy: IfNotPresent
+    registry:
+      # Mandatory: Defines the URL to the image registry for every container.
+      # Can also be set per container for the subcharts.
+      # url: localhost:32000  # example value
+      url:
+    # Optional: Defines the image pull secret used when images are pulled on helm install/upgrade.
+    # The secret is used to authenticate against the Docker registry.
+    pullSecret:
+
+  # To constrain the pods to particular nodes.
+  # Example:
+  #  nodeSelector:
+  #    kubernetes.io/hostname: "<hostname>"
+  nodeSelector: {}
+
+  # To constrain pods with specific labels. (E.g. Availability zone)
+  affinity: {}
+  # Example:
+  # affinity:
+  #   nodeAffinity:
+  #     preferredDuringSchedulingIgnoredDuringExecution:
+  #     - weight: 50
+  #       preference:
+  #         matchExpressions:
+  #         - key: topology.kubernetes.io/zone
+  #           operator: In
+  #           values:
+  #           - us-east-1a
+  #     - weight: 50
+  #       preference:
+  #         matchExpressions:
+  #         - key: topology.kubernetes.io/zone
+  #           operator: In
+  #           values:
+  #           - us-east-1b
+
+
+  # Identifier for customized images.
+  # customerTag: "common"  # example value
+  customerTag: ""
+
+  # The mode in which the system is deployed.
+  # Possible values: eb, ebdmp (default)
+  useDeploymentMode: "ebdmp"
+
+  # Mandatory: The UID to run the entrypoint of the container processes of the pods.
+  #            If not set, this value defaults in Kubernetes to the user specified in the image metadata.
+  #            Therefore the parameter is mandatory so that all of EB uses the same UID.
+  # runAsUser: 1001  # example value as integer
+  runAsUser: null
+  # Mandatory: The GID to run the entrypoint of the container process. Uses runtime default if unset.
+  #            May also be set in SecurityContext. If set in both SecurityContext and PodSecurityContext,
+  #            the value specified in SecurityContext takes precedence for that container.
+  # runAsGroup: 1002  # example value as integer
+  runAsGroup: null
+  # Mandatory: A special supplemental group that applies to all containers in a pod.
+  # fsGroup: 1003  # example value as integer
+  fsGroup: null
+
+  ### Global configuration related to Database connection: ###
+  # Global configuration related to Oracle secure connection using TLS.
+  # These independent settings have to be changed consistently:
+  # 1) Set switch databaseTls to true
+  # 2) Specify cipherSuites for according to the Oracle version, otherwise the default is used.
+  #    - Please see the Oracle database security guide for recommended cipher suites
+  # 3) Use TCPS instead of TCP
+  # 4) Specify secure DB connect parameters
+  databaseTls:
+    # Switch to enable databaseTls (secure communication between database client and database server).
+    # enable: true  # example value
+    enable: true
+    # Conditional, if databaseTls.enable=true: Name of the encryption key file
+    # trustedCertificateKey: "cwallet.sso"  # example value
+    trustedCertificateKey: "cwallet.sso"
+    # Conditional, if databaseTls.enable=true: Name of the secret file of the database client.
+    # clientSecretName: "eric-bss-eb-wallet-secret"  # example value
+    clientSecretName: "eric-bss-eb-wallet-secret"
+    clientAdminSecretName: "eric-bss-eb-wallet-admin-secret"
+    # Conditional, if databaseTls.enable=true: The cipherSuites to be used.
+    # cipherSuites: "(TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA)"  # example value
+    cipherSuites: "(TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA)"
+    # Conditional, if databaseTls.enable=true: The protocol to be used. The protocol can be TCPS for secure connection, or TCP for insecure connection.
+    # protocol: "TCPS"  # example value
+    protocol: "TCPS"
+    #Conditional, if databaseTls.enable=true: Specify the distinguished name (DN) of the bscs database server.
+    # sslServerCertDNbscsDb: "C=US,ST=Washington,L=Seattle,O=Amazon.com,OU=RDS,CN=u2dev01U.ckvgupmjow0d.us-east-1.rds.amazonaws.com"  # example value for AWS where u2dev01U.ckvgupmjow0d.us-east-1.rds.amazonaws.com is the endpoint of the RDS database
+    sslServerCertDNbscsDb: ""
+    #Conditional, if databaseTls.enable=true: Specify the distinguished name (DN) of the rtx database server.
+    # sslServerCertDNrtxDb: "C=US,ST=Washington,L=Seattle,O=Amazon.com,OU=RDS,CN=u2dev01U.ckvgupmjow0d.us-east-1.rds.amazonaws.com"  # example value for AWS where u2dev01U.ckvgupmjow0d.us-east-1.rds.amazonaws.com is the endpoint of the RDS database
+    sslServerCertDNrtxDb: ""
+
+  # Specify secure database connection parameters:
+  # When using the Oracle TLS secure connection, the secure database configuration can be identified by sending:
+  # tnsping < secureDatabaseConnectString  >.
+  # (The secureDatabaseConnectString is the Name of the database connection defined in tnsnames.ora.)
+  # This shows the DBName, host and port that needs to be entered in the lines below.
+  # Note that secure and insecure database connections use different ports for the same database.
+
+  ### Connection parameters for main database. ###
+  # Mandatory: Name of the main database.
+  # bscsDb: "bscsdb"  # example value
+  bscsDb: ""
+  # Mandatory: Domain name (FQDN) or IP address of the main database server.
+  # databaseServerName: "myDatabaseServer.myDomain.com"  # example value
+  # databaseServerName: "10.120.135.122"  # example value
+  databaseServerName: ""
+  # Mandatory: Port on the main database server.
+  # databaseServerPort: "1921"  # example value
+  databaseServerPort: ""
+  # Optional: Additional ports on the main database server for additional listeners (e.g. for RAC).
+  #  - port: "1921"  # example value
+  #  - port: "1922"  # example value
+  databaseServerAdditionalPorts:
+  # Optional: Connect string used for the database link BSCS_TO_RTX_LINK
+  # Required, when a separate RTX DB is configured.
+  # This sting will be used as a parameter to call SQL scripts.
+  # It has a maximum length of 256 characters and should not contain TAB, Newline, Linefeed, Spaces.
+  bscsToRtxNetDescriptor: "(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL={{.Values.global.databaseTls.protocol}})(Host={{.Values.global.rtxDatabaseServerName}})(Port={{.Values.global.rtxDatabaseServerPort}})))(CONNECT_DATA=(SERVICE_NAME={{.Values.global.rtxDb}})))"
+
+  ### Connection parameters for UDR database. ###
+  # Same conditionality and parameter description as for main database.
+  rtxDb: ""
+  rtxDatabaseServerName: ""
+  rtxDatabaseServerPort: ""
+  rtxDbAdditionalPorts:
+  # Optional: Connect string used for the database link RTX_TO_BSCS_LINK
+  # Required, when a separate RTX DB is configured.
+  # This sting will be used as a parameter to call SQL scripts.
+  # It has a maximum length of 256 characters and should not contain TAB, Newline, Linefeed, Spaces.
+  rtxToBscsNetDescriptor: "(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL={{.Values.global.databaseTls.protocol}})(Host={{.Values.global.databaseServerName}})(Port={{.Values.global.databaseServerPort}})))(CONNECT_DATA=(SERVICE_NAME={{.Values.global.bscsDb}})))"
+
+  # Mandatory: Database master/bootstraping user name for dmf chart
+  # dbSystemUserName: "SYSTEM"  # example value
+  dbSystemUserName: ""
+
+  # allows pod to change the values for net.ipv4.tcp_keepalive_* by sysctl
+  # this works only, if the configuration of kubelet on the worker nodes has been adapted accordingly.
+  # There are two alternatives:
+  #  - use command line parameter when starting kubelet (deprecated):
+  #      --allowed-unsafe-sysctls=net.ipv4.tcp_keepalive_time,net.ipv4.tcp_keepalive_probes,net.ipv4.tcp_keepalive_intvl
+  #  - adapt the kubelet configuration file which is passed by parameter --config (not --kubeconfig)
+  allowUnsafeSysctlKeepalive: false
+
+  ### TNSNAMES parameters for BSCS and UDR databases. ###
+  # Mandatory: Configuration of tnsnames.ora for BSCS and RTX databases
+  tnsnames:
+    bscsdb: |-
+      (DESCRIPTION=
+        (ENABLE=broken)
+        (SDU=8192)
+        (ADDRESS_LIST=
+          (ADDRESS= (PROTOCOL={{ .Values.global.databaseTls.protocol }})
+                    (Host={{ .Values.global.databaseServerName }})
+                    (Port={{ .Values.global.databaseServerPort }})
+          )
+        )
+        (CONNECT_DATA= (SERVICE_NAME={{ .Values.global.bscsDb }}))
+        (SECURITY= (SSL_SERVER_CERT_DN="{{.Values.global.databaseTls.sslServerCertDNbscsDb}}")(SSL_SERVER_DN_MATCH=yes))
+      )
+    bscsdb_admin: |-
+      (DESCRIPTION=
+        (SDU=8192)
+        (ADDRESS_LIST=
+          (ADDRESS= (PROTOCOL={{ .Values.global.databaseTls.protocol }})
+                    (Host={{ .Values.global.databaseServerName }})
+                    (Port={{ .Values.global.databaseServerPort }})
+          )
+        )
+        (CONNECT_DATA= (SERVICE_NAME={{ .Values.global.bscsDb }}))
+        (SECURITY= (SSL_SERVER_CERT_DN="{{.Values.global.databaseTls.sslServerCertDNbscsDb}}")(MY_WALLET_DIRECTORY=/oratns/secret/admin)(SSL_SERVER_DN_MATCH=yes))
+      )
+    rtxdb: |-
+      (DESCRIPTION=
+        (ENABLE=broken)
+        (SDU=8192)
+        (ADDRESS_LIST=
+          (ADDRESS= (PROTOCOL={{ .Values.global.databaseTls.protocol }})
+                    (Host={{ .Values.global.rtxDatabaseServerName }})
+                    (Port={{ .Values.global.rtxDatabaseServerPort }})
+          )
+        )
+        (CONNECT_DATA= (SERVICE_NAME={{ .Values.global.rtxDb }}))
+        (SECURITY= (SSL_SERVER_CERT_DN="{{.Values.global.databaseTls.sslServerCertDNrtxDb}}")(SSL_SERVER_DN_MATCH=yes))
+      )
+    rtxdb_admin: |-
+      (DESCRIPTION=
+        (SDU=8192)
+        (ADDRESS_LIST=
+          (ADDRESS= (PROTOCOL={{ .Values.global.databaseTls.protocol }})
+                    (Host={{ .Values.global.rtxDatabaseServerName }})
+                    (Port={{ .Values.global.rtxDatabaseServerPort }})
+          )
+        )
+        (CONNECT_DATA= (SERVICE_NAME={{ .Values.global.rtxDb }}))
+        (SECURITY= (SSL_SERVER_CERT_DN="{{.Values.global.databaseTls.sslServerCertDNrtxDb}}")(MY_WALLET_DIRECTORY=/oratns/secret/admin)(SSL_SERVER_DN_MATCH=yes))
+      )
+
+  ### SQLNET parameters for BSCS and UDR databases. ###
+  # Mandatory: Configuration of minimum sqlnet.ora
+  sqlnet:
+    ora: |-
+      NAMES.DIRECTORY_PATH=(tnsnames,ezconnect)
+      SQLNET.ALLOWED_LOGON_VERSION_SERVER=11
+      # secure connection part
+      SQLNET.AUTHENTICATION_SERVICES={{.Values.global.databaseTls.protocol}}
+      SSL_CIPHER_SUITES={{.Values.global.databaseTls.cipherSuites}}
+      WALLET_LOCATION=(SOURCE=(METHOD=FILE)(METHOD_DATA=(DIRECTORY=/oratns/secret)))
+      # Possible values for SSL_VERSION: undetermined, 1.0, 1.1, 1.2. Version "3.0" does not work and must not be used.
+      SSL_VERSION=1.2
+      # Autologin via Passwords or Certificate DN and Secure External Password Store
+      SSL_CLIENT_AUTHENTICATION = ON
+      # Autologin via Passwords and Secure External Password Store
+      SQLNET.WALLET_OVERRIDE = TRUE
+      # Autologin via Certificate DN and Secure External Password Store
+      # SQLNET.WALLET_OVERRIDE = FALSE
+      # Security, verify DN in the security clauses in tnsnames.ora
+      SSL_SERVER_DN_MATCH=TRUE
+      # Security, in case main database users are identified via SSL and Certificate_DN
+      # That would require that the wallet in /oratns/secret/admin was created with the Certificate-DN of the SystemUser user
+      SQLNET.AUTHENTICATION_SERVICES= (TCPS)
+
+  # DaTA server connection configuration
+  # Conditional, if dataConfigFile inside dataChart is enabled
+  # dataServerName: "DATA_K8s" # example value
+  dataServerName: "DATA_K8s"
+  # Note: If DaTA-TLS connection is enabled (global.securityTls.enable is set), DaTA uses dataPort+2
+  # Note: DaTA uses dataPort+1 for communication with DConf
+  # Conditional, if DaTA needs to be accessed from outside of EB cluster: Port to connect to DaTA server from outside of EB cluster.
+  # dataNodePort: "30096"  # example value
+  dataNodePort: null
+  # Mandatory: Port to connect to DaTA server within the EB cluster.
+  # A special DaTA cluster port that applies to DaTA container.
+  # dataClusterPort: 25520  # example value as integer
+  dataClusterPort: null
+
+
+  # Mandatory: Time interval in seconds.
+  # Init containers repeatedly check some pre-conditions.
+  # conditionCheckInterval: "2"  # example value
+  conditionCheckInterval: "2"
+
+  # Mandatory: Local time zone used for time conversions.
+  # timezone: "CET"  # example value
+  timezone: "UTC"
+
+  # Mandatory: NLS language used for the conversion to and from the database character set.
+  # nlsLang: "_.WE8ISO8859P15"  # example value
+  nlsLang: "_.WE8ISO8859P15"
+
+  # Mandatory: List of naming server services used by the server framework.
+  # Format: <FQDN>:<port>,<FQDN>:<port>,...
+  # k8sNamingServiceList: "eric-bss-eb-ns1:2010,eric-bss-eb-ns2:2010,eric-bss-eb-ns3:2010"  # example value
+  k8sNamingServiceList: "eric-bss-eb-ns1:2010,eric-bss-eb-ns2:2010,eric-bss-eb-ns3:2010"
+
+  # Mandatory: Share process namespace between containers in a pod.
+  # This means that all the applications in a pod with multiple containers will have a unique PID value.
+  # Needs to be set to true in order to be able to address a dedicated process.
+  # e.g. for sending a broadcast messages with FIOT to a process running in a pod.
+  shareProcessNamespace: true
+
+  # Contour
+  # Global configuration related to external Ingress controller "Contour":
+  # The following set of parameters are applicable to the open-source Ingress controller "Contour".
+  # If an operator wants to use another Ingress solution, the operator has to define
+  # customized ingress configuration.
+  ingress:
+    # Switch to enable Ingress controller "Contour".
+    # enabled: true  # example value
+    enabled: true
+    # Conditional, if ingress.enabled=true:
+    # Fully Qualified Domain Names (FQDN) used for traffic (TRF) and Operation And Maintenance (OAM).
+    fqdn:
+      # FQDN for Operation And Maintenance services. Target applications are ADMX, WEX.
+      # OAM: "oam.eb.com"  # example value
+      OAM: ""
+      # FQDN for traffic services. Target applications are AX, CX, CPX, Partner CX, DCX, CMS.
+      # TRF: "eb.com"  # example value
+      TRF: ""
+    # Optional: Name of the CA secret containing the CA certificate that has been used to sign the server certificate(s).
+    # To enable upstream TLS certificate validation, set caSecret to the CA secret to be used.
+    # No validation is performed if caSecret is set to "".
+    # The CA secret must be of type Opaque and have a data key named ca.crt. It can be created e.g. in the following way:
+    #     kubectl create secret generic eric-bss-eb-root-ca --from-file=ca.crt=ca.crt -n <namespace>
+    # caSecret: eric-bss-eb-root-ca  # example value
+    caSecret: ""
+    # Conditional, if upstream TLS certificate validation is enabled: subject name.
+    # The subjectName must match the Common Name (CN) of the server certificate(s).
+    # subjectName: eb.com  # example value
+    subjectName: ""
+    # Conditional, if ingress.enabled=true: Name of ingress class.
+    ingressClass:
+      # Two contour installations with ingress can be started, one for OAM (Operation And Maintenance)
+      # and one for TRF (Traffic)
+      # The related contour installation must be started for the ingress class name noted here.
+      # i.e. for traffic it must be started with parameter "--ingress-class-name=TRF"
+      # If only one contour installation shall be used, then it must be TRF; the ingressClass for
+      # OAM must be empty. e.g.:
+      #   OAM: ""
+      #   TRF: "TRF"
+      # If only one contour installation is used, without any class specification, then both
+      # ingress-classes must be empty:
+      #   OAM: ""
+      #   TRF: ""
+      OAM: "OAM"
+      TRF: "TRF"
+    # Name of secret used for secure external traffic.
+    tlsSecretName:
+      # Optional: If specified, secure communication is used for OAM traffic.
+      # Secret name for secure OAM traffic.
+      # OAM: eb-certs-tls  # example value
+      OAM: ""
+      # Optional: If specified, secure communication is used for TRF traffic.
+      # Secret name for secure TRF traffic.
+      # TRF: eb-certs-tls  # example value
+      TRF: ""
+
+  # AWS
+  # Global configuration for AWS Load Balancer service
+  loadBalancerAnnotations:
+    # Specifies the load balancer type as "External"
+    # Conditional, only if AWS is used
+    service.beta.kubernetes.io/aws-load-balancer-type: "external"
+    # Specifies that the network load balancer will route traffic directly to the pod's IP
+    # Conditional, only if AWS is used
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+    # Specifies that NLB will not have an internet-facing endpoint
+    # Conditional, only if AWS is used
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"
+    # Specifies the subnets/AZs the NLB will route traffic to
+    # Conditional, only if AWS is used
+    service.beta.kubernetes.io/aws-load-balancer-subnets: "subnet-az1, subnet-az2" # example value
+
+  # MetalLB
+  # Global configuration related to the MetalLB external load balancer:
+  addressPoolName:
+    # Conditional, if "MetalLB" is used: Name of the address pool used by the
+    # MetalLB load balancer to assign an IP address to the OAM ingress service.
+    OAM: "default"  # example value
+    # Conditional, if "MetalLB" is used: Name of the address pool used by the
+    # MetalLB load balancer to assign an IP address to the TRF ingress service.
+    TRF: "default"  # example value
+
+  # RBAC
+  # Global configuration related to role-based access control (RBAC):
+  rbac:
+    # Create service accounts [true,false]
+    sa_roles_create: true  # example value
+
+  # Global configuration related to the ForgeRock external identity management system.
+  forgerock:
+    # Conditional, if LDAP is used: Connection to the LDAP server. Format: ldaps://<FQDN>:<port>
+    # ldapServer: "ldaps://myLdapServer.myDomain.com:1921"  # example value
+    ldapServer: ""
+    # URL for login to ForgeRock AM, used by CMS REST authentication. Format: "https://<FQDN>:<port>/openam/"
+    # amServerURL: "https://myAmServer.myDomain.com:8080/openam/"  # example value
+    amServerURL: ""
+    # Parameters are inserted into the <application name>.applicationcontext-sfw-security-openam.xml ConfigMap:
+    ldapConfig:
+      # The base distinguished name (DN) of the LDAP
+      baseDn: "dc=billing,dc=com"
+      # The distinguished name (DN) of the LDAP admin user, which will be used to create or modify LDAP users.
+      adminUser: "SECADM"
+      # The common name of the password policy in the LDAP format cn=<name>.
+      policyName: "cn=Default Password Policy"  # example value
+      # The root address of the password policy in LDAP format.
+      policyBaseAddress: "cn=Password Policies,cn=config"  # example value
+      # The configuration that maps output password policy attributes to new ones.
+      outputMappings:
+        name: "NAME"
+        maxAge: "MAXAGE"
+        ds-cfg-character-set: "CHARSET"
+        ds-cfg-min-password-length: "MINLENGHT"
+      # Configuration for the LDAP url, userDn (distinguished name of the user) and password.
+      contextSource:
+        url: "url"
+        userDn: "userDn"
+        password: ""
+      # The LDAP root address for users and roles setting.
+      contextSource_base: "base"
+      # LDAP connection pooling is on (true) or off (false)
+      contextSource_pooled: "true"
+
+  # Global configuration related to the external secrets management system.
+  secretManager:
+    # Enable usage of secrets management system. If the value is set false no external secrets manager will be used.
+    # Note: switching the value to "false" requires a license to retain full functionality
+    enable: true
+    # Vault client configuration (mandatory, if secretManager is enabled)
+    vault:
+      # Connection to the vault server. Format: https://<FQDN>:<port>
+      # Example: vaultServerAddress: "https://myHostName.myDomain.com:8200
+      vaultServerAddress: ""
+      # CA secret name. If set, TLS is enabled and a CA certificate must be provided.
+      caSecretName:
+      # Name of the CA certificate
+      caCertificate:
+
+  # Global configuration of the truststore for eb applications acting as clients of external servers such as LDAP or Vault
+  # The truststore must contain all certificates required for the external servers.
+  ebTruststore:
+    # Name of the secret.
+    # If defined, secure communication to the external servers is done.
+    # secretName: "eric-bss-eb-truststore-secret"  # example value
+    secretName:
+    # Name of the trust store that is used to securely connect to external servers.
+    # trustStoreName: "eb.truststore"  # example value
+    trustStoreName:
+    # Password for the trust store that is used to securely connect to external servers
+    trustStorePassword:
+
+  # OpenText Exstream HTTP(S) 1.1 POST Connection
+  httpExstreamUrl:
+    # fqdn for Exstream Server
+    # host: "myExstreamServer.myDomain.com"  # example value
+    host: ""
+    # Port Exstream Server, e. g. 31717
+    port:
+
+  # DaTA
+  # Global configuration related to DaTA HA.
+  dataHighAvailability:
+    # Switch to enable DaTA on HA mode.
+    enable: false
+    # Conditional, if dataHighAvailability.enable=true: number of replicas (1 or 2).
+    replicaCount: 2
+    # DaTA server connection configuration
+    # Note: If DaTA-TLS connection is enabled (global.securityTls.enable is set), DaTA uses dataPort+2
+    # Note: DaTA uses dataPort+1 for communication with DConf
+    # Conditional, if DaTA needs to be accessed from outside of EB cluster: Port to connect to DaTA server from outside of EB cluster.
+    # make sure this is not the same as global.dataNodePort
+    # dataNodePort: "30096"  # example value
+    dataNodePort: null
+
+  # Global configuration related to secure DaTA connections via TLS.
+  securityTls:
+    # Switch to enable secure connections for DaTA.
+    enable: false  # example value
+    # Conditional, if securityTls.enable=true: The cipherSuites to be used by DaTA.
+    cipherList: "AES256-GCM-SHA384:AES256-SHA256:AES128-GCM-SHA256:AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384"  # example value
+    # client
+    # Conditional, if securityTls.enable=true: client-side key.
+    trustedCertificateKey: "Certificate"  # example value
+    # Conditional, if securityTls.enable=true: client-side secret name.
+    clientSecretName: "eric-bss-eb-client-certificate-secret"  # example value
+    # server
+    # Conditional, if securityTls.enable=true: server-side key.
+    dataServerKeystoreKey: "ServerKeystore"  # example value
+    # Conditional, if securityTls.enable=true: Password for server-side keystore.
+    dataKeystorePasswordKey: ""
+    # Conditional, if securityTls.enable=true: server-side secret name.
+    serverSecretName: "eric-bss-eb-data-keystore-secret"  # example value
+
+  # Security Server
+  # Global configuration related to Syslog Appender which is used to send messages to a remote syslog daemon via TLS.
+  SyslogAppenderSecurityTls:
+    # Switch to enable secure connections for SecServer.
+    enable: false
+    # Host to connect on Syslog server
+    hostSyslogAppender: "127.0.0.1"  # example value
+    # Port to connect on Syslog server
+    portSyslogAppender: "6514"  # example value
+    # client
+    # Conditional, if SyslogAppenderSecurityTls.enable=true: syslog key.
+    syslogServerKeystoreKey: "ServerKeystore"  # example value
+    # Conditional, if SyslogAppenderSecurityTls.enable=true: syslog password.
+    syslogKeystorePasswordKey: ""
+    # Conditional, if SyslogAppenderSecurityTls.enable=true: client-side secret name.
+    syslogServerKeystoreSecretName: "eric-bss-eb-syslog-keystore-secret"  # example value
+    # Conditional, if SyslogAppenderSecurityTls.enable=true: server-side secret name.
+    syslogServerTrustStoreSecretName: "eric-bss-eb-syslog-truststore-secret"  # example value
+    # Path where the truststore and keystore files are created
+    syslogTlsPath: "/tls/syslog/"  # example value
+
+  # GMD
+  # Global configuration related to secure GMD connections via TLS.
+  gmdSecurityTls:
+    # Switch to enable secure connections for GMD.
+    # Defines whether TLS is used in a secure connection in GMD subcomponents, such as GMDCOM, GMDRRS and VMDREP.
+    enable: true  # example value
+    # Conditional, if gmdSecurityTls.enable=true: The cipherSuites to be used by GMD subcomponents.
+    cipherList: "AES256-GCM-SHA384:AES256-SHA256:AES128-GCM-SHA256:AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384"  # example value
+    # client
+    # Conditional, if gmdSecurityTls.enable=true: GMDCOM client-side key.
+    gmdcomTrustedCertificateKey: "Certificate"  # example value
+    # Conditional, if gmdSecurityTls.enable=true: GMDCOM client-side secret name.
+    gmdcomClientSecretName: "eric-bss-eb-gmdcom-client-certificate-secret"  # example value
+    # gmdrrs server
+    # Conditional, if gmdSecurityTls.enable=true: GMDRRS server-side key.
+    gmdrrsServerKeystoreKey: "ServerKeystore"  # example value
+    # Conditional, if gmdSecurityTls.enable=true: GMDRRS password for server-side keystore.
+    gmdrrsKeystorePasswordKey: ""
+    # Conditional, if gmdSecurityTls.enable=true: GMDRRS server-side secret name.
+    gmdrrsServerSecretName: "eric-bss-eb-gmdrrs-keystore-secret"  # example value
+    # vmdrep client
+    # Conditional, if gmdSecurityTls.enable=true: VMDREP client-side key.
+    vmdrepTrustedCertificateKey: "Certificate"  # example value
+    # Conditional, if gmdSecurityTls.enable=true: VMDREP client-side secret name.
+    vmdrepClientSecretName: "eric-bss-eb-vmdrep-client-certificate-secret"  # example value
+    # vmdrep server
+    # Conditional, if gmdSecurityTls.enable=true: VMDREP server-side key.
+    vmdrepServerKeystoreKey: "ServerKeystore"  # example value
+    # Conditional, if gmdSecurityTls.enable=true: VMDREP password for server-side keystore.
+    vmdrepKeystorePasswordKey: ""
+    # Conditional, if gmdSecurityTls.enable=true: VMDREP server-side secret name.
+    vmdrepServerSecretName: "eric-bss-eb-vmdrep-keystore-secret"  # example value
+
+  # MDC
+  # Global configuration related to Monitoring of Digital Certificates (MDC)
+  bee:
+    # Name of MDC secret
+    # If the secret name, eric-bss-eb-bee-mdc-secret, is defined, the batch job Monitoring of Digital Certificates will be enabled.
+    # mdcSecretName: eric-bss-eb-bee-mdc-secret  # example value
+    mdcSecretName:
+    # Conditional, if bee.mdcSecretName is set:
+    # The MDC certificate file, which contains all digital certificates required for the following secure interfaces.
+    mdcCertificateFile: "mdc-certificate.pem"  # example value
+    # Conditional, if bee.mdcSecretName is set:
+    # List of monitored secure interfaces. The secure port may be adapted, and additional secure interfaces can be added.
+    # e.g.: When a new secure interface is added, an additional entry needs to be added to the
+    # mdcSecureInterface list and the corresponding certificate must be added into the above mdcCertificateFile.
+    mdcSecureInterface: |-
+      eric-bss-eb-data-service,25522,DaTA
+      eric-bss-eb-cms-soap,8443,CMS
+      eric-bss-eb-cx-http,8443,CX
+      eric-bss-eb-bp-http,8443,BP
+      eric-bss-eb-admx-http,8443,ADMX
+      eric-bss-eb-ax-http,8443,AX
+      eric-bss-eb-cpx-http,8443,CPX
+      eric-bss-eb-wex-http,8443,WEX
+      eric-bss-eb-dcx-http,8443,DCX
+
+  # COMLOCK
+  # Global configuration related to the comlock functionality.
+  # For each Lock Table, LOCK_NUMBER and LOCK_SET_SIZE can be set:
+  # LOCK_NUMBER:    Maximum number of locks in this lock table
+  # LOCK_SET_SIZE:  Number of locks per lock set (for semaphore locks only, always 1 else)
+  # There are in total 12 different lock tables.
+  # These 12 tables belong to 4 different applications/modules:
+  # - Cost Control Handler (CCH)
+  # - Cost Control Shared Memory Administration (COMA)
+  # - Pre-Rate Input Handler (PRIH)
+  # - Rate Input Handler (RIH)
+  # The locks are used for these entities:
+  # - customer
+  # - contract
+  # - directory number
+  # - port number
+  # - family
+  # - family group
+  # - COMA registry
+  comLock:
+    # Optional: Remove locks on exit. Possible values: Yes/No
+    removeLocksOnExit: "No"  # default value
+    # Read/write access to the shared memory is controlled by Unix semaphores to ensure that a rating process
+    # does not read inconsistent data. The number of semaphores is determined by the lockNumber divided by the lockSetSize.
+    # The default values for these parameters are considered reliable but not optimized. Installations may benefit from
+    # adjusted values, especially by using more semaphores.
+    # lockNumber: 10   # example value as integer
+    # lockSetSize: 10  # example value as integer
+    cch:
+      contractHash:
+        lockNumber: 10
+        lockSetSize: 10
+      customerHash:
+        lockNumber: 10
+        lockSetSize: 10
+    coma:
+      contractHash:
+        lockNumber: 10
+        lockSetSize: 10
+      familyGroupHash:
+        lockNumber: 10
+        lockSetSize: 10
+      registryHash:
+        lockNumber: 10
+        lockSetSize: 10
+    prih:
+      contractHash:
+        lockNumber: 10
+        lockSetSize: 10
+      contractPKHash:
+        lockNumber: 10
+        lockSetSize: 10
+      customerHash:
+        lockNumber: 10
+        lockSetSize: 10
+      directoryNumberHash:
+        lockNumber: 10
+        lockSetSize: 10
+      familyHash:
+        lockNumber: 10
+        lockSetSize: 10
+      portNumberHash:
+        lockNumber: 10
+        lockSetSize: 10
+    rih:
+      contractHash:
+        lockNumber: 10
+        lockSetSize: 10
+
+  # Mandatory: Directory used to store application core or heap dumps.
+  # Note that the access rights and the "core_pattern" file of the host system must be adapted to the specified path.
+  # It is also possible to define subdirectories.
+  coredumpDirectory: "/coredump"  # example value
+
+  # Configuration for the SMS server.
+  sms:
+    # The IP of the host on which the SMSC can be reached.
+    # An empty value will cause the installment to fail due to a violation of the "Endpoints" spec.
+    # Therefore a formally correct but non-functional value is provided as default setting.
+    # smscHost: "198.0.0.10"  # example value
+    smscHost: ""
+    # The port on which the SMSC can be reached.
+    # An empty value will cause the installment to fail due to a violation of the "Endpoints" spec.
+    # Therefore a formally correct but non-functional value is provided as default setting.
+    # smscPort: "50900"  # example value
+    smscPort: ""
+    # The system ID the SMS server uses to bind to the SMSC.
+    # smscSystemId: "SMSC"  # example value
+    smscSystemId: ""
+
+  tracingAndLogging:
+    mpLogParameters:
+      # Defines the value for the MP_LOG_SIZE environment variable. Default: 100000 bytes
+      # It sets the maximum size in bytes of a log file in a transaction.
+      mpLogSize: "5000000"
+      # Defines the value for the MP_LOG_INTERVAL environment variable. Default: 1440 minutes (24h)
+      # It corresponds to the period in minutes in which the application collects logging information in a single log file.
+      mpLogInterval: "1440"
+    # Defines the value for the DXL_CONTINUE_AFTER_CORRUPT environment variable.
+    # If set to "Y" it enables an application to retry to read a corrupt DXL message.
+    dxlContinueAfterCorrupt: "Y"
+
+  # Configuration for the CronJobs suspension
+  suspendCronJobs:
+    # Mandatory: If it is set to true, all subsequent cron Jobs executions of the respective module are suspended.
+    # This setting does not apply to already started executions. Default value is false.
+    cah: false
+    dah: false
+    dch: false
+    dly: false
+    foh: false
+    rrm: false
+    teh: false
+    diuh: true
+
+#############################################################################################
+### In the following section configuration parameters of local charts can be overwritten.
+### Specify configuration parameters from local charts here in the
+### global values.yaml / my_values.yaml file in the following cases:
+###   - If a parameter value is site-specific, i.e. the parameter value needs to be
+###     adapted per installation.
+###   - Overwrite default values with site-specific values.
+#############################################################################################
+
+# Overwrite default configuration of the networkpolicies chart.
+eric-bss-eb-networkpolicies:
+  enabled: true
+  # Networkpolicy for the exstream server used by EB.
+  exstream:
+    # Conditional, if exstream is used:
+    # CIDR (containing IP address and network mask) of the exstream server
+    # cidr: "10.0.0.0/32"  # example value
+    cidr: ""
+    # Conditional, if exstream is used:
+    # Port of the exstream server
+    # port: "1921"  # example value
+    port: ""
+  # Networkpolicy for the ForgeRock server used by EB.
+  forgerock:
+    # Conditional, if ForgeRock is used:
+    # CIDR (containing IP address and network mask) of the ForgeRock server
+    # cidr: "10.0.0.0/32"  # example value
+    cidr: ""
+    # Conditional, if ForgeRock AM is used:
+    # Port of the ForgeRock AM server
+    # amPort: "1921"  # example value
+    amPort: ""
+    # Conditional, if ForgeRock DS is used:
+    # Port of the ForgeRock DS server
+    # dsPort: "1922"  # example value
+    dsPort: ""
+
+  vault:
+    # Conditional, if vault is used:
+    # CIDR (containing IP address and network mask) of the vault server
+    # cidr: "10.0.0.0/32"  # example value
+    cidr: ""
+    # Port of the vault server
+    # port: "8200"  # example value
+    port: ""
+
+  # Networkpolicy for external VMD instances used by EB.
+  # Conditional, if external VMD instances are used:
+  #   If external VMD instances are running, their CIDR (containing IP adress and network mask)
+  #   and ports must be configured.
+  #   Use the example below as a pattern to set up data related to classless inter-domain routings
+  #   and ports for external VMDs.
+  externalVMDs:
+    #- cidr: "10.0.0.0/32"  # example value
+    #  port: "44134"  # example value
+    #- cidr: "172.16.0.0/32"  # example value
+    #  port: "44135"  # example value
+    #- cidr: "192.168.0.0/32"  # example value
+    #  port: "44136"  # example value
+
+# Overwrite default configuration of the admx chart.
+eric-bss-eb-admx:
+  enabled: true
+  service:
+  tomcat:
+    # Name of the secret used for secure connection to the Web application.
+    # If a Tomcat secret name is defined, the HTTPS protocol is used, and the keystoreFile and keystorePass
+    # have to be defined. Otherwise, the HTTP protocol is applied.
+    # secretName: "my-tomcat-secret-admx"  # example value
+    secretName: ""
+    connector:
+      # Conditional, if secretName is defined: KeystoreFile of the web application.
+      # keystoreFile: "myKeystoreFile.jks"  # example value
+      keystoreFile: ""
+      # Conditional, if secretName is defined: Password of the keystore.
+      # keystorePass: "12345"  # example value
+      keystorePass: ""
+
+# Overwrite default configuration of the ax chart.
+eric-bss-eb-ax:
+  enabled: true
+  service:
+  tomcat:
+    # Name of the secret used for secure connection to the Web application.
+    # If a Tomcat secret name is defined, the HTTPS protocol is used, and the keystoreFile and keystorePass
+    # have to be defined. Otherwise, the HTTP protocol is applied.
+    # secretName: "my-tomcat-secret-ax"  # example value
+    secretName: ""
+    connector:
+      # Conditional, if secretName is defined: KeystoreFile of the web application.
+      # keystoreFile: "myKeystoreFile.jks"  # example value
+      keystoreFile: ""
+      # Conditional, if secretName is defined: Password of the keystore.
+      # keystorePass: "12345"  # example value
+      keystorePass: ""
+
+# Overwrite default configuration of the bp chart.
+eric-bss-eb-bp:
+  enabled: true
+  service:
+  tomcat:
+    # Name of the secret used for secure connection to the Web application.
+    # If a Tomcat secret name is defined, the HTTPS protocol is used, and the keystoreFile and keystorePass
+    # have to be defined. Otherwise, the HTTP protocol is applied.
+    # secretName: "my-tomcat-secret-bp"  # example value
+    secretName: ""
+    connector:
+      # Conditional, if secretName is defined: KeystoreFile of the web application.
+      # keystoreFile: "myKeystoreFile.jks"  # example value
+      keystoreFile: ""
+      # Conditional, if secretName is defined: Password of the keystore.
+      # keystorePass: "12345"  # example value
+      keystorePass: ""
+
+# Overwrite default configuration of the cms chart.
+eric-bss-eb-cms:
+  enabled: true
+  service:
+  tomcat:
+    # Name of the secret used for secure connection to the Web application.
+    # If a Tomcat secret name is defined, the HTTPS protocol is used, and the keystoreFile and keystorePass
+    # have to be defined. Otherwise, the HTTP protocol is applied.
+    # secretName: "my-tomcat-secret-cms"  # example value
+    secretName: ""
+    connector:
+      # Conditional, if secretName is defined: KeystoreFile of the web application.
+      # keystoreFile: "myKeystoreFile.jks"  # example value
+      keystoreFile: ""
+      # Conditional, if secretName is defined: Password of the keystore.
+      # keystorePass: "12345"  # example value
+      keystorePass: ""
+
+# Overwrite default configuration of the cpx chart.
+eric-bss-eb-cpx:
+  enabled: true
+  service:
+  tomcat:
+    # Name of the secret used for secure connection to the Web application.
+    # If a Tomcat secret name is defined, the HTTPS protocol is used, and the keystoreFile and keystorePass
+    # have to be defined. Otherwise, the HTTP protocol is applied.
+    # secretName: "my-tomcat-secret-cpx"  # example value
+    secretName: ""
+    connector:
+      # Conditional, if secretName is defined: KeystoreFile of the web application.
+      # keystoreFile: "myKeystoreFile.jks"  # example value
+      keystoreFile: ""
+      # Conditional, if secretName is defined: Password of the keystore.
+      # keystorePass: "12345"  # example value
+      keystorePass: ""
+
+eric-bss-eb-chrgen:
+  # Possible values: n >= 0
+  replicaCount: 2
+  # If replicaCount > 0 following flag should be false
+  startJobRequest: false
+  crhgenDeployment:
+    startParameters:
+      mininterval: 1
+      traceInfo: false
+  crhgenJob:
+    startParameters:
+      # Test mode request number
+      # Conditional, only if startJobRequest is true and replicaCount = 0
+      # request: 1 # example value
+      request: ""
+      # Time to live after finished
+      # ttlSecondsAfterFinished: 240 # example value
+      ttlSecondsAfterFinished: ""
+      traceInfo: false
+
+# Overwrite default configuration of the cx chart.
+eric-bss-eb-cx:
+  enabled: true
+  service:
+  tomcat:
+    # Name of the secret used for secure connection to the Web application.
+    # If a Tomcat secret name is defined, the HTTPS protocol is used, and the keystoreFile and keystorePass
+    # have to be defined. Otherwise, the HTTP protocol is applied.
+    # secretName: "my-tomcat-secret-cx"  # example value
+    secretName: ""
+    connector:
+      # Conditional, if secretName is defined: KeystoreFile of the web application.
+      # keystoreFile: "myKeystoreFile.jks"  # example value
+      keystoreFile: ""
+      # Conditional, if secretName is defined: Password of the keystore.
+      # keystorePass: "12345"  # example value
+      keystorePass: ""
+
+# Overwrite default configuration of the dcx chart.
+eric-bss-eb-dcx:
+  enabled: true
+  service:
+  tomcat:
+    # Name of the secret used for secure connection to the Web application.
+    # If a Tomcat secret name is defined, the HTTPS protocol is used, and the keystoreFile and keystorePass
+    # have to be defined. Otherwise, the HTTP protocol is applied.
+    # secretName: "my-tomcat-secret-dcx"  # example value
+    secretName: ""
+    connector:
+      # Conditional, if secretName is defined: KeystoreFile of the web application.
+      # keystoreFile: "myKeystoreFile.jks"  # example value
+      keystoreFile: ""
+      # Conditional, if secretName is defined: Password of the keystore.
+      # keystorePass: "12345"  # example value
+      keystorePass: ""
+
+# Overwrite default configuration of the wex chart.
+eric-bss-eb-wex:
+  enabled: true
+  service:
+  tomcat:
+    # Name of the secret used for secure connection to the Web application.
+    # If a Tomcat secret name is defined, the HTTPS protocol is used, and the keystoreFile and keystorePass
+    # have to be defined. Otherwise, the HTTP protocol is applied.
+    # secretName: "my-tomcat-secret-wex"  # example value
+    secretName: ""
+    connector:
+      # Conditional, if secretName is defined: KeystoreFile of the web application.
+      # keystoreFile: "myKeystoreFile.jks"  # example value
+      keystoreFile: ""
+      # Conditional, if secretName is defined: Password of the keystore.
+      # keystorePass: "12345"  # example value
+      keystorePass: ""
+
+# Overwrite default configuration of the gmdrrs chart.
+eric-bss-eb-gmdrrs:
+  enabled: true
+  service:
+  # GMDRRS connection configuration
+  # Conditional, if GMDRRS needs to be accessed from outside the EB cluster: Port to connect to GMDRRS from outside the EB cluster.
+  # nodePort: "30099"  # example value
+    nodePort: null
+
+# Overwrite default configuration of the rlh chart.
+eric-bss-eb-rlh:
+  enabled: true
+  # Grace period for pod termination, which is used to shut down RLH gracefully.
+  # By default, k8s allows a graceful application shutdown within 30s.
+  # But for RLH a larger value is needed in some cases, e.g. if a large transaction
+  # size is used (for better performance), reload data from database.
+  terminationGracePeriodSeconds: 600
+
+# Overwrite default configuration of the bsh chart.
+eric-bss-eb-bsh:
+  enabled: true
+  # Grace period for pod termination, which is used to shut down BSH gracefully.
+  # By default, k8s allows a graceful application shutdown within 30s.
+  # But for BSH a larger value is needed in some cases, e.g. if a large
+  # transaction size is used (for better performance).
+  terminationGracePeriodSeconds: 300
+
+# Overwrite default configuration of the eoh chart.
+eric-bss-eb-eoh:
+  enabled: true
+  # Grace period for pod termination, which is used to shut down EOH gracefully.
+  # By default, k8s allows a graceful application shutdown within 30s.
+  terminationGracePeriodSeconds: 300
+
+# Overwrite default configuration of the dih chart.
+eric-bss-eb-dih:
+  enabled: true
+  # Grace period for pod termination, which is used to shut down DIH gracefully.
+  # By default, k8s allows a graceful application shutdown within 30s.
+  terminationGracePeriodSeconds: 300
+
+# Overwrite default configuration of the fih chart.
+eric-bss-eb-fih:
+  enabled: true
+  # Grace period for pod termination, which is used to shut down FIH gracefully.
+  # By default, k8s allows a graceful application shutdown within 30s.
+  terminationGracePeriodSeconds: 300
+
+# Overwrite default configuration of the bgh chart.
+eric-bss-eb-bgh:
+  enabled: true
+  # Grace period for pod termination, which is used to shut down BGH gracefully.
+  # By default, k8s allows a graceful application shutdown within 30s.
+  # But for BGH a larger value is needed in some cases.
+  terminationGracePeriodSeconds: 60
+  # Exstream from OpenText
+  exstream:
+    securityTls:
+      # Switch to enable secure tls connections to exstream.
+      enable: true
+      # Conditional, if tls to exstream is enabled: Name of the client secret
+      # clientSecretName: "eric-bss-eb-exstream-client-secret"  # example value
+      clientSecretName: ""
+      # Conditional, if tls to exstream is enabled: Filename of the exstream client certificate
+      # Note, this filename has to match the key of the key-value pair in the data section of the exstream secret file.
+      # exstreamClientCertificateFileName: "exstream-ca-certificate.pem"  # example value
+      exstreamClientCertificateFileName: ""
+
+# Overwrite default configuration of the tools chart.
+eric-bss-eb-tools:
+  enabled: true
+  env:
+    # Set DB credentials for udrtool as username/password. The value provided will be injected
+    # into the pod's environment as environment variable ORACLE_PROCUSR.
+    # udrtoolDbCredentials: "TALK"  # example value
+    udrtoolDbCredentials:
+
+# Overwrite default configuration of the dah chart.
+eric-bss-eb-dah:
+  enabled: true
+  #Existing DAH file deletion and archival mechanism relies on the file name pattern
+  #and sub path configured in table ARCHIVE_FILE_CONFIG. Hence, in case new files are
+  #supposed to be deleted by DAH, new volumes, in addition to the pre-configured ones
+  #/log, /workdir/DOCS, /workdir/BGH/PRINT and /workdir/dih_in, need to be added here
+  #to the pod.
+  dahVolumes:
+       #volume name used in volumeMounts
+  #  - name: "new-volume" # example value
+       #Path inside the container used in volumeMounts
+  #    mountPath: "/workdir/newVolume" # example value
+       #Name of the persistant volume claim used for the volume
+  #    claimName: "pvc-new-volume" # example value
+
+# Mandatory: boolean indicating if a chart is enabled or not.
+# ADP rule GL-D1121-033: All charts must be enabled by default.
+# If a chart shall not be enabled, the user can override these settings in a my_values.yaml file.
+# Note: some charts (e.g. for ADMX etc.) are enabled above in the chart specific section.
+eric-bss-eb-aih: {enabled: true}
+eric-bss-eb-bch: {enabled: true}
+eric-bss-eb-cah: {enabled: true}
+eric-bss-eb-cch: {enabled: true}
+eric-bss-eb-cdh: {enabled: true}
+eric-bss-eb-data: {enabled: true}
+eric-bss-eb-dch: {enabled: true}
+# DIUH should be disabled in a my_values.yaml file by default.
+eric-bss-eb-diuh: {enabled: true}
+eric-bss-eb-dly: {enabled: true}
+eric-bss-eb-evh: {enabled: true}
+# DMFJOB should be disabled in a my_values.yaml file by default.
+# This is a switch controlling the execution of the DMF database upgrade hook.
+# It should only be set to "true" if the DMF preinstall hook of the ericssonBillingChart needs to be executed.
+# This prevents the hook from running unintentionally.
+# The hook should not be run unnecessarily if no database changes have been delivered or
+# if the system has been shut down deliberately and is restarted without installing
+# a new software version.
+eric-bss-eb-dmfjob: {enabled: true}
+eric-bss-eb-ff: {enabled: true}
+eric-bss-eb-foh: {enabled: true}
+eric-bss-eb-gmdcom: {enabled: true}
+eric-bss-eb-gmdext: {enabled: true}
+eric-bss-eb-gmdlrd: {enabled: true}
+eric-bss-eb-gmdrec: {enabled: true}
+eric-bss-eb-gmdres: {enabled: true}
+eric-bss-eb-gmdresdata: {enabled: true}
+eric-bss-eb-ns: {enabled: true}
+eric-bss-eb-pms: {enabled: true}
+eric-bss-eb-prih: {enabled: true}
+eric-bss-eb-rih: {enabled: true}
+eric-bss-eb-rbac: {enabled: true}
+eric-bss-eb-rrm: {enabled: true}
+eric-bss-eb-sms: {enabled: true}
+eric-bss-eb-teh: {enabled: true}
+# VMDREP is GMD Response Simulator. It should be disabled in a my_values.yaml file in production envorinment.
+eric-bss-eb-vmdrep: {enabled: true}
+eric-bss-eb-wfmssupporttool: {enabled: true}
+
+# Optional section for non-kernal customization.
+ingress:
+  # Here additional custom routes can be installed for TRF and OAM
+  # 'httpproxyName' is the name of the included proxy, there must be a separate
+  # httpproxy installed with that name,
+  # 'httpproxyPrefix' is the route / condition to that proxy
+  customHttpproxy:
+    TRF:
+#      - httpproxyName: customService1
+#        httpproxyPrefix: /customService1
+#      - httpproxyName: customService2
+#        httpproxyPrefix: /customService2
+    OAM:
+#      - httpproxyName: customService3
+#        httpproxyPrefix: /customService3
+#      - httpproxyName: customService4
+#        httpproxyPrefix: /customService4

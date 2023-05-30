@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-jbpm-businesscalendar-cfg.xml
+data:
+  {{ if .Values.debtColl.jbpmCfg.businesscalendar_cfg_xml }}
+    jbpm.businesscalendar.cfg.xml: |
+{{ .Values.debtColl.jbpmCfg.businesscalendar_cfg_xml | indent 6 }}
+  {{ else }}
+    jbpm.businesscalendar.cfg.xml: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <jbpm-configuration>
+        <!-- Begin Feature - 360912 - douradoj - 18-apr-2011 -->
+        <import resource="jbpm.holidayscalendar.cfg.xml" />
+        <!-- End Feature - 360912 -->
+        <process-engine-context>
+          <business-calendar>
+            <monday    hours="9:00-12:00 and 12:30-17:00"/>
+            <tuesday   hours="9:00-12:00 and 12:30-17:00"/>
+            <wednesday hours="9:00-12:00 and 12:30-17:00"/>
+            <thursday  hours="9:00-12:00 and 12:30-17:00"/>
+            <friday    hours="9:00-12:00 and 12:30-17:00"/>
+            <!-- Begin Feature - 360912 - douradoj - 18-apr-2011 -->
+            <!-- <holiday period="01/07/2008 - 31/08/2008"/> -->
+            <!-- End Feature - 360912 -->
+
+            <!-- Reading Business Hour - PN 410015 - Start -->
+
+            <businessDayExpressedInHours value="8" />
+            <businessWeekExpressedInHours value="40" />
+            <businessMonthExpressedInBusinessDays value="21" />
+            <businessYearExpressedInBusinessDays value="220" />
+
+            <!-- Reading Business Hour - PN 410015 - End -->
+
+          </business-calendar>
+        </process-engine-context>
+      </jbpm-configuration>
+  {{ end }}

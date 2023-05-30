@@ -1,0 +1,77 @@
+# Default values for gmdlrdChart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Allowed: 0,1
+replicaCount: 1
+
+imageCredentials:
+  eric-bss-eb-gmdlrd:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+  init-wait-for-xrefs:
+    repoPath:
+    pullPolicy:
+    registry:
+      url:
+
+images:
+  eric-bss-eb-gmdlrd:
+    name: "eric-bss-eb-gmdlrd"
+    tag: "22.15.12"
+  init-wait-for-xrefs:
+    name: "eric-bss-eb-wait-for-condition"
+    tag: "22.15.12"
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 5Gi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+gmdlrdDeployment:
+  startParameters: "-t WARNING -n 50 -s 60 -c 100"
+
+gmdlrdRacSetup:
+  waitTime: 500
+  totalWaitTime: 30
+  numAttempts: 60
+
+#A local nodeSelector definition has priority over the global definition.
+nodeSelector: {}
+
+# A local affinity definition has priority over the global definition.
+# affinity: {}
+# Example:
+# affinity:
+#   nodeAffinity:
+#     preferredDuringSchedulingIgnoredDuringExecution:
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1a
+#     - weight: 50
+#       preference:
+#         matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - us-east-1b
+
+#Example:
+#nodeSelector:
+#  kubernetes.io/hostname: "<hostname>"
+
+tnsnames:
+  bscsdb: '{{ tpl .Values.global.tnsnames.bscsdb . }}'
+  rtxdb: '{{ tpl .Values.global.tnsnames.rtxdb . }}'
+
+sqlnet:
+  ora: '{{ tpl .Values.global.sqlnet.ora . }}'

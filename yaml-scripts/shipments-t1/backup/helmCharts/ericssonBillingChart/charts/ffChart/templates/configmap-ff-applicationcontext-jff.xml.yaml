@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-ff-applicationcontext-jff.xml
+data:
+  applicationContext-jff.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:util="http://www.springframework.org/schema/util" xmlns:tx="http://www.springframework.org/schema/tx"
+        xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+        xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd
+        http://www.springframework.org/schema/tx  http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+        http://www.springframework.org/schema/aop  http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd"
+        default-autowire="byName">
+
+        <import resource="classpath*:applicationContext-sfw-security.xml" />
+        <import resource="classpath*:applicationContext-sfw-cache.xml" />
+        <import resource="classpath*:applicationContext-sfw-core.xml" />
+
+        <context:component-scan base-package="com/lhs/ccb/sop" />
+
+        <bean id="serviceRoot" class="com.lhs.fedfactory.ServiceRootImpl" factory-method="getInstance" />
+
+        <bean id="vaultClientManager"  class="com.lhs.ccb.sfw.security.password.vault.VaultClientManager">
+            <property name="applicationName" value="fedfactory"/>
+        </bean>
+
+        <bean name="exchangeFormatFactory" class="com.lhs.ccb.common.soi.ExchangeFormatFactory" factory-method="instance"
+            depends-on="exchangeFormatFactoryInitializer" />
+
+        <bean id="exchangeFormatFactoryInitializer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+            <property name="staticMethod" value="com.lhs.ccb.common.soi.ExchangeFormatFactory.init" />
+            <property name="arguments">
+                <list>
+                    <bean class="com.lhs.ccb.common.soiimpl.DefaultSVLObjectFactory" />
+                </list>
+            </property>
+        </bean>
+    </beans>

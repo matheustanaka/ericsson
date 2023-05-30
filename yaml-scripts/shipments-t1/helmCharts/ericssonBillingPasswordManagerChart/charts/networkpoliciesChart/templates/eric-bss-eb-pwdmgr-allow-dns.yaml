@@ -1,0 +1,19 @@
+# This is only internal (to the K8s Cluster) DNS
+# DNS outside the cluster cannot be reached
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: eric-bss-eb-pwdmgr-allow-dns
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+  - to:
+# Kubernetes uses DNS to resolve service names to their IP addresses.
+# This policy will allow all pods in the namespace to use DNS
+      - namespaceSelector: {}
+    ports:
+      - protocol: UDP
+        port: 53
+

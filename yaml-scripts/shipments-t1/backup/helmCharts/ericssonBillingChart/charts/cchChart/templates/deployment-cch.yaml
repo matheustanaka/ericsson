@@ -1,0 +1,685 @@
+{{- range $index, $cchDeployment := .Values.cchDeployments }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ $.Values.metadataName }}-{{ $cchDeployment.name | lower}}"
+  labels:
+    app: "{{ $.Values.metadataName }}-{{ $cchDeployment.name | lower}}"
+    chart: {{ template "eric-bss-eb-cch.chart" $ }}
+    {{- include "eric-bss-eb-cch.kubernetesIoInfo" $ | nindent 4 }}
+    heritage: "{{ $.Release.Service }}"
+  annotations:
+  {{- include "eric-bss-eb-cch.productInfo" $ | indent 4 }}
+spec:
+  {{ if gt (int $.Values.replicaCount) 1 }}
+  replicas: 1
+  {{ else }}
+  replicas: {{ $.Values.replicaCount | default 1}}
+  {{ end }}
+  selector:
+    matchLabels:
+      app: "eric-bss-eb-{{ $cchDeployment.name | lower}}"
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+      eric-bss-eb-network-database-client: "true"
+      eric-bss-eb-network-data-client: "true"
+      eric-bss-eb-network-lem-client: "true"
+      eric-bss-eb-network-vault-client: "true"
+  strategy:
+    # ensure that, on an update, old pod is first stopped before new is started
+    # otherwise both (old and new) might be running in parallel for some time
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: "eric-bss-eb-{{ $cchDeployment.name | lower}}"
+        {{- include "eric-bss-eb-cch.kubernetesIoInfo" $ | nindent 8 }}
+        eric-bss-eb-network-database-client: "true"
+        eric-bss-eb-network-data-client: "true"
+        eric-bss-eb-network-lem-client: "true"
+        eric-bss-eb-network-vault-client: "true"
+      annotations:
+      {{- include "eric-bss-eb-cch.productInfo" $ | indent 8 }}
+    spec:
+      securityContext:
+        {{- include "eric-bss-eb-cch.checkPodUserLoginData" $ | nindent 8 }}
+      terminationGracePeriodSeconds: {{ $.Values.terminationGracePeriodSeconds }}
+      shareProcessNamespace: {{ $.Values.global.shareProcessNamespace }}
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      initContainers:
+        - name: init-wait-for-data-{{ $cchDeployment.name | lower}}
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "init-wait-for-data" }}
+          image: "{{ template "eric-bss-eb-cch.registryUrl" $templDict }}/{{ template "eric-bss-eb-cch.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-cch.pullPolicy" $templDict }}
+          command: ["/bin/bash"]
+          args: ["-c", "./waitForCondition.sh dmh {{ $.Values.global.conditionCheckInterval }}"]
+          env:
+          {{ if $.Values.global.dataHighAvailability.enable }}
+          - name: DATA_CONNECT_NAME
+            value: "{{ $.Values.global.dataServerName }}"
+          - name: DATA_CONNECT_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }},T:eric-bss-eb-data1-service:{{ $.Values.global.dataClusterPort }}"
+          - name: DATA_CONNECT_MODE
+            value: "0"
+          {{ else }}
+          - name: DATA_SERVER_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }}"
+          {{ end }}
+          - name: TZ
+            value: "{{ $.Values.global.timezone }}"
+          - name: BSCS_LOG_FULL
+            value: "/log/{{ $cchDeployment.name }}"
+          volumeMounts:
+          {{ if $.Values.global.securityTls.enable }}
+          - name: tls-volume
+            mountPath: "/tls/connect"
+            readOnly: true
+          {{ end }}
+          - name: logs-volume
+            mountPath: /log
+        - name: init-wait-for-xrefs-{{ $cchDeployment.name | lower}}
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "init-wait-for-xrefs" }}
+          image: "{{ template "eric-bss-eb-cch.registryUrl" $templDict }}/{{ template "eric-bss-eb-cch.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-cch.pullPolicy" $templDict }}
+          command: ["/bin/bash"]
+          args: ["-c", "$WAIT_FOR_CONDITION -U && $WAIT_FOR_CONDITION -S && $WAIT_FOR_CONDITION -G"]
+          env:
+          - name: TZ
+            value: "{{ $.Values.global.timezone }}"
+          - name: BSCS_LOG_FULL
+            value: "/log/{{ $cchDeployment.name }}"
+          - name: WAIT_FOR_CONDITION
+            value: "./waitForCondition.sh checkXref {{ $.Values.global.conditionCheckInterval }}"
+          volumeMounts:
+          - name: xref-volume
+            mountPath: /workdir/XREF
+          - name: logs-volume
+            mountPath: /log
+        # Init container for waiting grace period
+        # During a restart, old and new container are up at the same time, old one
+        # shutting down and new one starting up. This period gives termnating rdh
+        # time to shut down gracefully.
+        - name: init-wait-for-grace-period-{{ $cchDeployment.name | lower}}
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "init-wait-for-grace-period" }}
+          image: "{{ template "eric-bss-eb-cch.registryUrl" $templDict }}/{{ template "eric-bss-eb-cch.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-cch.pullPolicy" $templDict }}
+          command: ["/bin/bash"]
+          args: ["-c", "echo 'wait grace period:' $WAIT_TIME 'sec' && sleep $WAIT_TIME"]
+          env:
+          - name: TZ
+            value: "{{ $.Values.global.timezone }}"
+          - name: WAIT_TIME
+            value: "{{ $.Values.terminationGracePeriodSeconds | default 60 }}"
+      {{- if $.Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ $.Chart.Name }}-sa
+      {{- end }}
+      containers:
+        # rdh for cch container
+        - name: eric-bss-eb-rdh-cch
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "rdh-container" }}
+          image: "{{ template "eric-bss-eb-cch.registryUrl" $templDict }}/{{ template "eric-bss-eb-cch.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-cch.pullPolicy" $templDict }}
+          readinessProbe:
+            exec:
+              # don't use -f for ps, because the probe will always succeed then
+              command: ["/bin/bash","-c","ps -e | grep rdh"]
+            initialDelaySeconds: {{ $.Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ $.Values.readinessProbe.periodSeconds }}
+            successThreshold: {{ $.Values.readinessProbe.successThreshold }}
+            failureThreshold: {{ $.Values.readinessProbe.failureThreshold }}
+            timeoutSeconds: {{ $.Values.readinessProbe.timeoutSeconds }}
+          resources:
+            limits:
+              memory: "{{ $.Values.rdhResources.limits.memory}}"
+              cpu: "{{ $.Values.rdhResources.limits.cpu}}"
+            requests:
+              memory: "{{ $.Values.rdhResources.requests.memory}}"
+              cpu: "{{ $.Values.rdhResources.requests.cpu}}"
+          env:
+          - name: K8S_ENV
+            value: "true"
+          {{ if $.Values.global.databaseTls.enable }}
+          - name: ORA_SEC_WLT
+            value: "/oratns/secret"
+          {{ end }}
+          - name: DXL_CONTINUE_AFTER_CORRUPT
+            value: "{{ $.Values.global.tracingAndLogging.dxlContinueAfterCorrupt }}"
+          {{ if $.Values.global.dataHighAvailability.enable }}
+          - name: DATA_CONNECT_NAME
+            value: "{{ $.Values.global.dataServerName }}"
+          - name: DATA_CONNECT_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }},T:eric-bss-eb-data1-service:{{ $.Values.global.dataClusterPort }}"
+          - name: DATA_CONNECT_MODE
+            value: "0"
+          {{ else }}
+          - name: DATA_SERVER_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }}"
+          {{ end }}
+          - name: DATABASE_SERVER_NAME
+            value: "{{ $.Values.global.databaseServerName }}"
+          - name: DATABASE_SERVER_PORT
+            value: "{{ $.Values.global.databaseServerPort }}"
+          - name: DATABASE_SERVER_NAME_RTX
+            value: "{{ $.Values.global.rtxDatabaseServerName }}"
+          - name: DATABASE_SERVER_PORT_RTX
+            value: "{{ $.Values.global.rtxDatabaseServerPort }}"
+          # using SHM environment different from that of bare-metal installation
+          # due to different SHM access rights for applications running in pods
+          # and those from bare-metal installation
+          - name: SHM_MAX_ENVIRONMENTS
+            value: "{{ $.Values.envVariables.shmMaxEnvironments }}"
+          - name: SHM_MAX_SECTORS
+            value: "{{ $.Values.envVariables.shmMaxSectors }}"
+          - name: SHM_MAX_SEGMENTS
+            value: "{{ $.Values.envVariables.shmMaxSegments }}"
+          - name: SHM_MIN_SEGMENT_SIZE
+            value: "{{ $.Values.envVariables.shmMinSegmentSize }}"
+          - name: TZ
+            value: "{{ $.Values.global.timezone }}"
+          {{ if $.Values.global.securityTls.enable }}
+          - name: DATA_SSL_CONNECT
+            value: "1"
+          - name: DATA_CIPHER_LIST
+            value: "{{ $.Values.global.securityTls.cipherList }}"
+          {{ end }}
+          {{ if $.Values.rdhCch.tracingAndLogging }}
+          {{ if $.Values.rdhCch.tracingAndLogging.bscsErrorTimestamp }}
+          - name: BSCS_ERROR_TIMESTAMP
+            value: "{{ $.Values.rdhCch.tracingAndLogging.bscsErrorTimestamp }}"
+          {{ end }}
+          {{ if $.Values.rdhCch.tracingAndLogging.dtaTracefile }}
+          - name: DTA_TRACEFILE
+            value: "{{ $.Values.rdhCch.tracingAndLogging.dtaTracefile }}"
+          {{ end }}
+          {{ if $.Values.rdhCch.tracingAndLogging.dxlTracefile }}
+          - name: DXL_TRACEFILE
+            value: "{{ $.Values.rdhCch.tracingAndLogging.dxlTracefile }}"
+          {{ end }}
+          {{ if $.Values.rdhCch.tracingAndLogging.udrTracefile }}
+          - name: UDR_TRACEFILE
+            value: "{{ $.Values.rdhCch.tracingAndLogging.udrTracefile }}"
+          {{ end }}
+          {{ end }}
+          - name: DATA_RETRY_TIME
+            value: "{{ $.Values.dataRetry.dataRetryTime }}"
+          - name: DATA_RETRY_TIME_MAX
+            value: "{{ $.Values.dataRetry.dataRetryTimeMax }}"
+          {{ if $.Values.RDH_LOAD_SYNCH }}
+          - name: RDH_LOAD_SYNCH
+            value: "{{ $.Values.RDH_LOAD_SYNCH }}"
+          {{ end }}
+          - name:  RDH_RM_SHM_AFTER_TERMINATION
+            value: "true"
+          # Configure rdh start options
+          - name: TRACE_LEVEL
+            value: "{{ $.Values.rdh.traceLevel | default 0 }}"
+          - name: USE_SLAVE
+            value: "{{ $.Values.rdh.useSlave }}"
+          - name: DATA_TIMEOUT
+            value: "{{ $.Values.rdh.dataTimeout  }}"
+          - name: SEGMENTATION
+            value: "{{ $cchDeployment.segmentationParameters }}"
+          - name: OPTIONAL_PARAMETERS
+            value: "{{ $.Values.rdh.optionalParameters }}"
+          {{ if not $.Values.global.secretManager.enable }}
+          - name: NO_SECRET_MANAGER
+            value: "true"
+          {{ end }}
+          #command: ["tail"]
+          #args: ["-f", "/dev/null"]
+          command: ["/bin/bash"]
+          args: ["-c", "ulimit -c unlimited && mkdir -p {{ $.Values.global.coredumpDirectory }} && \
+                        ./rdh -cch -n -t $TRACE_LEVEL $USE_SLAVE $DATA_TIMEOUT $SEGMENTATION $OPTIONAL_PARAMETERS"]
+          volumeMounts:
+          {{ if $.Values.global.securityTls.enable }}
+          - name: tls-volume
+            mountPath: "/tls/connect"
+            readOnly: true
+          {{ end }}
+          {{ if $.Values.global.databaseTls.enable }}
+          - name: wallet-volume
+            mountPath: /oratns/secret
+          {{ end }}
+          - name: xref-volume
+            mountPath: /workdir/XREF
+          - name: pwdmgr-security-volume
+            mountPath: /workdir/PWDMGR_SECURITY
+          - name: logs-volume
+            mountPath: /log
+          - name: coredump-volume
+            mountPath: "{{ $.Values.global.coredumpDirectory }}"
+          - name: ctrl-volume
+            mountPath: /workdir/CTRL
+          - name: tnsnames-ora-volume
+            mountPath: /oratns/tnsnames.ora
+            subPath: tnsnames.ora
+          - name: sqlnet-ora-volume
+            mountPath: /oratns/sqlnet.ora
+            subPath: sqlnet.ora
+          - name: cch-comlock-volume
+            mountPath: /workdir/CONF/comlock/ComLock.cfg
+            subPath: ComLock.cfg
+          - mountPath: /dev/shm
+            name: dshm
+          {{ if and ($.Values.global.secretManager.enable) ($.Values.global.secretManager.vault.caSecretName) }}
+          - name: secretmanager-tls-volume
+            mountPath: "/tls/secretManager/vault"
+            readOnly: true
+          {{ end }}
+          - name: vault-clientcfg-xml-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.xml
+            subPath: vault-clientcfg.xml
+          - name: vault-clientcfg-dtd-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.dtd
+            subPath: vault-clientcfg.dtd
+          lifecycle:
+            preStop:
+              exec:
+                # Delete the PID-file that contains the hostname of the current POD.
+                command: ["/bin/bash","-c","rm -f $(grep -H $(hostname) /workdir/CTRL/RDH_CCH-*.pid | cut -d':' -f1)"]
+                # Note, as k8s will send a SIGTERM and apply a grace period, there is no need to do that in the prestop hook.
+        # cch container
+        {{- range $index, $cch := $cchDeployment.cchContainer }}
+        - name: {{$cch.name}}
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "cch" }}
+          image: "{{ template "eric-bss-eb-cch.registryUrl" $templDict }}/{{ template "eric-bss-eb-cch.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-cch.pullPolicy" $templDict }}
+          readinessProbe:
+            exec:
+              # don't use -f for ps, because the probe will always succeed then
+              command: ["/bin/bash","-c","ps -e | grep cch"]
+            initialDelaySeconds: {{ $.Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ $.Values.readinessProbe.periodSeconds }}
+            successThreshold: {{ $.Values.readinessProbe.successThreshold }}
+            failureThreshold: {{ $.Values.readinessProbe.failureThreshold }}
+            timeoutSeconds: {{ $.Values.readinessProbe.timeoutSeconds }}
+          resources:
+            limits:
+              memory: "{{ $.Values.cchResources.limits.memory}}"
+              cpu: "{{ $.Values.cchResources.limits.cpu}}"
+            requests:
+              memory: "{{ $.Values.cchResources.requests.memory}}"
+              cpu: "{{ $.Values.cchResources.requests.cpu}}"
+          env:
+          - name: K8S_ENV
+            value: "true"
+          - name: BSCS_LOG_POSTFIX
+            value: "{{$cch.name}}"
+          - name: NLS_LANG
+            value: "{{ $.Values.global.nlsLang }}"
+          {{ if $.Values.global.dataHighAvailability.enable }}
+          - name: DATA_CONNECT_NAME
+            value: "{{ $.Values.global.dataServerName }}"
+          - name: DATA_CONNECT_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }},T:eric-bss-eb-data1-service:{{ $.Values.global.dataClusterPort }}"
+          - name: DATA_CONNECT_MODE
+            value: "0"
+          {{ else }}
+          - name: DATA_SERVER_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }}"
+          {{ end }}
+          - name: DATABASE_SERVER_NAME
+            value: "{{ $.Values.global.databaseServerName }}"
+          - name: DATABASE_SERVER_PORT
+            value: "{{ $.Values.global.databaseServerPort }}"
+          - name: DATABASE_SERVER_NAME_RTX
+            value: "{{ $.Values.global.rtxDatabaseServerName }}"
+          - name: DATABASE_SERVER_PORT_RTX
+            value: "{{ $.Values.global.rtxDatabaseServerPort }}"
+          - name: TZ
+            value: "{{ $.Values.global.timezone }}"
+          {{ if $.Values.global.databaseTls.enable }}
+          - name: ORA_SEC_WLT
+            value: "/oratns/secret"
+          {{ end }}
+          - name: DXL_CONTINUE_AFTER_CORRUPT
+            value: "{{ $.Values.global.tracingAndLogging.dxlContinueAfterCorrupt }}"
+          - name: MP_LOG_SIZE
+            value: "{{ $.Values.global.tracingAndLogging.mpLogParameters.mpLogSize }}"
+          - name: MP_LOG_INTERVAL
+            value: "{{ $.Values.global.tracingAndLogging.mpLogParameters.mpLogInterval }}"
+          # using SHM environment created by daemonset RDHs
+          # different from that of bare-metal installation
+          # due to different SHM access rights for applications running in pods
+          # and those from bare-metal installation
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          {{ if $.Values.global.securityTls.enable }}
+          - name: DATA_SSL_CONNECT
+            value: "1"
+          - name: DATA_CIPHER_LIST
+            value: "{{ $.Values.global.securityTls.cipherList }}"
+          {{ end }}
+          {{ if $cch.tracingAndLogging }}
+          {{ if $cch.tracingAndLogging.bscsErrorTimestamp }}
+          - name: BSCS_ERROR_TIMESTAMP
+            value: "{{ $cch.tracingAndLogging.bscsErrorTimestamp }}"
+          {{ end }}
+          {{ if $cch.tracingAndLogging.dtaTracefile }}
+          - name: DTA_TRACEFILE
+            value: "{{ $cch.tracingAndLogging.dtaTracefile }}"
+          {{ end }}
+          {{ if $cch.tracingAndLogging.dxlTracefile }}
+          - name: DXL_TRACEFILE
+            value: "{{ $cch.tracingAndLogging.dxlTracefile }}"
+          {{ end }}
+          {{ if $cch.tracingAndLogging.udrTracefile }}
+          - name: UDR_TRACEFILE
+            value: "{{ $cch.tracingAndLogging.udrTracefile }}"
+          {{ end }}
+          {{ end }}
+          - name: DATA_RETRY_TIME
+            value: "{{ $.Values.dataRetry.dataRetryTime }}"
+          - name: DATA_RETRY_TIME_MAX
+            value: "{{ $.Values.dataRetry.dataRetryTimeMax }}"
+          {{- range $extraIndex, $extraEnv := $.Values.cchExtraEnvs }}
+          - name: {{ $extraEnv.name }}
+            value: {{ $extraEnv.value | quote}}
+          {{ end }}
+          - name: OPTIONS
+            value: "{{ $cch.startParameters }}"
+          - name: SEGMENTATION
+            value: "{{ $cchDeployment.segmentationParameters }}"
+          {{ if not $.Values.global.secretManager.enable }}
+          - name: NO_SECRET_MANAGER
+            value: "true"
+          {{ end }}
+          command: ["/bin/bash"]
+          args: ["-c", "ulimit -c unlimited && mkdir -p {{ $.Values.global.coredumpDirectory }} && \
+                        ./waitForShm.sh -cch -sleep {{ $.Values.global.conditionCheckInterval }} $SEGMENTATION && exec ./cch $OPTIONS $SEGMENTATION"]
+          volumeMounts:
+          {{ if $.Values.global.securityTls.enable }}
+          - name: tls-volume
+            mountPath: "/tls/connect"
+            readOnly: true
+          {{ end }}
+          - name: xref-volume
+            mountPath: /workdir/XREF
+          - name: pwdmgr-security-volume
+            mountPath: /workdir/PWDMGR_SECURITY
+          - name: logs-volume
+            mountPath: /log
+          - name: coredump-volume
+            mountPath: "{{ $.Values.global.coredumpDirectory }}"
+          - name: shared-rac-volume
+            mountPath: /ericssonbilling/resource/bat/RAC_Setup.xml
+            subPath: RAC_Setup.xml
+          - name: tnsnames-ora-volume
+            mountPath: /oratns/tnsnames.ora
+            subPath: tnsnames.ora
+          - name: sqlnet-ora-volume
+            mountPath: /oratns/sqlnet.ora
+            subPath: sqlnet.ora
+          - name: cch-ini-volume
+            mountPath: /workdir/CONF/cch.ini
+            subPath: cch.ini
+          - name: cch-registry-volume
+            mountPath: /ericssonbilling/resource/cch/CCH_Registry.xml
+            subPath: CCH_Registry.xml
+          - name: cch-comlock-volume
+            mountPath: /workdir/CONF/comlock/ComLock.cfg
+            subPath: ComLock.cfg
+          {{ if $.Values.global.databaseTls.enable }}
+          - name: wallet-volume
+            mountPath: /oratns/secret
+          {{ end }}
+          - mountPath: /dev/shm
+            name: dshm
+          {{ if and ($.Values.global.secretManager.enable) ($.Values.global.secretManager.vault.caSecretName) }}
+          - name: secretmanager-tls-volume
+            mountPath: "/tls/secretManager/vault"
+            readOnly: true
+          {{ end }}
+          - name: vault-clientcfg-xml-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.xml
+            subPath: vault-clientcfg.xml
+          - name: vault-clientcfg-dtd-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.dtd
+            subPath: vault-clientcfg.dtd
+        {{- end}}
+        # bds container
+        {{- range $index, $bds := $cchDeployment.bdsContainer }}
+        - name: {{ $bds.name }}
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" $.Values "containerKey" "bds" }}
+          image: "{{ template "eric-bss-eb-cch.registryUrl" $templDict }}/{{ template "eric-bss-eb-cch.repoPath" $templDict }}{{ index $.Values "images" $templDict.containerKey "name" }}:{{ index $.Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-cch.pullPolicy" $templDict }}
+          readinessProbe:
+            exec:
+              # don't use -f for ps, because the probe will always succeed then
+              command: ["/bin/bash","-c","ps -e | grep bds"]
+            initialDelaySeconds: {{ $.Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ $.Values.readinessProbe.periodSeconds }}
+            successThreshold: {{ $.Values.readinessProbe.successThreshold }}
+            failureThreshold: {{ $.Values.readinessProbe.failureThreshold }}
+            timeoutSeconds: {{ $.Values.readinessProbe.timeoutSeconds }}
+          resources:
+            limits:
+              memory: "{{ $.Values.bdsResources.limits.memory}}"
+              cpu: "{{ $.Values.bdsResources.limits.cpu}}"
+            requests:
+              memory: "{{ $.Values.bdsResources.requests.memory}}"
+              cpu: "{{ $.Values.bdsResources.requests.cpu}}"
+          env:
+          - name: K8S_ENV
+            value: "true"
+          - name: BSCS_LOG_POSTFIX
+            value: "{{$bds.name}}"
+          - name: NLS_LANG
+            value: "{{ $.Values.global.nlsLang }}"
+          {{ if $.Values.global.dataHighAvailability.enable }}
+          - name: DATA_CONNECT_NAME
+            value: "{{ $.Values.global.dataServerName }}"
+          - name: DATA_CONNECT_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }},T:eric-bss-eb-data1-service:{{ $.Values.global.dataClusterPort }}"
+          - name: DATA_CONNECT_MODE
+            value: "0"
+          {{ else }}
+          - name: DATA_SERVER_ADDRESS
+            value: "T:eric-bss-eb-data-service:{{ $.Values.global.dataClusterPort }}"
+          {{ end }}
+          - name: DATABASE_SERVER_NAME
+            value: "{{ $.Values.global.databaseServerName }}"
+          - name: DATABASE_SERVER_PORT
+            value: "{{ $.Values.global.databaseServerPort }}"
+          - name: DATABASE_SERVER_NAME_RTX
+            value: "{{ $.Values.global.rtxDatabaseServerName }}"
+          - name: DATABASE_SERVER_PORT_RTX
+            value: "{{ $.Values.global.rtxDatabaseServerPort }}"
+          - name: TZ
+            value: "{{ $.Values.global.timezone }}"
+          {{ if $.Values.global.databaseTls.enable }}
+          - name: ORA_SEC_WLT
+            value: "/oratns/secret"
+          {{ end }}
+          - name: DXL_CONTINUE_AFTER_CORRUPT
+            value: "{{ $.Values.global.tracingAndLogging.dxlContinueAfterCorrupt }}"
+          # using SHM environment created by daemonset RDHs
+          # different from that of bare-metal installation
+          # due to different SHM access rights for applications running in pods
+          # and those from bare-metal installation
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          {{ if $.Values.global.securityTls.enable }}
+          - name: DATA_SSL_CONNECT
+            value: "1"
+          - name: DATA_CIPHER_LIST
+            value: "{{ $.Values.global.securityTls.cipherList }}"
+          {{ end }}
+          {{ if $bds.tracingAndLogging }}
+          {{ if $bds.tracingAndLogging.bscsErrorTimestamp }}
+          - name: BSCS_ERROR_TIMESTAMP
+            value: "{{ $bds.tracingAndLogging.bscsErrorTimestamp }}"
+          {{ end }}
+          {{ if $bds.tracingAndLogging.dtaTracefile }}
+          - name: DTA_TRACEFILE
+            value: "{{ $bds.tracingAndLogging.dtaTracefile }}"
+          {{ end }}
+          {{ if $bds.tracingAndLogging.dxlTracefile }}
+          - name: DXL_TRACEFILE
+            value: "{{ $bds.tracingAndLogging.dxlTracefile }}"
+          {{ end }}
+          {{ if $bds.tracingAndLogging.udrTracefile }}
+          - name: UDR_TRACEFILE
+            value: "{{ $bds.tracingAndLogging.udrTracefile }}"
+          {{ end }}
+          {{ end }}
+          - name: DATA_RETRY_TIME
+            value: "{{ $.Values.dataRetry.dataRetryTime }}"
+          - name: DATA_RETRY_TIME_MAX
+            value: "{{ $.Values.dataRetry.dataRetryTimeMax }}"
+          - name: MP_LOG_SIZE
+            value: "{{ $.Values.global.tracingAndLogging.mpLogParameters.mpLogSize }}"
+          - name: MP_LOG_INTERVAL
+            value: "{{ $.Values.global.tracingAndLogging.mpLogParameters.mpLogInterval }}"
+          - name: OPTIONS
+            value: "{{ $bds.startParameters }}"
+          - name: SEGMENTATION
+            value: "{{ $cchDeployment.segmentationParameters }}"
+          {{ if not $.Values.global.secretManager.enable }}
+          - name: NO_SECRET_MANAGER
+            value: "true"
+          {{ end }}
+          command: ["/bin/bash"]
+          args: ["-c", "ulimit -c unlimited && mkdir -p {{ $.Values.global.coredumpDirectory }} && \
+                        ./waitForShm.sh -cch -sleep {{ $.Values.global.conditionCheckInterval }}  $SEGMENTATION && exec ./bds $OPTIONS $SEGMENTATION"]
+          volumeMounts:
+          {{ if $.Values.global.securityTls.enable }}
+          - name: tls-volume
+            mountPath: "/tls/connect"
+            readOnly: true
+          {{ end }}
+          - name: ctrl-volume
+            mountPath: /workdir/BDS
+          - name: xref-volume
+            mountPath: /workdir/XREF
+          - name: pwdmgr-security-volume
+            mountPath: /workdir/PWDMGR_SECURITY
+          - name: logs-volume
+            mountPath: /log
+          - name: coredump-volume
+            mountPath: "{{ $.Values.global.coredumpDirectory }}"
+          - name: shared-rac-volume
+            mountPath: /ericssonbilling/resource/bat/RAC_Setup.xml
+            subPath: RAC_Setup.xml
+          - name: tnsnames-ora-volume
+            mountPath: /oratns/tnsnames.ora
+            subPath: tnsnames.ora
+          - name: sqlnet-ora-volume
+            mountPath: /oratns/sqlnet.ora
+            subPath: sqlnet.ora
+          - name: cch-comlock-volume
+            mountPath: /workdir/CONF/comlock/ComLock.cfg
+            subPath: ComLock.cfg
+          {{ if $.Values.global.databaseTls.enable }}
+          - name: wallet-volume
+            mountPath: /oratns/secret
+          {{ end }}
+          {{ if and ($.Values.global.secretManager.enable) ($.Values.global.secretManager.vault.caSecretName) }}
+          - name: secretmanager-tls-volume
+            mountPath: "/tls/secretManager/vault"
+            readOnly: true
+          {{ end }}
+          - name: vault-clientcfg-xml-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.xml
+            subPath: vault-clientcfg.xml
+          - name: vault-clientcfg-dtd-volume
+            mountPath: /ericssonbilling/resource/vault-clientcfg/vault-clientcfg.dtd
+            subPath: vault-clientcfg.dtd
+          - mountPath: /dev/shm
+            name: dshm
+        {{- end}}
+      {{- if $cchDeployment.nodeSelector }}
+      nodeSelector: {{ toYaml $cchDeployment.nodeSelector | nindent 8 }}
+      # else if: use local helm chart setting, if defined
+      {{- else if $.Values.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.nodeSelector | nindent 8 }}
+      # else if: use global setting, if defined
+      {{- else if $.Values.global.nodeSelector }}
+      nodeSelector: {{ toYaml $.Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if $.Values.affinity }}
+      affinity: {{ toYaml $.Values.affinity | nindent 8 }}
+      {{- else if $.Values.global.affinity }}
+      affinity: {{ toYaml $.Values.global.affinity | nindent 8 }}
+      {{- end }}
+      restartPolicy: "{{ $.Values.restartPolicy }}"
+      volumes:
+      {{ if $.Values.global.securityTls.enable }}
+      - name: tls-volume
+        secret:
+          secretName: "{{ $.Values.global.securityTls.clientSecretName }}"
+          items:
+          - key: {{ $.Values.global.securityTls.trustedCertificateKey }}
+            path: certificate.pem
+      {{ end }}
+      {{ if $.Values.global.databaseTls.enable }}
+      - name: wallet-volume
+        secret:
+          secretName: "{{ $.Values.global.databaseTls.clientSecretName }}"
+      {{ end }}
+      - name: xref-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-xref
+      - name: pwdmgr-security-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-pwdmgr-security
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-logs
+      - name: coredump-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-coredump
+      - name: ctrl-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-pids
+      - name: shared-rac-volume
+        configMap:
+          name: eric-bss-eb-cch-rac-setup.xml
+      - name: tnsnames-ora-volume
+        configMap:
+          name: eric-bss-eb-cch-tnsnames.ora
+      - name: sqlnet-ora-volume
+        configMap:
+          name: eric-bss-eb-cch-sqlnet.ora
+      - name: cch-ini-volume
+        configMap:
+          name: eric-bss-eb-cch.ini
+      - name: cch-registry-volume
+        configMap:
+          name: eric-bss-eb-cch-registry.xml
+      - name: cch-comlock-volume
+        configMap:
+          name: eric-bss-eb-cch-comlock
+      - name: vault-clientcfg-xml-volume
+        configMap:
+          name: eric-bss-eb-cch-vault-clientcfg.xml
+      - name: vault-clientcfg-dtd-volume
+        configMap:
+          name: eric-bss-eb-cch-vault-clientcfg.dtd
+      {{ if and ($.Values.global.secretManager.enable) ($.Values.global.secretManager.vault.caSecretName) }}
+      - name: secretmanager-tls-volume
+        secret:
+          secretName: "{{ $.Values.global.secretManager.vault.caSecretName }}"
+          items:
+          - key: {{ $.Values.global.secretManager.vault.caCertificate }}
+            path: ca.pem
+      {{ end }}
+      - name: dshm
+        emptyDir:
+         medium: Memory
+---
+{{- end}}

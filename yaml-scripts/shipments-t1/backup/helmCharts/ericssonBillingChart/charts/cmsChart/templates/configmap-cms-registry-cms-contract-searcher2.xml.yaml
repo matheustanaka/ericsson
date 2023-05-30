@@ -1,0 +1,3339 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-cms-contract-searcher2.xml
+data:
+  Registry_CMS_Contract_searcher2.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+
+    <ComponentRegistry>
+
+        <Node name="CMS Settings">
+
+            <!-- ===================================================================================== -->
+            <!--  Settings for the "SearchContractsEvenWithoutDN"  -  This version will find all the contracts which have services  -->
+            <!--  assigned, even without DN. Be carefull using it on big databases, it can run some minutes. -->
+            <!-- ===================================================================================== -->
+            <Node name="SearchContractsEvenWithoutDN">
+                <KeyValue key="MaxResultSetSize" type="Integer" value="500"/>
+                <KeyValue key="DefaultResultSetSize" type="Integer" value="50"/>
+          <KeyValue key="DefaultOutput" value="BusinessUnitId, ContractType, ContractTypeId, DirectoryNo, CustomerCode, Lastname, Firstname, HlCode, Street, StreetNo, Zipcode, City, ContractId, ContractStatus, TechnologyFlavourId, NetworkId, CustomerId, CustomerIdPub, RelationType, VPNId, External, Tmcode,ActivationDate, CoIdPub, MainCoId, MainCoIdPub, Name, DESCRIPTION, DNNumberingPlan, ForeignNetwork, Carrier, HomeBID, ForeignBID, ReratingCandidate, PAYMENT_METHOD_IND"/>
+                <KeyValue key="BaseTable" value="CONTRACT_ALL" />
+                <KeyValue key="BaseTableAlias" value="CO" />
+                <KeyValue key="DefaultNumberOfCharactersBeforeWildcard" type="Integer" value="3"/>
+          <KeyValue key="FromClauseOrder" value="CCONTACT CC, CUSTOMER CU, CONTRACT_ALL CO, DIRECTORY_NUMBER DN, PROFILE_SERVICE CCS, DIRECTORY_NUMBER_BLOCK DNB" />
+                 <!--       <KeyValue key="Hint" value="/*+ RULE */" />  -->
+                    <Node name="DefaultClauses">
+                     <Node name="FromClauses">
+                            <KeyValue key="CUSTOMER CU" value=""/>
+                            <KeyValue key="CCONTACT CC" value=""/>
+                     </Node>
+                     <Node name="WhereClauses">
+                            <KeyValue key="CO.CUSTOMER_ID=CU.CUSTOMER_ID" value=""/>
+                            <KeyValue key="CC.CUSTOMER_ID=CU.CUSTOMER_ID" value=""/>
+                     </Node>
+               </Node>
+
+                <Node name="Attributes">
+
+                  <Node name="User">
+              <KeyValue key="SelectClause" value="CO.CO_USERLASTMOD"/>
+              <KeyValue key="ConditionWhereClause" value="CO.CO_USERLASTMOD"/>
+            </Node>
+            <Node name="BusinessUnit">
+              <KeyValue key="ConditionWhereClause" value="CO.BUSINESS_UNIT_ID"/>
+            </Node>
+               <Node name="filterByUsersBusinessUnit">
+                    <KeyValue key="Operator" value="IN" />
+                    <KeyValue key="ConditionWhereClause" value="CO.BUSINESS_UNIT_ID" />
+              </Node>
+                    <Node name="ContractTypeId">
+                        <KeyValue key="SelectClause" value="CO.CONTRACT_TYPE_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CONTRACT_TYPE_ID"/>
+                    </Node>
+            <Node name="ContractTypes">
+                          <KeyValue key="ConditionWhereClause" value="CO.CONTRACT_TYPE_ID"/>
+                        <KeyValue key="Operator" value="IN"/>
+                  </Node>
+            <Node name="PartyTypeId">
+                        <KeyValue key="SelectClause" value="CU.PARTY_TYPE_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.PARTY_TYPE_ID"/>
+                    </Node>
+
+                    <Node name="ContractType">
+                        <KeyValue key="SelectClause" value="DECODE(CO.TYPE, &apos;S&apos;, &apos;C&apos;,&apos;A&apos;, &apos;A&apos;)"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.TYPE"/>
+                    </Node>
+                    <Node name="NOT_RELATED">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_REL_TYPE IS NULL OR CO.CO_REL_TYPE != &apos;R&apos;" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                        <Node name="ForeignNetwork">
+                            <KeyValue key="SelectClause" value="CO.REMOTE_PLCODE"/>
+                            <KeyValue key="ConditionWhereClause" value="CO.REMOTE_PLCODE"/>
+                        </Node>
+                        <Node name="Carrier">
+                            <KeyValue key="SelectClause" value="CO.CONTRACT_ID_LEC"/>
+                            <KeyValue key="ConditionWhereClause" value="CO.CONTRACT_ID_LEC"/>
+                        </Node>
+                      <Node name="HomeBID">
+                          <KeyValue key="SelectClause" value="CO.HPLMN_BID_GROUP_ID"/>
+                      </Node>
+                      <Node name="ForeignBID">
+                          <KeyValue key="SelectClause" value="CO.VPLMN_BID_GROUP_ID"/>
+                      </Node>
+
+            <Node name="Tmcode">
+              <KeyValue key="SelectClause" value="CO.TMCODE"/>
+            </Node>
+
+            <Node name="ActivationDate">
+              <KeyValue key="SelectClause" value="CO.CO_ACTIVATED"/>
+            </Node>
+
+                    <Node name="ContractId">
+                        <KeyValue key="SelectClause" value="CO.CO_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_ID"/>
+                    </Node>
+
+                    <Node name="CoIdPub">
+                        <KeyValue key="SelectClause" value="CO.CO_CODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_CODE"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+                    <Node name="MainCoId">
+                        <KeyValue key="SelectClause" value="CO2.CO_ID MAIN_CO_ID"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="CONTRACT_ALL CO2" value=""/>
+                            <KeyValue key="CONTRACT_RELATION COR" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="OutputAttributes">
+                                <KeyValue key="CO.CO_ID = COR.REL_CO_ID (+)" value=""/>
+                                <KeyValue key="COR.MAIN_CO_ID = CO2.CO_ID(+)" value=""/>
+                            </Node>
+
+                             <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID = COR.REL_CO_ID (+)" value=""/>
+                                <KeyValue key="COR.MAIN_CO_ID = CO2.CO_ID(+)" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                    <Node name="MainCoIdPub">
+                        <KeyValue key="SelectClause" value="CO2.CO_CODE MAIN_CO_ID_PUB"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="CONTRACT_ALL CO2" value=""/>
+                            <KeyValue key="CONTRACT_RELATION COR" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="OutputAttributes">
+                                <KeyValue key="CO.CO_ID = COR.REL_CO_ID (+)" value=""/>
+                                <KeyValue key="COR.MAIN_CO_ID = CO2.CO_ID(+)" value=""/>
+                            </Node>
+
+                             <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID = COR.REL_CO_ID (+)" value=""/>
+                                <KeyValue key="COR.MAIN_CO_ID = CO2.CO_ID(+)" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                    <Node name="BusinessUnitId">
+                        <KeyValue key="SelectClause" value="CO.BUSINESS_UNIT_ID"/>
+                    </Node>
+
+                    <Node name="CustomerId">
+                        <KeyValue key="SelectClause" value="CO.CUSTOMER_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CUSTOMER_ID"/>
+                    </Node>
+
+                    <Node name="CustomerIdPub">
+                        <KeyValue key="SelectClause" value="CU.CUSTNUM"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.CUSTNUM"/>
+                         <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true" />
+                         <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="5"/>
+                    </Node>
+
+                    <Node name="TechnologyFlavourId">
+                        <KeyValue key="SelectClause" value="CO.SUBM_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.SUBM_ID"/>
+                    </Node>
+
+                    <Node name="NetworkId">
+                        <KeyValue key="SelectClause" value="CO.PLCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.PLCODE"/>
+                    </Node>
+
+            <Node name="LAMemberContractInc">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CU.CSLEVEL > 0 and CU.CSLEVEL !=40" value=""/>
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="1"/>
+                    </Node>
+            <Node name="LAMemberContractExc">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CU.CSLEVEL = 0 or CU.CSLEVEL = 40 or CU.CSLEVEL IS NULL" value=""/>
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="1"/>
+
+                    </Node>
+
+                    <Node name="POFUContract">
+                        <Node name="FromClauses">
+                            <KeyValue key="PROFILE_SERVICE CCS" value=""/>
+                        </Node>
+                    </Node>
+
+                    <Node name="SnCode">
+                      <Node name="FromClauses">
+                            <KeyValue key="PROFILE_SERVICE CCS" value=""/>
+                        </Node>
+                         <Node name="JoinWhereClauses">
+                          <Node name="InputAttributes">
+                            <KeyValue key="CO.CO_ID=CCS.CO_ID" value=""/>
+                          </Node>
+                          </Node>
+                         <KeyValue key="ConditionWhereClause" value="CCS.SNCODE"/>
+                    </Node>
+
+                    <Node name="RelationType">
+                        <KeyValue key="SelectClause" value="CO.CO_REL_TYPE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_REL_TYPE" />
+                    </Node>
+
+                    <Node name="LowerExtension">
+                        <KeyValue key="SelectClause" value="DNB.LOWER_EXTENSION"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER_BLOCK DNB" value=""/>
+                            <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CAP.DN_ID=DNB.DN_ID" value=""/>
+                                <KeyValue key="CAP.DN_BLOCK_ID=DNB.DN_BLOCK_ID" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DNB.LOWER_EXTENSION"/>
+                    </Node>
+
+                    <Node name="UpperExtension">
+                        <KeyValue key="SelectClause" value="DNB.UPPER_EXTENSION"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER_BLOCK DNB" value=""/>
+                            <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CAP.DN_ID=DNB.DN_ID" value=""/>
+                                <KeyValue key="CAP.DN_BLOCK_ID=DNB.DN_BLOCK_ID" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DNB.UPPER_EXTENSION"/>
+                    </Node>
+
+                    <Node name="DirectoryNo">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(DN.DN_NUM)  OVER (PARTITION BY CAP.CO_ID ORDER BY CAP.MAIN_DIRNUM, DN.DIRNUM_NPCODE, CAP.SEQNO DESC) AS DN_NUM"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+                           <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="OutputAttributes">
+                                <KeyValue key="CO.CO_ID=CAP.CO_ID (+)" value=""/>
+                                <KeyValue key="CAP.DN_ID=DN.DN_ID (+)" value=""/>
+                            </Node>
+
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CAP.CO_ID (+)" value=""/>
+                                <KeyValue key="CAP.DN_ID=DN.DN_ID (+)" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DN.DN_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+            <Node name="DNNumberingPlan">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(DN.DIRNUM_NPCODE)  OVER (PARTITION BY CAP.CO_ID ORDER BY CAP.MAIN_DIRNUM, DN.DIRNUM_NPCODE, CAP.SEQNO DESC) AS DIRNUM_NPCODE" />
+                        <Node name="FromClauses">
+                <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+                <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="DN.DIRNUM_NPCODE"/>
+                    </Node>
+
+                    <Node name="CustomerCode">
+                        <KeyValue key="SelectClause" value="CU.CUSTCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.CUSTCODE"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+                    <Node name="CS_STATUS">
+                        <KeyValue key="SelectClause" value="CU.CSTYPE"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.CSTYPE"/>
+                    </Node>
+
+                    <!-- If this criteria is set to true, the Name, Lastname, Firstname, Matchcode, Street, Streetno, Zipcode, City represents the installation address,
+                    otherwise, these tags represents the billing address -->
+                    <Node name="UseInstallationAddress">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CC.CCUSER_INST =&apos;X&apos;" value=""/>
+                            </Node>
+                        </Node>
+            </Node>
+            <Node name="CCBILL">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CC.CCBILL =&apos;X&apos;" value=""/>
+                            </Node>
+                        </Node>
+            </Node>
+
+                    <Node name="Name">
+                        <KeyValue key="SelectClause" value="CC.CCNAME"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCNAME"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="Lastname">
+                        <KeyValue key="SelectClause" value="CC.CCLNAME"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCLNAME"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="Firstname">
+                        <KeyValue key="SelectClause" value="CC.CCFNAME"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCFNAME"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+                    <Node name="MatchCode">
+                      <KeyValue key="SelectClause" value="CC.CCLNAMEMC"/>
+                      <KeyValue key="ConditionWhereClause"
+                        value="CC.CCLNAMEMC"/>
+                      <KeyValue key="SupportsWildcardSearch"
+                        type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch"
+                        type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="Street">
+                        <KeyValue key="SelectClause" value="CC.CCSTREET"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCSTREET"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="StreetNo">
+                        <KeyValue key="SelectClause" value="CC.CCSTREETNO"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCSTREETNO"/>
+                    </Node>
+
+                    <Node name="Zipcode">
+                        <KeyValue key="SelectClause" value="CC.CCZIP"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCZIP"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="3"/>
+                    </Node>
+
+                    <Node name="City">
+                        <KeyValue key="SelectClause" value="CC.CCCITY"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCCITY"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+            <Node name="ADR_COMPNO">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSCOMPREGNO"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+                  <Node name="ADR_EMAIL">
+                      <KeyValue key="ConditionWhereClause" value="CC.CCEMAIL"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+            <Node name="ADR_SOCIALSENO">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSSOCIALSECNO"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+                  <Node name="ADR_BIRTHDT">
+                      <KeyValue key="ConditionWhereClause" value="CC.BIRTHDATE"/>
+                  </Node>
+                  <Node name="COUNTRY_ID">
+                      <KeyValue key="ConditionWhereClause" value="CC.COUNTRY"/>
+                  </Node>
+                  <Node name="ADR_DRIVELICENCE">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSDRIVELICENCE"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+            <Node name="ADR_PASSPORTNO">
+              <KeyValue key="ConditionWhereClause" value="CC.PASSPORTNO"/>
+              <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+              <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+            </Node>
+            <Node name="ADR_STATE">
+                      <KeyValue key="ConditionWhereClause" value="CC.CCSTATE"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                  </Node>
+                  <Node name="ADR_TAXNO">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSCOMPTAXNO"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+
+                    <Node name="ContractStatus">
+                        <KeyValue key="SelectClause" value="DECODE(CO.CH_STATUS, &apos;o&apos;,1, &apos;a&apos;, 2, &apos;s&apos;,3,&apos;d&apos;,4) "/>
+              <KeyValue key="ConditionWhereClause" value="CO.CH_STATUS"/>
+                    </Node>
+
+                    <Node name="StorageMediumNo">
+                      <KeyValue key="SelectClause" value="CDSP.SM_NUM"/>
+                        <Node name="FromClauses">
+                            <KeyValue key="CURR_CO_DEVICE_SERVICE_PORT CDSP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CDSP.CO_ID" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="CDSP.SM_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+                    </Node>
+
+                    <Node name="MainDirectoryNo">
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CAP.CO_ID" value=""/>
+                                <KeyValue key="CAP.DN_ID=DN.DN_ID" value=""/>
+                                <KeyValue key="CAP.MAIN_DIRNUM=&apos;X&apos;" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DN.DN_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+                    </Node>
+
+                    <Node name="BillNo">
+                        <Node name="FromClauses">
+                            <KeyValue key="ORDERHDR_ALL OH" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=OH.CO_ID" value=""/>
+                                <KeyValue key="OH.OHSTATUS=&apos;IN&apos;" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="OH.OHREFNUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+            <Node name="CALL_DETAIL">
+                        <KeyValue key="ConditionWhereClause" value="CO.CDS_GENERATION" />
+                    </Node>
+            <Node name="CALL_DETAIL_ALL">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CDS_GENERATION IS NOT NULL" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                    <Node name="CompositeProduct">
+                        <KeyValue key="SelectClause" value="CO.TMCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.TMCODE"/>
+                    </Node>
+
+                    <Node name="Technology">
+                        <KeyValue key="SelectClause" value="CO.SCCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.SCCODE"/>
+                    </Node>
+
+                    <Node name="Port">
+                      <KeyValue key="SelectClause" value="PO.PORT_NUM"/>
+                        <Node name="FromClauses">
+                            <KeyValue key="PORT PO" value=""/>
+                            <KeyValue key="CONTR_SERVICES_PORT CSP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="(PO.PORT_ID=CSP.PORT_ID AND CSP.CO_ID=CO.CO_ID)" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="PO.PORT_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+                    </Node>
+
+            <Node name="DevPort">
+              <KeyValue key="SelectClause" value="PO.PORT_NUM"/>
+              <Node name="FromClauses">
+                <KeyValue key="PORT PO" value=""/>
+                <KeyValue key="CURR_CO_DEVICE CD" value=""/>
+              </Node>
+              <Node name="JoinWhereClauses">
+                <Node name="InputAttributes">
+                  <KeyValue key="(PO.PORT_ID=CD.PORT_ID AND CD.CO_ID=CO.CO_ID)" value=""/>
+                </Node>
+              </Node>
+              <KeyValue key="ConditionWhereClause" value="PO.PORT_NUM"/>
+              <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+              <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+            </Node>
+                    <Node name="HlCode">
+                        <KeyValue key="SelectClause" value="CDSP.HLCODE"/>
+                        <Node name="FromClauses">
+                            <KeyValue key="CURR_CO_DEVICE_SERVICE_PORT CDSP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CDSP.CO_ID" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+                    <Node name="DealerId">
+                        <KeyValue key="ConditionWhereClause" value="CO.DEALER_ID"/>
+                    </Node>
+
+            <Node name="External">
+              <KeyValue key="SelectClause" value="DECODE(CMV.PROVISION_EXT,null, &apos;False&apos;, &apos;X&apos;, &apos;True&apos;)"/>
+              <Node name="FromClauses">
+                <KeyValue key="RATEPLAN CMV" value=""/>
+              </Node>
+              <Node name="JoinWhereClauses">
+                <Node name="InputAttributes">
+                  <KeyValue key="CO.TMCODE=CMV.TMCODE" value=""/>
+                </Node>
+              </Node>
+              <KeyValue key="ConditionWhereClause" value="CMV.PROVISION_EXT" />
+            </Node>
+
+                    <Node name="ResultSize">
+                        <KeyValue key="ConditionWhereClause" value="ROWNUM"/>
+                        <KeyValue key="Operator" value="&lt;"/>
+                    </Node>
+
+                    <!-- When searching for the external VPN Members, we can get them from the DIRECTORY_NUMBER table-->
+                    <Node name="VPNId">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(DN.VPN_ID) OVER (PARTITION BY CAP.CO_ID ORDER BY CAP.MAIN_DIRNUM, DN.DIRNUM_NPCODE, CAP.SEQNO DESC)" />
+                        <KeyValue key="ConditionWhereClause" value="DN.VPN_ID"/>
+                    </Node>
+                <Node name="VpnIdPub">
+                    <Node name="FromClauses">
+                        <KeyValue key="VIRTUAL_PRIVATE_NETWORK VPN" type="String" value="" />
+                    </Node>
+                    <Node name="JoinWhereClauses">
+                        <Node name="InputAttributes">
+                            <KeyValue key="CO.CO_ID=CAP.CO_ID (+)" value=""/>
+                            <KeyValue key="VPN.VPN_ID = CAP.VPN_ID" type="String"  value="" />
+                        </Node>
+                    </Node>
+                    <KeyValue key="ConditionWhereClause" type="String" value="VPN.VPN_NAME"  />
+                    <KeyValue key="SupportsWildcardSearch" type="Boolean"  value="true" />
+                </Node>
+                <Node name="VpnPrivateNumber">
+                    <Node name="JoinWhereClauses">
+                        <Node name="InputAttributes">
+                            <KeyValue key="DN.DN_ID = CAP.DN_ID" value="" />
+                            <KeyValue key="DN.VPN_ID IS NOT NULL" value="" />
+                        </Node>
+                    </Node>
+                    <KeyValue key="ConditionWhereClause" value="DN.DN_NUM"/>
+                    <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                </Node>
+
+                    <Node name="DESCRIPTION">
+                        <KeyValue key="SelectClause" value="CO.DESCRIPTION"/>
+                <KeyValue key="ConditionWhereClause" value="CO.DESCRIPTION"/>
+                <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+            </Node>
+
+            <Node name="ReratingCandidate">
+              <KeyValue key="SelectClause" value="CO.RR_CANDIDATE"/>
+            </Node>
+            <Node name="MarkedForRerating">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.RR_CANDIDATE IS NOT NULL" value=""/>
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="1"/>
+                    </Node>
+            <Node name="NotMarkedForRerating">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.RR_CANDIDATE IS NULL" value=""/>
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="1"/>
+                    </Node>
+
+                    <Node name="PAYMENT_METHOD_IND">
+                        <Node name="FromClauses">
+                           <KeyValue key="RATEPLAN CMV" value=""/>
+                        </Node>
+                        <Node name="JoinWhereClauses">
+                           <Node name="InputAttributes">
+                              <KeyValue key="CO.TMCODE=CMV.TMCODE" value=""/>
+                           </Node>
+                        </Node>
+                        <KeyValue key="SelectClause" value="CMV.PAYMENT_METHOD_IND" />
+                        <KeyValue key="ConditionWhereClause" value="CMV.PAYMENT_METHOD_IND"  />
+                    </Node>
+                <Node name="CSP_ACCNO">
+                    <Node name="FromClauses">
+                        <KeyValue key="PAYMENT_ALL PA" value="" />
+                    </Node>
+                    <Node name="JoinWhereClauses">
+                        <Node name="InputAttributes">
+                            <KeyValue key="CU.CUSTOMER_ID = PA.CUSTOMER_ID" value="" />
+                            <KeyValue key="PA.PMOD IS NULL OR PA.PMOD='X'" value="" />
+                        </Node>
+                    </Node>
+                   <KeyValue key="ConditionWhereClause" value="PA.BANKACCNO"/>
+                   <KeyValue key="SupportsWildcardSearch" type="Boolean" value="false"/>
+                </Node>
+                <Node name="IBAN">
+                    <Node name="FromClauses">
+                        <KeyValue key="PAYMENT_ALL PA" value="" />
+                    </Node>
+                    <Node name="JoinWhereClauses">
+                        <Node name="InputAttributes">
+                            <KeyValue key="CU.CUSTOMER_ID = PA.CUSTOMER_ID" value="" />
+                            <KeyValue key="PA.PMOD IS NULL OR PA.PMOD='X'" value="" />
+                        </Node>
+                    </Node>
+                   <KeyValue key="ConditionWhereClause" value="PA.IBAN"/>
+                   <KeyValue key="SupportsWildcardSearch" type="Boolean" value="false"/>
+                </Node>
+                <Node name="DOCUMENT_ID">
+                    <Node name="FromClauses">
+                        <KeyValue key="ORDERHDR_ALL O" value="" />
+                    </Node>
+                    <Node name="JoinWhereClauses">
+                        <Node name="InputAttributes">
+                            <KeyValue key="CU.CUSTOMER_ID = O.CUSTOMER_ID" value="" />
+                        </Node>
+                    </Node>
+                    <KeyValue key="ConditionWhereClause" value="O.OHXACT"/>
+                </Node>
+                <Node name="DOCUMENT_ID_PUB">
+                    <Node name="FromClauses">
+                        <KeyValue key="ORDERHDR_ALL O" value="" />
+                    </Node>
+                    <Node name="JoinWhereClauses">
+                        <Node name="InputAttributes">
+                            <KeyValue key="CU.CUSTOMER_ID = O.CUSTOMER_ID" value="" />
+                        </Node>
+                    </Node>
+                    <KeyValue key="SelectClause" value="O.OHREFNUM"/>
+                    <KeyValue key="ConditionWhereClause" value="O.OHREFNUM"/>
+                    <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                </Node>
+                 <Node name="DOCUMENT_REF_DATE">
+                    <Node name="FromClauses">
+                        <KeyValue key="ORDERHDR_ALL O" value="" />
+                    </Node>
+                    <Node name="JoinWhereClauses">
+                        <Node name="InputAttributes">
+                            <KeyValue key="CU.CUSTOMER_ID = O.CUSTOMER_ID" value="" />
+                        </Node>
+                    </Node>
+                    <KeyValue key="ConditionWhereClause" value="O.OHREFDATE"/>
+                </Node>
+
+                </Node>
+            </Node>
+
+            <!-- ===================================================================================== -->
+            <!--  Settings for the "SearchContractsEvenWithoutServices"  -  This version will find all the contracts, even without     -->
+            <!-- services  assigned. This searcher will not return directory number related information, like directory number, VPN_ID -->
+            <!-- ===================================================================================== -->
+            <Node name="SearchContractsEvenWithoutServices">
+                <KeyValue key="MaxResultSetSize" type="Integer" value="500"/>
+                <KeyValue key="DefaultResultSetSize" type="Integer" value="50"/>
+          <KeyValue key="DefaultOutput" value="BusinessUnitId, ContractType, ContractTypeId, CustomerCode, Lastname, Firstname, HlCode, Street, StreetNo, Zipcode, City, ContractId, ContractStatus, TechnologyFlavourId, NetworkId, CustomerId, CustomerIdPub, RelationType, External, Tmcode,ActivationDate, CoIdPub, MainCoId, MainCoIdPub, Name, DESCRIPTION, ForeignNetwork, Carrier, HomeBID, ForeignBID, ReratingCandidate, PAYMENT_METHOD_IND"/>
+          <KeyValue key="BaseTable" value="CONTRACT_ALL" />
+          <KeyValue key="BaseTableAlias" value="CO" />
+          <KeyValue key="DefaultNumberOfCharactersBeforeWildcard" type="Integer" value="3"/>
+          <KeyValue key="FromClauseOrder" value="CCONTACT CC, CUSTOMER_ALL CU, CONTRACT_ALL CO, DIRECTORY_NUMBER DN, PROFILE_SERVICE CCS, DIRECTORY_NUMBER_BLOCK DNB" />
+          <!--   <KeyValue key="Hint" value="/*+ RULE */" /> -->
+                    <Node name="DefaultClauses">
+                     <Node name="FromClauses">
+                            <KeyValue key="CUSTOMER_ALL CU" value=""/>
+                            <KeyValue key="CCONTACT CC" value=""/>
+                     </Node>
+                     <Node name="WhereClauses">
+                            <KeyValue key="CO.CUSTOMER_ID=CU.CUSTOMER_ID" value=""/>
+                            <KeyValue key="CC.CUSTOMER_ID=CU.CUSTOMER_ID" value=""/>
+                     </Node>
+               </Node>
+                <Node name="Attributes">
+                    <Node name="Non_pending_only">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="not exists (select null from mdsrrtab mds where mds.co_id = CO.co_id and mds.status in (1, 2, 4, 10, 14, 15, 16))" value="" />
+                                <KeyValue key="not exists (select null from porting_request pr where pr.co_id = CO.co_id and pr.status not in (&apos;s&apos;, &apos;l&apos;, &apos;c&apos;))" value="" />
+                            </Node>
+                        </Node>
+                    </Node>
+                    <!-- defect 339746 NiJ -->
+                    <Node name="User">
+                        <KeyValue key="SelectClause" value="CO.CO_USERLASTMOD"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_USERLASTMOD"/>
+                    </Node>
+                      <!-- 339746 -->
+            <Node name="Tmcode">
+              <KeyValue key="SelectClause" value="CO.TMCODE"/>
+            </Node>
+                  <Node name="BusinessUnit">
+              <KeyValue key="ConditionWhereClause" value="CO.BUSINESS_UNIT_ID"/>
+            </Node>
+               <Node name="filterByUsersBusinessUnit">
+                    <KeyValue key="Operator" value="IN" />
+                    <KeyValue key="ConditionWhereClause" value="CO.BUSINESS_UNIT_ID" />
+              </Node>
+                    <Node name="ContractTypeId">
+                        <KeyValue key="SelectClause" value="CO.CONTRACT_TYPE_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CONTRACT_TYPE_ID"/>
+                    </Node>
+                    <Node name="ContractTypes">
+                          <KeyValue key="ConditionWhereClause" value="CO.CONTRACT_TYPE_ID"/>
+                        <KeyValue key="Operator" value="IN"/>
+                  </Node>
+                    <Node name="ContractType">
+                        <KeyValue key="SelectClause" value="DECODE(CO.TYPE, &apos;S&apos;, &apos;C&apos;,&apos;A&apos;, &apos;A&apos;)"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.TYPE"/>
+                    </Node>
+                    <Node name="NOT_RELATED">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_REL_TYPE IS NULL OR CO.CO_REL_TYPE != &apos;R&apos;" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                        <Node name="ForeignNetwork">
+                            <KeyValue key="SelectClause" value="CO.REMOTE_PLCODE"/>
+                            <KeyValue key="ConditionWhereClause" value="CO.REMOTE_PLCODE"/>
+                        </Node>
+                        <Node name="Carrier">
+                            <KeyValue key="SelectClause" value="CO.CONTRACT_ID_LEC"/>
+                            <KeyValue key="ConditionWhereClause" value="CO.CONTRACT_ID_LEC"/>
+                        </Node>
+                      <Node name="HomeBID">
+                          <KeyValue key="SelectClause" value="CO.HPLMN_BID_GROUP_ID"/>
+                      </Node>
+                      <Node name="ForeignBID">
+                          <KeyValue key="SelectClause" value="CO.VPLMN_BID_GROUP_ID"/>
+                      </Node>
+
+            <Node name="ActivationDate">
+              <KeyValue key="SelectClause" value="CO.CO_ACTIVATED"/>
+            </Node>
+
+                    <Node name="ContractId">
+                        <KeyValue key="SelectClause" value="CO.CO_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_ID"/>
+                    </Node>
+
+                    <Node name="CoIdPub">
+                        <KeyValue key="SelectClause" value="CO.CO_CODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_CODE"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                   <Node name="BusinessUnitId">
+                        <KeyValue key="SelectClause" value="CO.BUSINESS_UNIT_ID"/>
+                    </Node>
+
+                    <Node name="CustomerId">
+                        <KeyValue key="SelectClause" value="CO.CUSTOMER_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CUSTOMER_ID"/>
+                    </Node>
+
+                    <Node name="CustomerIdPub">
+                        <KeyValue key="SelectClause" value="CU.CUSTNUM"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.CUSTNUM"/>
+                         <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true" />
+                         <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="5"/>
+                    </Node>
+
+            <Node name="PartyTypeId">
+                        <KeyValue key="SelectClause" value="CU.PARTY_TYPE_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.PARTY_TYPE_ID"/>
+                    </Node>
+
+                    <Node name="TechnologyFlavourId">
+                        <KeyValue key="SelectClause" value="CO.SUBM_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.SUBM_ID"/>
+                    </Node>
+
+                    <Node name="NetworkId">
+                        <KeyValue key="SelectClause" value="CO.PLCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.PLCODE"/>
+                    </Node>
+
+            <Node name="LAMemberContractInc">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CU.CSLEVEL > 0 and CU.CSLEVEL !=40" value=""/>
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="1"/>
+                    </Node>
+            <Node name="LAMemberContractExc">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CU.CSLEVEL = 0 or CU.CSLEVEL = 40 or CU.CSLEVEL IS NULL" value=""/>
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="1"/>
+
+                    </Node>
+
+                    <Node name="POFUContract">
+                        <Node name="FromClauses">
+                            <KeyValue key="PROFILE_SERVICE CCS" value=""/>
+                        </Node>
+                    </Node>
+
+                    <Node name="SnCode">
+                      <Node name="FromClauses">
+                            <KeyValue key="PROFILE_SERVICE CCS" value=""/>
+                        </Node>
+                         <Node name="JoinWhereClauses">
+                          <Node name="InputAttributes">
+                            <KeyValue key="CO.CO_ID=CCS.CO_ID" value=""/>
+                          </Node>
+                          </Node>
+                         <KeyValue key="ConditionWhereClause" value="CCS.SNCODE"/>
+                    </Node>
+
+                    <Node name="RelationType">
+                        <KeyValue key="SelectClause" value="CO.CO_REL_TYPE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_REL_TYPE" />
+                    </Node>
+
+                    <Node name="LowerExtension">
+                        <KeyValue key="SelectClause" value="DNB.LOWER_EXTENSION"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER_BLOCK DNB" value=""/>
+                            <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+                <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CAP.DN_ID=DNB.DN_ID" value=""/>
+                                <KeyValue key="CAP.DN_BLOCK_ID=DNB.DN_BLOCK_ID" value=""/>
+                                <KeyValue key="DN.BLOCK_IND = &apos;Y&apos;" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DNB.LOWER_EXTENSION"/>
+                    </Node>
+
+                    <Node name="UpperExtension">
+                        <KeyValue key="SelectClause" value="DNB.UPPER_EXTENSION"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER_BLOCK DNB" value=""/>
+                            <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+                <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CAP.DN_ID=DNB.DN_ID" value=""/>
+                                <KeyValue key="CAP.DN_BLOCK_ID=DNB.DN_BLOCK_ID" value=""/>
+                                <KeyValue key="DN.BLOCK_IND = &apos;Y&apos;" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DNB.UPPER_EXTENSION"/>
+                    </Node>
+
+                    <Node name="DirectoryNo">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(DN.DN_NUM)  OVER (PARTITION BY CAP.CO_ID ORDER BY CAP.MAIN_DIRNUM, DN.DIRNUM_NPCODE, CAP.SEQNO DESC) AS DN_NUM"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+                            <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CAP.CO_ID" value=""/>
+                                <KeyValue key="CAP.DN_ID=DN.DN_ID" value=""/>
+                           </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DN.DN_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+
+            <Node name="DNNumberingPlan">
+                       <KeyValue key="SelectClause" value="FIRST_VALUE(DN.DIRNUM_NPCODE)  OVER (PARTITION BY CAP.CO_ID ORDER BY CAP.MAIN_DIRNUM, DN.DIRNUM_NPCODE, CAP.SEQNO DESC) AS DIRNUM_NPCODE"  />
+                          <Node name="FromClauses">
+                <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+                <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="OutputAttributes">
+                                <KeyValue key="CO.CO_ID=CAP.CO_ID" value=""/>
+                                <KeyValue key="CAP.DN_ID=DN.DN_ID" value=""/>
+                            </Node>
+
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CAP.CO_ID" value=""/>
+                                <KeyValue key="CAP.DN_ID=DN.DN_ID" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DN.DIRNUM_NPCODE"/>
+                    </Node>
+                    <Node name="CustomerCode">
+                        <KeyValue key="SelectClause" value="CU.CUSTCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.CUSTCODE"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+                    <Node name="CS_STATUS">
+                        <KeyValue key="SelectClause" value="CU.CSTYPE"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.CSTYPE"/>
+                    </Node>
+            <Node name="MainCoId">
+                        <KeyValue key="SelectClause" value="CO2.CO_ID MAIN_CO_ID"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="CONTRACT_ALL CO2" value=""/>
+                            <KeyValue key="CONTRACT_RELATION COR" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="OutputAttributes">
+                                <KeyValue key="CO.CO_ID = COR.REL_CO_ID (+)" value=""/>
+                                <KeyValue key="COR.MAIN_CO_ID = CO2.CO_ID(+)" value=""/>
+                            </Node>
+
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID = COR.REL_CO_ID (+)" value=""/>
+                                <KeyValue key="COR.MAIN_CO_ID = CO2.CO_ID(+)" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                    <Node name="MainCoIdPub">
+                        <KeyValue key="SelectClause" value="CO2.CO_CODE MAIN_CO_ID_PUB"/>
+
+                        <Node name="FromClauses">
+                             <KeyValue key="CONTRACT_ALL CO2" value=""/>
+                            <KeyValue key="CONTRACT_RELATION COR" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="OutputAttributes">
+                                <KeyValue key="CO.CO_ID = COR.REL_CO_ID (+)" value=""/>
+                                <KeyValue key="COR.MAIN_CO_ID = CO2.CO_ID(+)" value=""/>
+                            </Node>
+
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID = COR.REL_CO_ID (+)" value=""/>
+                                <KeyValue key="COR.MAIN_CO_ID = CO2.CO_ID(+)" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                    <!-- If this criteria is set to true, the Name, Lastname, Firstname, Matchcode Street, Streetno, Zipcode, City represents the installation address,
+                    otherwise, these tags represents the billing address -->
+                   <Node name="UseInstallationAddress">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CC.CCUSER_INST =&apos;X&apos;" value=""/>
+                            </Node>
+                        </Node>
+            </Node>
+            <Node name="CCBILL">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CC.CCBILL =&apos;X&apos;" value=""/>
+                            </Node>
+                        </Node>
+            </Node>
+
+                    <Node name="Name">
+                        <KeyValue key="SelectClause" value="CC.CCNAME"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCNAME"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="Lastname">
+                        <KeyValue key="SelectClause" value="CC.CCLNAME"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCLNAME"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="Firstname">
+                        <KeyValue key="SelectClause" value="CC.CCFNAME"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCFNAME"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="MatchCode">
+                      <KeyValue key="SelectClause" value="CC.CCLNAMEMC"/>
+                      <KeyValue key="ConditionWhereClause"
+                        value="CC.CCLNAMEMC"/>
+                      <KeyValue key="SupportsWildcardSearch"
+                        type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch"
+                        type="Boolean" value="true"/>
+                    </Node>
+                    <Node name="Street">
+                        <KeyValue key="SelectClause" value="CC.CCSTREET"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCSTREET"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="StreetNo">
+                        <KeyValue key="SelectClause" value="CC.CCSTREETNO"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCSTREETNO"/>
+                    </Node>
+
+                    <Node name="Zipcode">
+                        <KeyValue key="SelectClause" value="CC.CCZIP"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCZIP"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="3"/>
+                    </Node>
+
+                    <Node name="City">
+                        <KeyValue key="SelectClause" value="CC.CCCITY"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCCITY"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+            <Node name="ADR_COMPNO">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSCOMPREGNO"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+                  <Node name="ADR_EMAIL">
+                      <KeyValue key="ConditionWhereClause" value="CC.CCEMAIL"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+            <Node name="ADR_SOCIALSENO">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSSOCIALSECNO"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+                  <Node name="ADR_BIRTHDT">
+                      <KeyValue key="ConditionWhereClause" value="CC.BIRTHDATE"/>
+                  </Node>
+                  <Node name="COUNTRY_ID">
+                      <KeyValue key="ConditionWhereClause" value="CC.COUNTRY"/>
+                  </Node>
+                  <Node name="ADR_DRIVELICENCE">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSDRIVELICENCE"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+                  <Node name="ADR_PASSPORTNO">
+                      <KeyValue key="ConditionWhereClause" value="CC.PASSPORTNO"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+                  <Node name="ADR_STATE">
+                      <KeyValue key="ConditionWhereClause" value="CC.CCSTATE"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      </Node>
+                  <Node name="ADR_TAXNO">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSCOMPTAXNO"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+                  <Node name="CSP_ACCNO">
+                        <Node name="FromClauses">
+                        <KeyValue key="PAYMENT_ALL PA" value="" />
+                        </Node>
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                            <KeyValue key="CU.CUSTOMER_ID = PA.CUSTOMER_ID" value="" />
+                            <KeyValue key="PA.PMOD IS NULL OR PA.PMOD='X'" value="" />
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="PA.BANKACCNO"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="false"/>
+                  </Node>
+                  <Node name="IBAN">
+                        <Node name="FromClauses">
+                        <KeyValue key="PAYMENT_ALL PA" value="" />
+                        </Node>
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                            <KeyValue key="CU.CUSTOMER_ID = PA.CUSTOMER_ID" value="" />
+                            <KeyValue key="PA.PMOD IS NULL OR PA.PMOD='X'" value="" />
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="PA.IBAN"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="false"/>
+                  </Node>
+                  <Node name="DOCUMENT_ID">
+                        <Node name="FromClauses">
+                        <KeyValue key="ORDERHDR_ALL O" value="" />
+                        </Node>
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                            <KeyValue key="CU.CUSTOMER_ID = O.CUSTOMER_ID" value="" />
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="O.OHXACT"/>
+                  </Node>
+                  <Node name="DOCUMENT_ID_PUB">
+                        <Node name="FromClauses">
+                        <KeyValue key="ORDERHDR_ALL O" value="" />
+                        </Node>
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                            <KeyValue key="CU.CUSTOMER_ID = O.CUSTOMER_ID" value="" />
+                            </Node>
+                        </Node>
+                        <KeyValue key="SelectClause" value="O.OHREFNUM"/>
+                        <KeyValue key="ConditionWhereClause" value="O.OHREFNUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                  </Node>
+                  <Node name="DOCUMENT_REF_DATE">
+                        <Node name="FromClauses">
+                        <KeyValue key="ORDERHDR_ALL O" value="" />
+                        </Node>
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                            <KeyValue key="CU.CUSTOMER_ID = O.CUSTOMER_ID" value="" />
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="O.OHREFDATE"/>
+                  </Node>
+                  <Node name="ContractStatus">
+                        <KeyValue key="SelectClause" value="DECODE(CO.CH_STATUS, &apos;o&apos;,1, &apos;a&apos;, 2, &apos;s&apos;,3,&apos;d&apos;,4)" />
+                        <KeyValue key="ConditionWhereClause" value="CO.CH_STATUS"/>
+                  </Node>
+
+                    <Node name="StorageMediumNo">
+                      <KeyValue key="SelectClause" value="CDSP.SM_NUM"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="CURR_CO_DEVICE_SERVICE_PORT CDSP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CDSP.CO_ID" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="CDSP.SM_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+                    </Node>
+
+                    <Node name="MainDirectoryNo">
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+              <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CAP.CO_ID" value=""/>
+                                <KeyValue key="CAP.DN_ID=DN.DN_ID" value=""/>
+                                <KeyValue key="CAP.MAIN_DIRNUM=&apos;X&apos;" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DN.DN_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+                    </Node>
+
+                    <Node name="BillNo">
+                        <Node name="FromClauses">
+                            <KeyValue key="ORDERHDR_ALL OH" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=OH.CO_ID" value=""/>
+                                <KeyValue key="OH.OHSTATUS=&apos;IN&apos;" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="OH.OHREFNUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+            <Node name="CALL_DETAIL">
+                        <KeyValue key="ConditionWhereClause" value="CO.CDS_GENERATION" />
+                    </Node>
+            <Node name="CALL_DETAIL_ALL">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CDS_GENERATION IS NOT NULL" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                    <Node name="CompositeProduct">
+                        <KeyValue key="SelectClause" value="CO.TMCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.TMCODE"/>
+                    </Node>
+
+                    <Node name="Technology">
+                        <KeyValue key="SelectClause" value="CO.SCCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.SCCODE"/>
+                    </Node>
+
+                    <Node name="Port">
+                      <KeyValue key="SelectClause" value="PO.PORT_NUM"/>
+                        <Node name="FromClauses">
+                            <KeyValue key="PORT PO" value=""/>
+                            <KeyValue key="CONTR_SERVICES_PORT CSP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="(PO.PORT_ID=CSP.PORT_ID AND CSP.CO_ID=CO.CO_ID)" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="PO.PORT_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+                    </Node>
+
+            <Node name="DevPort">
+              <KeyValue key="SelectClause" value="PO.PORT_NUM"/>
+              <Node name="FromClauses">
+                <KeyValue key="PORT PO" value=""/>
+                <KeyValue key="CURR_CO_DEVICE CD" value=""/>
+              </Node>
+              <Node name="JoinWhereClauses">
+                <Node name="InputAttributes">
+                  <KeyValue key="(PO.PORT_ID=CD.PORT_ID AND CD.CO_ID=CO.CO_ID)" value=""/>
+                </Node>
+              </Node>
+              <KeyValue key="ConditionWhereClause" value="PO.PORT_NUM"/>
+              <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+              <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+            </Node>
+                    <Node name="HlCode">
+                        <KeyValue key="SelectClause" value="CDSP.HLCODE"/>
+                        <Node name="FromClauses">
+                            <KeyValue key="CURR_CO_DEVICE_SERVICE_PORT CDSP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CDSP.CO_ID(+)" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+                    <Node name="DealerId">
+                        <KeyValue key="ConditionWhereClause" value="CO.DEALER_ID"/>
+                    </Node>
+
+                   <Node name="External">
+              <KeyValue key="SelectClause" value="DECODE(CMV.PROVISION_EXT,null, &apos;False&apos;, &apos;X&apos;, &apos;True&apos;)"/>
+              <Node name="FromClauses">
+                <KeyValue key="RATEPLAN CMV" value=""/>
+              </Node>
+              <Node name="JoinWhereClauses">
+                <Node name="InputAttributes">
+                  <KeyValue key="CO.TMCODE=CMV.TMCODE(+)" value=""/>
+                </Node>
+              </Node>
+             <KeyValue key="ConditionWhereClause" value="CMV.PROVISION_EXT" />
+            </Node>
+
+                    <!-- When searching for the external VPN Members, we can get them from the CURR_CONTR_SERVICES_CAP table-->
+                    <Node name="VPNId">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(DN.VPN_ID) OVER (PARTITION BY CAP.CO_ID ORDER BY CAP.MAIN_DIRNUM, DN.DIRNUM_NPCODE, CAP.SEQNO DESC)" />
+                        <KeyValue key="ConditionWhereClause" value="DN.VPN_ID"/>
+                    </Node>
+                <Node name="VpnIdPub">
+                    <Node name="FromClauses">
+                        <KeyValue key="VIRTUAL_PRIVATE_NETWORK VPN" type="String" value="" />
+                        <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" type="String" value="" />
+                    </Node>
+                    <Node name="JoinWhereClauses">
+                        <Node name="InputAttributes">
+                            <KeyValue key="CO.CO_ID=CAP.CO_ID (+)" value=""/>
+                            <KeyValue key="VPN.VPN_ID = CAP.VPN_ID" type="String"  value="" />
+                        </Node>
+                    </Node>
+                    <KeyValue key="ConditionWhereClause" type="String" value="VPN.VPN_NAME"  />
+                    <KeyValue key="SupportsWildcardSearch" type="Boolean"  value="true" />
+                </Node>
+                <Node name="VpnPrivateNumber">
+                    <Node name="JoinWhereClauses">
+                        <Node name="InputAttributes">
+                            <KeyValue key="DN.DN_ID = CAP.DN_ID" value="" />
+                            <KeyValue key="DN.VPN_ID IS NOT NULL" value="" />
+                        </Node>
+                    </Node>
+                    <KeyValue key="ConditionWhereClause" value="DN.DN_NUM"/>
+                    <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                </Node>
+
+                    <Node name="ResultSize">
+                        <KeyValue key="ConditionWhereClause" value="ROWNUM"/>
+                        <KeyValue key="Operator" value="&lt;"/>
+                    </Node>
+
+                    <Node name="DESCRIPTION">
+                        <KeyValue key="SelectClause" value="CO.DESCRIPTION"/>
+                <KeyValue key="ConditionWhereClause" value="CO.DESCRIPTION"/>
+                <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+            </Node>
+
+            <Node name="ReratingCandidate">
+              <KeyValue key="SelectClause" value="CO.RR_CANDIDATE"/>
+            </Node>
+            <Node name="MarkedForRerating">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.RR_CANDIDATE IS NOT NULL" value=""/>
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="1"/>
+                    </Node>
+            <Node name="NotMarkedForRerating">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.RR_CANDIDATE IS NULL" value=""/>
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="1"/>
+                    </Node>
+                  <Node name="FAMILY_ID">
+                       <Node name="FromClauses">
+                         <KeyValue key="CUSTOMER_FAMILY CF" value="" />
+                       </Node>
+                       <Node name="JoinWhereClauses">
+                         <Node name="InputAttributes">
+                            <KeyValue key="CU.CUSTOMER_ID=CF.CUSTOMER_ID" value="" />
+                            <KeyValue key="CF.HISTNO = (SELECT MAX(CF2.HISTNO) FROM CUSTOMER_FAMILY CF2 WHERE CF2.CUSTOMER_ID = CF.CUSTOMER_ID)" value="" />
+                            <KeyValue key="CO.CH_STATUS IN (&apos;a&apos;,&apos;s&apos;)"             value=""             />
+                            <KeyValue key="NOT EXISTS (SELECT 1 FROM PROFILE_SERVICE PS, MPULKNXV XV, PR_SERV_STATUS_HIST PSSH WHERE PS.CO_ID = CO.CO_ID AND PS.SNCODE = XV.SNCODE AND XV.SRV_SUBTYPE = &apos;B&apos; AND PS.CO_ID = PSSH.CO_ID  AND PS.PROFILE_ID = PSSH.PROFILE_ID AND PS.SNCODE = PSSH.SNCODE AND PSSH.HISTNO = (SELECT MAX(SSH.HISTNO) FROM PR_SERV_STATUS_HIST SSH
+         WHERE SSH.CO_ID=PSSH.CO_ID  AND SSH.SNCODE=PSSH.SNCODE  AND SSH.PROFILE_ID=PSSH.PROFILE_ID) AND PSSH.STATUS in (&apos;O&apos;,&apos;A&apos;,&apos;S&apos;))" value=""/>
+                         </Node>
+                       </Node>
+                       <KeyValue key="ConditionWhereClause" value="CF.FAMILY_ID" />
+                   </Node>
+                   <Node name="ExcludeCSContracts">
+                      <Node name="FromClauses">
+                          <KeyValue key="RATEPLAN CMV" value=""/>
+                          <KeyValue key="CHARGING_ENGINE CE" value=""/>
+                      </Node>
+
+                      <Node name="JoinWhereClauses">
+                          <Node name="InputAttributes">
+                              <KeyValue key="CMV.TMCODE = CO.TMCODE" value=""/>
+                              <KeyValue key="CMV.CHARGING_ENGINE_CODE = CE.CHARGING_ENGINE_CODE " value=""/>
+                              <KeyValue key="CE.SHDES = 'BSCS'" value=""/>
+                          </Node>
+                      </Node>
+                   </Node>
+
+                    <Node name="PAYMENT_METHOD_IND">
+                        <Node name="FromClauses">
+                           <KeyValue key="RATEPLAN CMV" value=""/>
+                        </Node>
+                        <Node name="JoinWhereClauses">
+                           <Node name="InputAttributes">
+                              <KeyValue key="CO.TMCODE=CMV.TMCODE" value=""/>
+                           </Node>
+                        </Node>
+                        <KeyValue key="SelectClause" value="CMV.PAYMENT_METHOD_IND" />
+                        <KeyValue key="ConditionWhereClause" value="CMV.PAYMENT_METHOD_IND"  />
+                    </Node>
+
+                </Node>
+            </Node>
+
+        <!-- ===================================================================================== -->
+        <!--  Settings for the "SearchLastContractForDnPorting"  -  This version will find the last contract -->
+        <!--  the passed directory number was/is assigned -->
+        <!-- ===================================================================================== -->
+            <Node name="SearchLastContractForDnPorting">
+                <KeyValue key="MaxResultSetSize" type="Integer" value="500"/>
+                <KeyValue key="DefaultResultSetSize" type="Integer" value="50"/>
+          <KeyValue key="DefaultOutput" value="BusinessUnitId, ContractType, ContractTypeId, DirectoryNo, CustomerCode, HlCode, Lastname, Firstname, Street, StreetNo, Zipcode, City, ContractId, ContractStatus, TechnologyFlavourId, NetworkId, CustomerId, CustomerIdPub, RelationType, VPNId, Tmcode,ActivationDate, CoIdPub, Name"/>
+                <KeyValue key="BaseTable" value="CONTRACT_ALL" />
+                <KeyValue key="BaseTableAlias" value="CO" />
+                <KeyValue key="DefaultNumberOfCharactersBeforeWildcard" type="Integer" value="3"/>
+          <KeyValue key="FromClauseOrder" value="CCONTACT CC, CUSTOMER_ALL CU, CONTRACT_ALL CO, DIRECTORY_NUMBER DN, PROFILE_SERVICE CCS, DIRECTORY_NUMBER_BLOCK DNB" />
+          <KeyValue key="Hint" value="" />
+                           <Node name="DefaultClauses">
+                     <Node name="FromClauses">
+                            <KeyValue key="CUSTOMER_ALL CU" value=""/>
+                            <KeyValue key="CCONTACT CC" value=""/>
+                     </Node>
+                     <Node name="WhereClauses">
+                            <KeyValue key="CO.CUSTOMER_ID=CU.CUSTOMER_ID" value=""/>
+                            <KeyValue key="CC.CUSTOMER_ID=CU.CUSTOMER_ID" value=""/>
+                     </Node>
+               </Node>
+                <Node name="Attributes">
+                  <Node name="User">
+              <KeyValue key="SelectClause" value="CO.CO_USERLASTMOD"/>
+              <KeyValue key="ConditionWhereClause" value="CO.CO_USERLASTMOD"/>
+            </Node>
+            <Node name="BusinessUnit">
+              <KeyValue key="ConditionWhereClause" value="CO.BUSINESS_UNIT_ID"/>
+            </Node>
+               <Node name="filterByUsersBusinessUnit">
+                    <KeyValue key="Operator" value="IN" />
+                    <KeyValue key="ConditionWhereClause" value="CO.BUSINESS_UNIT_ID" />
+              </Node>
+                    <Node name="ContractTypeId">
+                        <KeyValue key="SelectClause" value="CO.CONTRACT_TYPE_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CONTRACT_TYPE_ID"/>
+                    </Node>
+                    <Node name="ContractTypes">
+                          <KeyValue key="ConditionWhereClause" value="CO.CONTRACT_TYPE_ID"/>
+                        <KeyValue key="Operator" value="IN"/>
+                      </Node>
+                    <Node name="ContractType">
+                        <KeyValue key="SelectClause" value="DECODE(CO.TYPE, &apos;S&apos;, &apos;C&apos;,&apos;A&apos;, &apos;A&apos;)"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.TYPE"/>
+                    </Node>
+                    <Node name="NOT_RELATED">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_REL_TYPE IS NULL OR CO.CO_REL_TYPE != &apos;R&apos;" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                        <Node name="ForeignNetwork">
+                            <KeyValue key="ConditionWhereClause" value="CO.REMOTE_PLCODE"/>
+                        </Node>
+                        <Node name="Carrier">
+                            <KeyValue key="ConditionWhereClause" value="CO.CONTRACT_ID_LEC"/>
+                        </Node>
+
+
+            <Node name="Tmcode">
+              <KeyValue key="SelectClause" value="CO.TMCODE"/>
+            </Node>
+
+            <Node name="ActivationDate">
+              <KeyValue key="SelectClause" value="CO.CO_ACTIVATED"/>
+            </Node>
+
+                    <Node name="ContractId">
+                        <KeyValue key="SelectClause" value="CO.CO_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_ID"/>
+                    </Node>
+
+                    <Node name="CoIdPub">
+                        <KeyValue key="SelectClause" value="CO.CO_CODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_CODE"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="BusinessUnitId">
+                        <KeyValue key="SelectClause" value="CO.BUSINESS_UNIT_ID"/>
+                    </Node>
+
+                    <Node name="CustomerId">
+                        <KeyValue key="SelectClause" value="CO.CUSTOMER_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CUSTOMER_ID"/>
+                    </Node>
+
+                    <Node name="CustomerIdPub">
+                        <KeyValue key="SelectClause" value="CU.CUSTNUM"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.CUSTNUM"/>
+                         <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true" />
+                         <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="5"/>
+                    </Node>
+
+                    <Node name="PartyTypeId">
+                        <KeyValue key="SelectClause" value="CU.PARTY_TYPE_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.PARTY_TYPE_ID"/>
+                    </Node>
+
+                    <Node name="TechnologyFlavourId">
+                        <KeyValue key="SelectClause" value="CO.SUBM_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.SUBM_ID"/>
+                    </Node>
+
+                    <Node name="NetworkId">
+                        <KeyValue key="SelectClause" value="CO.PLCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.PLCODE"/>
+                    </Node>
+
+            <Node name="LAMemberContractInc">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CU.CSLEVEL > 0 and CU.CSLEVEL !=40" value=""/>
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="1"/>
+                    </Node>
+            <Node name="LAMemberContractExc">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CU.CSLEVEL = 0 or CU.CSLEVEL = 40 or CU.CSLEVEL IS NULL" value=""/>
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="1"/>
+
+                    </Node>
+                    <Node name="POFUContract">
+                        <Node name="FromClauses">
+                            <KeyValue key="PROFILE_SERVICE CCS" value=""/>
+                        </Node>
+                    </Node>
+
+                    <Node name="SnCode">
+                      <Node name="FromClauses">
+                            <KeyValue key="PROFILE_SERVICE CCS" value=""/>
+                        </Node>
+                         <Node name="JoinWhereClauses">
+                          <Node name="InputAttributes">
+                               <KeyValue key="CO.CO_ID=CCS.CO_ID" value=""/>
+                          </Node>
+                          </Node>
+                         <KeyValue key="ConditionWhereClause" value="CCS.SNCODE"/>
+                    </Node>
+
+                    <Node name="RelationType">
+                        <KeyValue key="SelectClause" value="CO.CO_REL_TYPE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_REL_TYPE" />
+                    </Node>
+
+                    <Node name="LowerExtension">
+                        <KeyValue key="SelectClause" value="DNB.LOWER_EXTENSION"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER_BLOCK DNB" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CAP.DN_ID=DNB.DN_ID" value=""/>
+                                <KeyValue key="CAP.DN_BLOCK_ID=DNB.DN_BLOCK_ID" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DNB.LOWER_EXTENSION"/>
+                    </Node>
+
+                    <Node name="UpperExtension">
+                        <KeyValue key="SelectClause" value="DNB.UPPER_EXTENSION"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER_BLOCK DNB" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CAP.DN_ID=DNB.DN_ID" value=""/>
+                                <KeyValue key="CAP.DN_BLOCK_ID=DNB.DN_BLOCK_ID" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DNB.UPPER_EXTENSION"/>
+                    </Node>
+
+                    <Node name="DirectoryNo">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(DN.DN_NUM)  OVER (PARTITION BY CAP.CO_ID ORDER BY CAP.MAIN_DIRNUM, DN.DIRNUM_NPCODE, CAP.SEQNO DESC) AS DN_NUM"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+                            <KeyValue key="CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="OutputAttributes">
+                                <KeyValue key="CO.CO_ID=CAP.CO_ID" value=""/>
+                                <KeyValue key="CAP.DN_ID=DN.DN_ID" value=""/>
+                           </Node>
+
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CAP.CO_ID" value=""/>
+                                <KeyValue key="CAP.DN_ID=DN.DN_ID AND CAP.CS_ACTIV_DATE IN (SELECT MAX(CAP2.CS_ACTIV_DATE) FROM CONTR_SERVICES_CAP CAP2 WHERE CAP2.DN_ID = DN.DN_ID) " value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DN.DN_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="CustomerCode">
+                        <KeyValue key="SelectClause" value="CU.CUSTCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.CUSTCODE"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+                    <Node name="CS_STATUS">
+                             <KeyValue key="SelectClause" value="CU.CSTYPE"/>
+                             <KeyValue key="ConditionWhereClause" value="CU.CSTYPE"/>
+                     </Node>
+
+                    <!-- If this criteria is set to true, the Name, Lastname, Firstname, Matchcode, Street, Streetno, Zipcode, City represents the installation address,
+                    otherwise, these tags represents the billing address -->
+                   <Node name="UseInstallationAddress">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CC.CCUSER_INST =&apos;X&apos;" value=""/>
+                            </Node>
+                        </Node>
+            </Node>
+            <Node name="CCBILL">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CC.CCBILL =&apos;X&apos;" value=""/>
+                            </Node>
+                        </Node>
+            </Node>
+
+                    <Node name="Name">
+                        <KeyValue key="SelectClause" value="CC.CCNAME"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCNAME"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="Lastname">
+                        <KeyValue key="SelectClause" value="CC.CCLNAME"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCLNAME"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="Firstname">
+                        <KeyValue key="SelectClause" value="CC.CCFNAME"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCFNAME"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="MatchCode">
+                      <KeyValue key="SelectClause" value="CC.CCLNAMEMC"/>
+                      <KeyValue key="ConditionWhereClause"
+                        value="CC.CCLNAMEMC"/>
+                      <KeyValue key="SupportsWildcardSearch"
+                        type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch"
+                        type="Boolean" value="true"/>
+                    </Node>
+                    <Node name="Street">
+                        <KeyValue key="SelectClause" value="CC.CCSTREET"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCSTREET"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="StreetNo">
+                        <KeyValue key="SelectClause" value="CC.CCSTREETNO"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCSTREETNO"/>
+                    </Node>
+
+                    <Node name="Zipcode">
+                        <KeyValue key="SelectClause" value="CC.CCZIP"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCZIP"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="3"/>
+                    </Node>
+
+                    <Node name="City">
+                        <KeyValue key="SelectClause" value="CC.CCCITY"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCCITY"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+              <Node name="ADR_COMPNO">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSCOMPREGNO"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+                  <Node name="ADR_EMAIL">
+                      <KeyValue key="ConditionWhereClause" value="CC.CCEMAIL"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+            <Node name="ADR_SOCIALSENO">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSSOCIALSECNO"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+                  <Node name="ADR_BIRTHDT">
+                      <KeyValue key="ConditionWhereClause" value="CC.BIRTHDATE"/>
+                  </Node>
+                  <Node name="COUNTRY_ID">
+                      <KeyValue key="ConditionWhereClause" value="CC.COUNTRY"/>
+                  </Node>
+                  <Node name="ADR_DRIVELICENCE">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSDRIVELICENCE"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+            <Node name="ADR_PASSPORTNO">
+              <KeyValue key="ConditionWhereClause" value="CC.PASSPORTNO"/>
+              <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+              <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+            </Node>
+            <Node name="ADR_STATE">
+                      <KeyValue key="ConditionWhereClause" value="CC.CCSTATE"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                  </Node>
+                  <Node name="ADR_TAXNO">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSCOMPTAXNO"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+
+                    <Node name="ContractStatus">
+                        <KeyValue key="SelectClause" value="DECODE(CO.CH_STATUS, &apos;o&apos;,1, &apos;a&apos;, 2, &apos;s&apos;,3,&apos;d&apos;,4) "/>
+              <KeyValue key="ConditionWhereClause" value="CO.CH_STATUS"/>
+                    </Node>
+
+                    <Node name="StorageMediumNo">
+                        <KeyValue key="SelectClause" value="CDSP.SM_NUM"/>
+              <Node name="FromClauses">
+                            <KeyValue key="CURR_CO_DEVICE_SERVICE_PORT CDSP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CDSP.CO_ID" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="CDSP.SM_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+                    </Node>
+
+                    <Node name="MainDirectoryNo">
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CAP.CO_ID" value=""/>
+                                <KeyValue key="CAP.DN_ID=DN.DN_ID" value=""/>
+                                <KeyValue key="CAP.MAIN_DIRNUM=&apos;X&apos;" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DN.DN_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+                    </Node>
+
+                    <Node name="BillNo">
+                        <Node name="FromClauses">
+                            <KeyValue key="ORDERHDR_ALL OH" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=OH.CO_ID" value=""/>
+                                <KeyValue key="OH.OHSTATUS=&apos;IN&apos;" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="OH.OHREFNUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+            <Node name="CALL_DETAIL">
+                        <KeyValue key="ConditionWhereClause" value="CO.CDS_GENERATION" />
+                    </Node>
+            <Node name="CALL_DETAIL_ALL">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CDS_GENERATION IS NOT NULL" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                    <Node name="CompositeProduct">
+                        <KeyValue key="SelectClause" value="CO.TMCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.TMCODE"/>
+                    </Node>
+
+                    <Node name="Technology">
+                        <KeyValue key="SelectClause" value="CO.SCCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.SCCODE"/>
+                    </Node>
+
+                    <Node name="Port">
+                        <KeyValue key="SelectClause" value="PO.PORT_NUM"/>
+              <Node name="FromClauses">
+                            <KeyValue key="PORT PO" value=""/>
+                            <KeyValue key="CONTR_SERVICES_PORT CSP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="(PO.PORT_ID=CSP.PORT_ID AND CSP.CO_ID=CO.CO_ID)" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="PO.PORT_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+                    </Node>
+
+            <Node name="DevPort">
+              <KeyValue key="SelectClause" value="PO.PORT_NUM"/>
+              <Node name="FromClauses">
+                <KeyValue key="PORT PO" value=""/>
+                <KeyValue key="CURR_CO_DEVICE CD" value=""/>
+              </Node>
+              <Node name="JoinWhereClauses">
+                <Node name="InputAttributes">
+                  <KeyValue key="(PO.PORT_ID=CD.PORT_ID AND CD.CO_ID=CO.CO_ID)" value=""/>
+                </Node>
+              </Node>
+              <KeyValue key="ConditionWhereClause" value="PO.PORT_NUM"/>
+              <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+              <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+            </Node>
+                    <Node name="HlCode">
+                        <KeyValue key="SelectClause" value="CDSP.HLCODE"/>
+                        <Node name="FromClauses">
+                            <KeyValue key="CURR_CO_DEVICE_SERVICE_PORT CDSP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CDSP.CO_ID" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+                    <Node name="DealerId">
+                        <KeyValue key="ConditionWhereClause" value="CO.DEALER_ID"/>
+                    </Node>
+
+                    <Node name="ResultSize">
+                        <KeyValue key="ConditionWhereClause" value="ROWNUM"/>
+                        <KeyValue key="Operator" value="&lt;"/>
+                    </Node>
+
+                    <!-- When searching for the external VPN Members, we can get them from the DIRECTORY_NUMBER table-->
+                    <Node name="VPNId">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(DN.VPN_ID) OVER (PARTITION BY CAP.CO_ID ORDER BY CAP.MAIN_DIRNUM, DN.DIRNUM_NPCODE, CAP.SEQNO DESC)" />
+                        <KeyValue key="ConditionWhereClause" value="DN.VPN_ID"/>
+                    </Node>
+                <Node name="VpnIdPub">
+                    <Node name="FromClauses">
+                        <KeyValue key="VIRTUAL_PRIVATE_NETWORK VPN" type="String" value="" />
+                    </Node>
+                    <Node name="JoinWhereClauses">
+                        <Node name="InputAttributes">
+                            <KeyValue key="CO.CO_ID=CAP.CO_ID (+)" value=""/>
+                            <KeyValue key="VPN.VPN_ID = CAP.VPN_ID" type="String"  value="" />
+                        </Node>
+                    </Node>
+                    <KeyValue key="ConditionWhereClause" type="String" value="VPN.VPN_NAME"  />
+                    <KeyValue key="SupportsWildcardSearch" type="Boolean"  value="true" />
+                </Node>
+                <Node name="VpnPrivateNumber">
+                    <Node name="JoinWhereClauses">
+                        <Node name="InputAttributes">
+                            <KeyValue key="DN.DN_ID = CAP.DN_ID" value="" />
+                            <KeyValue key="DN.VPN_ID IS NOT NULL" value="" />
+                        </Node>
+                    </Node>
+                    <KeyValue key="ConditionWhereClause" value="DN.DN_NUM"/>
+                    <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                </Node>
+
+                    <Node name="DESCRIPTION">
+                        <KeyValue key="SelectClause" value="CO.DESCRIPTION"/>
+                <KeyValue key="ConditionWhereClause" value="CO.DESCRIPTION"/>
+                <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+            </Node>
+
+                </Node>
+            </Node>
+
+
+
+            <!-- ===================================================================================== -->
+            <!-- Settings for "SearchContractsWithoutServicesAndDealerRestriction" -->
+            <!-- renamed from "SearchContractsEvenWithoutServicesWithoutDealerRestriction"  -->
+            <!-- This version will find all the contracts, even without services assigned.  -->
+            <!-- This searcher will not return directory number related information,   -->
+            <!-- like directory number, VPN_ID -->
+            <!-- The user - dealer restriction will be ignored -->
+            <!-- ===================================================================================== -->
+            <Node name="SearchContractsWithoutServicesAndDealerRestriction">
+                <KeyValue key="MaxResultSetSize" type="Integer" value="500"/>
+                <KeyValue key="DefaultResultSetSize" type="Integer" value="50"/>
+          <KeyValue key="DefaultOutput" value="BusinessUnitId, ContractType, ContractTypeId, HlCode, CustomerCode, Lastname, Firstname, Street, StreetNo, Zipcode, City, ContractId, ContractStatus, TechnologyFlavourId, NetworkId, CustomerId, CustomerIdPub, RelationType, External, Tmcode,ActivationDate, CoIdPub, MainCoId, MainCoIdPub, Name, DESCRIPTION, ForeignNetwork, Carrier, HomeBID, ForeignBID"/>
+          <KeyValue key="BaseTable" value="CONTRACT_ALL" />
+          <KeyValue key="BaseTableAlias" value="CO" />
+          <KeyValue key="DefaultNumberOfCharactersBeforeWildcard" type="Integer" value="3"/>
+          <KeyValue key="FromClauseOrder" value="CCONTACT CC, CUSTOMER_ALL CU, CONTRACT_ALL CO, DIRECTORY_NUMBER DN, PROFILE_SERVICE CCS, DIRECTORY_NUMBER_BLOCK DNB" />
+          <!--  <KeyValue key="Hint" value="/*+ RULE */" /> -->
+           <Node name="DefaultClauses">
+                     <Node name="FromClauses">
+                            <KeyValue key="CUSTOMER_ALL CU" value=""/>
+                            <KeyValue key="CCONTACT CC" value=""/>
+                     </Node>
+                     <Node name="WhereClauses">
+                            <KeyValue key="CO.CUSTOMER_ID=CU.CUSTOMER_ID" value=""/>
+                            <KeyValue key="CC.CUSTOMER_ID=CU.CUSTOMER_ID" value=""/>
+                     </Node>
+               </Node>
+                <Node name="Attributes">
+                    <Node name="Non_pending_only">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="not exists (select null from mdsrrtab mds where mds.co_id = CO.co_id and mds.status in (1, 2, 4, 10, 14, 15, 16))" value="" />
+                                <KeyValue key="not exists (select null from porting_request pr where pr.co_id = CO.co_id and pr.status not in (&apos;s&apos;, &apos;l&apos;, &apos;c&apos;))" value="" />
+                            </Node>
+                        </Node>
+                    </Node>
+                      <Node name="User">
+                           <KeyValue key="SelectClause" value="CO.CO_USERLASTMOD"/>
+                           <KeyValue key="ConditionWhereClause" value="CO.CO_USERLASTMOD"/>
+                      </Node>
+
+            <Node name="Tmcode">
+              <KeyValue key="SelectClause" value="CO.TMCODE"/>
+            </Node>
+                  <Node name="BusinessUnit">
+              <KeyValue key="ConditionWhereClause" value="CO.BUSINESS_UNIT_ID"/>
+            </Node>
+               <Node name="filterByUsersBusinessUnit">
+                    <KeyValue key="Operator" value="IN" />
+                    <KeyValue key="ConditionWhereClause" value="CO.BUSINESS_UNIT_ID" />
+              </Node>
+                    <Node name="ContractTypeId">
+                        <KeyValue key="SelectClause" value="CO.CONTRACT_TYPE_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CONTRACT_TYPE_ID"/>
+                    </Node>
+                    <Node name="ContractTypes">
+                          <KeyValue key="ConditionWhereClause" value="CO.CONTRACT_TYPE_ID"/>
+                        <KeyValue key="Operator" value="IN"/>
+                  </Node>
+                    <Node name="ContractType">
+                        <KeyValue key="SelectClause" value="DECODE(CO.TYPE, &apos;S&apos;, &apos;C&apos;,&apos;A&apos;, &apos;A&apos;)"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.TYPE"/>
+                    </Node>
+                    <Node name="NOT_RELATED">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_REL_TYPE IS NULL OR CO.CO_REL_TYPE != &apos;R&apos;" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                        <Node name="ForeignNetwork">
+                            <KeyValue key="SelectClause" value="CO.REMOTE_PLCODE"/>
+                            <KeyValue key="ConditionWhereClause" value="CO.REMOTE_PLCODE"/>
+                        </Node>
+                        <Node name="Carrier">
+                            <KeyValue key="SelectClause" value="CO.CONTRACT_ID_LEC"/>
+                            <KeyValue key="ConditionWhereClause" value="CO.CONTRACT_ID_LEC"/>
+                        </Node>
+                      <Node name="HomeBID">
+                          <KeyValue key="SelectClause" value="CO.HPLMN_BID_GROUP_ID"/>
+                      </Node>
+                      <Node name="ForeignBID">
+                          <KeyValue key="SelectClause" value="CO.VPLMN_BID_GROUP_ID"/>
+                      </Node>
+
+            <Node name="ActivationDate">
+              <KeyValue key="SelectClause" value="CO.CO_ACTIVATED"/>
+            </Node>
+
+                    <Node name="ContractId">
+                        <KeyValue key="SelectClause" value="CO.CO_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_ID"/>
+                    </Node>
+
+                    <Node name="CoIdPub">
+                        <KeyValue key="SelectClause" value="CO.CO_CODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_CODE"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                   <Node name="BusinessUnitId">
+                        <KeyValue key="SelectClause" value="CO.BUSINESS_UNIT_ID"/>
+                    </Node>
+
+                    <Node name="CustomerId">
+                        <KeyValue key="SelectClause" value="CO.CUSTOMER_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CUSTOMER_ID"/>
+                    </Node>
+
+                    <Node name="CustomerIdPub">
+                        <KeyValue key="SelectClause" value="CU.CUSTNUM"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.CUSTNUM"/>
+                         <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true" />
+                         <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="5"/>
+                    </Node>
+
+            <Node name="PartyTypeId">
+                        <KeyValue key="SelectClause" value="CU.PARTY_TYPE_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.PARTY_TYPE_ID"/>
+                    </Node>
+
+                    <Node name="TechnologyFlavourId">
+                        <KeyValue key="SelectClause" value="CO.SUBM_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.SUBM_ID"/>
+                    </Node>
+
+                    <Node name="NetworkId">
+                        <KeyValue key="SelectClause" value="CO.PLCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.PLCODE"/>
+                    </Node>
+
+            <Node name="LAMemberContractInc">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CU.CSLEVEL > 0 and CU.CSLEVEL !=40" value=""/>
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="1"/>
+                    </Node>
+            <Node name="LAMemberContractExc">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CU.CSLEVEL = 0 or CU.CSLEVEL = 40 or CU.CSLEVEL IS NULL" value=""/>
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="1"/>
+
+                    </Node>
+
+                    <Node name="POFUContract">
+                        <Node name="FromClauses">
+                            <KeyValue key="PROFILE_SERVICE CCS" value=""/>
+                        </Node>
+                    </Node>
+
+                    <Node name="SnCode">
+                      <Node name="FromClauses">
+                            <KeyValue key="PROFILE_SERVICE CCS" value=""/>
+                        </Node>
+                         <Node name="JoinWhereClauses">
+                          <Node name="InputAttributes">
+                               <KeyValue key="CO.CO_ID=CCS.CO_ID" value=""/>
+                          </Node>
+                          </Node>
+                         <KeyValue key="ConditionWhereClause" value="CCS.SNCODE"/>
+                    </Node>
+
+                    <Node name="RelationType">
+                        <KeyValue key="SelectClause" value="CO.CO_REL_TYPE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_REL_TYPE" />
+                    </Node>
+
+                    <Node name="LowerExtension">
+                        <KeyValue key="SelectClause" value="DNB.LOWER_EXTENSION"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER_BLOCK DNB" value=""/>
+                            <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+                <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CAP.DN_ID=DNB.DN_ID" value=""/>
+                                <KeyValue key="CAP.DN_BLOCK_ID=DNB.DN_BLOCK_ID" value=""/>
+                                <KeyValue key="DN.BLOCK_IND = &apos;Y&apos;" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DNB.LOWER_EXTENSION"/>
+                    </Node>
+
+                    <Node name="UpperExtension">
+                        <KeyValue key="SelectClause" value="DNB.UPPER_EXTENSION"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER_BLOCK DNB" value=""/>
+                            <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+                <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CAP.DN_ID=DNB.DN_ID" value=""/>
+                                <KeyValue key="CAP.DN_BLOCK_ID=DNB.DN_BLOCK_ID" value=""/>
+                                <KeyValue key="DN.BLOCK_IND = &apos;Y&apos;" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DNB.UPPER_EXTENSION"/>
+                    </Node>
+
+                    <Node name="DirectoryNo">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(DN.DN_NUM)  OVER (PARTITION BY CAP.CO_ID ORDER BY CAP.MAIN_DIRNUM, DN.DIRNUM_NPCODE, CAP.SEQNO DESC) AS DN_NUM"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+                            <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CAP.CO_ID" value=""/>
+                                <KeyValue key="CAP.DN_ID=DN.DN_ID" value=""/>
+                           </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DN.DN_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+
+            <Node name="DNNumberingPlan">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(DN.DIRNUM_NPCODE)  OVER (PARTITION BY CAP.CO_ID ORDER BY CAP.MAIN_DIRNUM, DN.DIRNUM_NPCODE, CAP.SEQNO DESC) AS DIRNUM_NPCODE" />
+                         <Node name="FromClauses">
+                <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+                <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="OutputAttributes">
+                                <KeyValue key="CO.CO_ID=CAP.CO_ID" value=""/>
+                                <KeyValue key="CAP.DN_ID=DN.DN_ID" value=""/>
+                            </Node>
+
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CAP.CO_ID" value=""/>
+                                <KeyValue key="CAP.DN_ID=DN.DN_ID" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DN.DIRNUM_NPCODE"/>
+                    </Node>
+                    <Node name="CustomerCode">
+                        <KeyValue key="SelectClause" value="CU.CUSTCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.CUSTCODE"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+                    <Node name="CS_STATUS">
+                           <KeyValue key="SelectClause" value="CU.CSTYPE"/>
+                          <KeyValue key="ConditionWhereClause" value="CU.CSTYPE"/>
+                    </Node>
+            <Node name="MainCoId">
+                        <KeyValue key="SelectClause" value="CO2.CO_ID MAIN_CO_ID"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="CONTRACT_ALL CO2" value=""/>
+                            <KeyValue key="CONTRACT_RELATION COR" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="OutputAttributes">
+                                <KeyValue key="CO.CO_ID = COR.REL_CO_ID (+)" value=""/>
+                                <KeyValue key="COR.MAIN_CO_ID = CO2.CO_ID(+)" value=""/>
+                            </Node>
+
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID = COR.REL_CO_ID (+)" value=""/>
+                                <KeyValue key="COR.MAIN_CO_ID = CO2.CO_ID(+)" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                    <Node name="MainCoIdPub">
+                        <KeyValue key="SelectClause" value="CO2.CO_CODE MAIN_CO_ID_PUB"/>
+
+                        <Node name="FromClauses">
+                             <KeyValue key="CONTRACT_ALL CO2" value=""/>
+                            <KeyValue key="CONTRACT_RELATION COR" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="OutputAttributes">
+                                <KeyValue key="CO.CO_ID = COR.REL_CO_ID (+)" value=""/>
+                                <KeyValue key="COR.MAIN_CO_ID = CO2.CO_ID(+)" value=""/>
+                            </Node>
+
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID = COR.REL_CO_ID (+)" value=""/>
+                                <KeyValue key="COR.MAIN_CO_ID = CO2.CO_ID(+)" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                    <!-- If this criteria is set to true, the Name, Lastname, Firstname, Matchcode Street, Streetno, Zipcode, City represents the installation address,
+                    otherwise, these tags represents the billing address -->
+                    <Node name="UseInstallationAddress">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CC.CCUSER_INST =&apos;X&apos;" value=""/>
+                            </Node>
+                        </Node>
+            </Node>
+            <Node name="CCBILL">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CC.CCBILL =&apos;X&apos;" value=""/>
+                            </Node>
+                        </Node>
+            </Node>
+
+                    <Node name="Name">
+                        <KeyValue key="SelectClause" value="CC.CCNAME"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCNAME"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="Lastname">
+                        <KeyValue key="SelectClause" value="CC.CCLNAME"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCLNAME"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="Firstname">
+                        <KeyValue key="SelectClause" value="CC.CCFNAME"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCFNAME"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="MatchCode">
+                      <KeyValue key="SelectClause" value="CC.CCLNAMEMC"/>
+                      <KeyValue key="ConditionWhereClause"
+                        value="CC.CCLNAMEMC"/>
+                      <KeyValue key="SupportsWildcardSearch"
+                        type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch"
+                        type="Boolean" value="true"/>
+                    </Node>
+                    <Node name="Street">
+                        <KeyValue key="SelectClause" value="CC.CCSTREET"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCSTREET"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="StreetNo">
+                        <KeyValue key="SelectClause" value="CC.CCSTREETNO"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCSTREETNO"/>
+                    </Node>
+
+                    <Node name="Zipcode">
+                        <KeyValue key="SelectClause" value="CC.CCZIP"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCZIP"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="3"/>
+                    </Node>
+
+                    <Node name="City">
+                        <KeyValue key="SelectClause" value="CC.CCCITY"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCCITY"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+            <Node name="ADR_COMPNO">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSCOMPREGNO"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+                  <Node name="ADR_EMAIL">
+                      <KeyValue key="ConditionWhereClause" value="CC.CCEMAIL"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+            <Node name="ADR_SOCIALSENO">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSSOCIALSECNO"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+                  <Node name="ADR_BIRTHDT">
+                      <KeyValue key="ConditionWhereClause" value="CC.BIRTHDATE"/>
+                  </Node>
+                  <Node name="COUNTRY_ID">
+                      <KeyValue key="ConditionWhereClause" value="CC.COUNTRY"/>
+                  </Node>
+                  <Node name="ADR_DRIVELICENCE">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSDRIVELICENCE"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+            <Node name="ADR_PASSPORTNO">
+              <KeyValue key="ConditionWhereClause" value="CC.PASSPORTNO"/>
+              <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+              <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+            </Node>
+            <Node name="ADR_STATE">
+                      <KeyValue key="ConditionWhereClause" value="CC.CCSTATE"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                  </Node>
+                  <Node name="ADR_TAXNO">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSCOMPTAXNO"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+
+                    <Node name="ContractStatus">
+                        <KeyValue key="SelectClause" value="DECODE(CO.CH_STATUS, &apos;o&apos;,1, &apos;a&apos;, 2, &apos;s&apos;,3,&apos;d&apos;,4)" />
+              <KeyValue key="ConditionWhereClause" value="CO.CH_STATUS"/>
+                    </Node>
+
+                    <Node name="StorageMediumNo">
+                      <KeyValue key="SelectClause" value="CDSP.SM_NUM"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="CURR_CO_DEVICE_SERVICE_PORT CDSP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CDSP.CO_ID" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="CDSP.SM_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+                    </Node>
+
+                    <Node name="MainDirectoryNo">
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+              <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CAP.CO_ID" value=""/>
+                                <KeyValue key="CAP.DN_ID=DN.DN_ID" value=""/>
+                                <KeyValue key="CAP.MAIN_DIRNUM=&apos;X&apos;" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DN.DN_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+                    </Node>
+
+                    <Node name="BillNo">
+                        <Node name="FromClauses">
+                            <KeyValue key="ORDERHDR_ALL OH" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=OH.CO_ID" value=""/>
+                                <KeyValue key="OH.OHSTATUS=&apos;IN&apos;" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="OH.OHREFNUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+            <Node name="CALL_DETAIL">
+                        <KeyValue key="ConditionWhereClause" value="CO.CDS_GENERATION" />
+                    </Node>
+            <Node name="CALL_DETAIL_ALL">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CDS_GENERATION IS NOT NULL" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                    <Node name="CompositeProduct">
+                        <KeyValue key="SelectClause" value="CO.TMCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.TMCODE"/>
+                    </Node>
+
+                    <Node name="Technology">
+                        <KeyValue key="SelectClause" value="CO.SCCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.SCCODE"/>
+                    </Node>
+
+                    <Node name="Port">
+                      <KeyValue key="SelectClause" value="PO.PORT_NUM"/>
+                        <Node name="FromClauses">
+                            <KeyValue key="PORT PO" value=""/>
+                            <KeyValue key="CONTR_SERVICES_PORT CSP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="(PO.PORT_ID=CSP.PORT_ID AND CSP.CO_ID=CO.CO_ID)" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="PO.PORT_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+                    </Node>
+
+            <Node name="DevPort">
+              <KeyValue key="SelectClause" value="PO.PORT_NUM"/>
+              <Node name="FromClauses">
+                <KeyValue key="PORT PO" value=""/>
+                <KeyValue key="CURR_CO_DEVICE CD" value=""/>
+              </Node>
+              <Node name="JoinWhereClauses">
+                <Node name="InputAttributes">
+                  <KeyValue key="(PO.PORT_ID=CD.PORT_ID AND CD.CO_ID=CO.CO_ID)" value=""/>
+                </Node>
+              </Node>
+              <KeyValue key="ConditionWhereClause" value="PO.PORT_NUM"/>
+              <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+              <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+            </Node>
+                    <Node name="HlCode">
+                        <KeyValue key="SelectClause" value="CDSP.HLCODE"/>
+                        <Node name="FromClauses">
+                            <KeyValue key="CURR_CO_DEVICE_SERVICE_PORT CDSP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CDSP.CO_ID" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+                    <Node name="DealerId">
+                    </Node>
+
+                   <Node name="External">
+              <KeyValue key="SelectClause" value="DECODE(CMV.PROVISION_EXT,null, &apos;False&apos;, &apos;X&apos;, &apos;True&apos;)"/>
+              <Node name="FromClauses">
+                <KeyValue key="RATEPLAN CMV" value=""/>
+              </Node>
+              <Node name="JoinWhereClauses">
+                <Node name="InputAttributes">
+                  <KeyValue key="CO.TMCODE=CMV.TMCODE(+)" value=""/>
+                </Node>
+              </Node>
+              <KeyValue key="ConditionWhereClause" value="CMV.PROVISION_EXT" />
+            </Node>
+
+                    <!-- When searching for the external VPN Members, we can get them from the CURR_CONTR_SERVICES_CAP table-->
+                    <Node name="VPNId">
+                       <KeyValue key="SelectClause" value="FIRST_VALUE(DN.VPN_ID) OVER (PARTITION BY CAP.CO_ID ORDER BY CAP.MAIN_DIRNUM, DN.DIRNUM_NPCODE, CAP.SEQNO DESC)" />
+                        <KeyValue key="ConditionWhereClause" value="DN.VPN_ID"/>
+                    </Node>
+                <Node name="VpnIdPub">
+                    <Node name="FromClauses">
+                        <KeyValue key="VIRTUAL_PRIVATE_NETWORK VPN" type="String" value="" />
+                    </Node>
+                    <Node name="JoinWhereClauses">
+                        <Node name="InputAttributes">
+                            <KeyValue key="CO.CO_ID=CAP.CO_ID (+)" value=""/>
+                            <KeyValue key="VPN.VPN_ID = CAP.VPN_ID" type="String"  value="" />
+                        </Node>
+                    </Node>
+                    <KeyValue key="ConditionWhereClause" type="String" value="VPN.VPN_NAME"  />
+                    <KeyValue key="SupportsWildcardSearch" type="Boolean"  value="true" />
+                </Node>
+                <Node name="VpnPrivateNumber">
+                    <Node name="JoinWhereClauses">
+                        <Node name="InputAttributes">
+                            <KeyValue key="DN.DN_ID = CAP.DN_ID" value="" />
+                            <KeyValue key="DN.VPN_ID IS NOT NULL" value="" />
+                        </Node>
+                    </Node>
+                    <KeyValue key="ConditionWhereClause" value="DN.DN_NUM"/>
+                    <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                </Node>
+
+                    <Node name="ResultSize">
+                        <KeyValue key="ConditionWhereClause" value="ROWNUM"/>
+                        <KeyValue key="Operator" value="&lt;"/>
+                    </Node>
+
+                    <Node name="DESCRIPTION">
+                        <KeyValue key="SelectClause" value="CO.DESCRIPTION"/>
+                <KeyValue key="ConditionWhereClause" value="CO.DESCRIPTION"/>
+                <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+            </Node>
+                </Node>
+            </Node>
+
+
+       <!-- ===================================================================================== -->
+            <!--  Settings for the CustomerAndOptionalContractSearch  -  This version will find all the customer that have either no contract or have contracts which have services and DN assigned. -->
+            <!--  Use with care, since it uses a lot of outer joins. -->
+            <!-- ===================================================================================== -->
+            <Node name="CustomerAndOptionalContractSearch">
+                <KeyValue key="MaxResultSetSize" type="Integer" value="500"/>
+                <KeyValue key="DefaultResultSetSize" type="Integer" value="50"/>
+                <KeyValue key="DefaultOutput" value="DNNumberingPlan, BusinessUnitId, HlCode, ContractType, ContractTypeId, DirectoryNo, DirNoCurrentAssigned, CustomerCode, Lastname, Firstname, Street, StreetNo, Zipcode, City, ContractId, ContractStatus, TechnologyFlavourId, NetworkId, CustomerId, CustomerIdPub, RelationType, VPNId, External, Tmcode,ActivationDate, CoIdPub, MainCoId, MainCoIdPub, Name, DESCRIPTION, Carrier, LowerExtension, UpperExtension"/>
+                <KeyValue key="BaseTable" value="CONTRACT_ALL" />
+                <KeyValue key="BaseTableAlias" value="CO" />
+                <KeyValue key="DefaultNumberOfCharactersBeforeWildcard" type="Integer" value="3"/>
+          <KeyValue key="FromClauseOrder" value="CCONTACT CC, CUSTOMER CU, CONTRACT_ALL CO, DIRECTORY_NUMBER DN, DIRECTORY_NUMBER_BLOCK DNB" />
+          <KeyValue key="Hint" value="/*+ FIRST_ROWS */ " />
+    <!-- One of the following combinations must be included within the criteria -->
+                <Node name="MandatoryCriteriaCombinations">
+                     <Node name="DirectoryNo">
+                        <KeyValue key="DirectoryNo" value=""             />
+                    </Node>
+                    <Node name="CoIdPub">
+                        <KeyValue key="CoIdPub" value=""/>
+                    </Node>
+                    <Node name="CustomerCode">
+                        <KeyValue key="CustomerCode" value=""/>
+                    </Node>
+                    <Node name="CustomerIdPub">
+                        <KeyValue key="CustomerIdPub" value=""/>
+                    </Node>
+                    <Node name="Lastname">
+                        <KeyValue key="Lastname" value=""/>
+                    </Node>
+                    <Node name="Name">
+                        <KeyValue key="Name" value=""/>
+                    </Node>
+                    <Node name="MatchCode">
+                        <KeyValue key="MatchCode" value=""/>
+                    </Node>
+                    <Node name="Zipcode">
+                        <KeyValue key="Zipcode" value=""/>
+                    </Node>
+                     <Node name="City">
+                        <KeyValue key="City" value=""/>
+                    </Node>
+                     <Node name="StorageMediumNo">
+                     <KeyValue key="StorageMediumNo" value=""/>
+                    </Node>
+
+                    <Node name="CompositeProduct">
+                        <KeyValue key="CompositeProduct" value=""/>
+                    </Node>
+                      <Node name="ContractId">
+                        <KeyValue key="ContractId" value=""/>
+                    </Node>
+                    <Node name="CustomerId">
+                        <KeyValue key="CustomerId" value=""/>
+                    </Node>
+
+
+                </Node>
+              <Node name="DefaultClauses">
+                     <Node name="FromClauses">
+                            <KeyValue key="CUSTOMER CU" value=""/>
+                            <KeyValue key="CCONTACT CC" value=""/>
+                     </Node>
+                     <Node name="WhereClauses">
+                             <KeyValue key="CO.CUSTOMER_ID (+)=CU.CUSTOMER_ID" value=""/>
+                            <KeyValue key="CC.CUSTOMER_ID=CU.CUSTOMER_ID" value=""/>
+                     </Node>
+               </Node>
+                <Node name="Attributes">
+                  <Node name="User">
+              <KeyValue key="SelectClause" value="CO.CO_USERLASTMOD"/>
+              <KeyValue key="ConditionWhereClause" value="CO.CO_USERLASTMOD"/>
+            </Node>
+                    <Node name="CoIdPub">
+                        <KeyValue key="SelectClause" value="CO.CO_CODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_CODE"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+                    <Node name="MainCoId">
+                        <KeyValue key="SelectClause" value="CO2.CO_ID MAIN_CO_ID"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="CONTRACT_ALL CO2" value=""/>
+                            <KeyValue key="CONTRACT_RELATION COR" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="OutputAttributes">
+                                <KeyValue key="CO.CO_ID = COR.REL_CO_ID (+)" value=""/>
+                                <KeyValue key="COR.MAIN_CO_ID = CO2.CO_ID(+)" value=""/>
+                            </Node>
+
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID = COR.REL_CO_ID (+)" value=""/>
+                                <KeyValue key="COR.MAIN_CO_ID = CO2.CO_ID(+)" value=""/>
+                            </Node>
+
+                        </Node>
+                    </Node>
+                    <Node name="MainCoIdPub">
+                        <KeyValue key="SelectClause" value="CO2.CO_CODE MAIN_CO_ID_PUB"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="CONTRACT_ALL CO2" value=""/>
+                            <KeyValue key="CONTRACT_RELATION COR" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="OutputAttributes">
+                                <KeyValue key="CO.CO_ID = COR.REL_CO_ID (+)" value=""/>
+                                <KeyValue key="COR.MAIN_CO_ID = CO2.CO_ID(+)" value=""/>
+                            </Node>
+
+                             <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID = COR.REL_CO_ID (+)" value=""/>
+                                <KeyValue key="COR.MAIN_CO_ID = CO2.CO_ID(+)" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                    <Node name="Tmcode">
+              <KeyValue key="SelectClause" value="CO.TMCODE"/>
+            </Node>
+
+            <Node name="ActivationDate">
+              <KeyValue key="SelectClause" value="CO.CO_ACTIVATED"/>
+            </Node>
+
+                    <Node name="ContractId">
+                        <KeyValue key="SelectClause" value="CO.CO_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_ID"/>
+                    </Node>
+
+                    <Node name="ContractTypeId">
+                        <KeyValue key="SelectClause" value="CO.CONTRACT_TYPE_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CONTRACT_TYPE_ID"/>
+                    </Node>
+                    <Node name="ContractTypes">
+                          <KeyValue key="ConditionWhereClause" value="CO.CONTRACT_TYPE_ID (+)"/>
+                        <KeyValue key="Operator" value="IN"/>
+                      </Node>
+                  <Node name="ContractType">
+                        <KeyValue key="SelectClause" value="DECODE(CO.TYPE, &apos;S&apos;, &apos;C&apos;,&apos;A&apos;, &apos;A&apos;)"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.TYPE"/>
+                    </Node>
+                    <Node name="NOT_RELATED">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_REL_TYPE IS NULL OR CO.CO_REL_TYPE != &apos;R&apos;" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                        <Node name="Carrier">
+                            <KeyValue key="SelectClause" value="CO.CONTRACT_ID_LEC"/>
+                            <KeyValue key="ConditionWhereClause" value="CO.CONTRACT_ID_LEC"/>
+                        </Node>
+                          <Node name="BusinessUnit">
+                  <!--  the business unit must be check against the customer, not the contract, since it should find customers without contracts -->
+              <KeyValue key="ConditionWhereClause" value="CU.BUSINESS_UNIT_ID"/>
+            </Node>
+               <Node name="filterByUsersBusinessUnit">
+                    <KeyValue key="Operator" value="IN" />
+                    <!--  the business unit must be check against the customer, not the contract, since it should find customers without contracts -->
+                    <KeyValue key="ConditionWhereClause" value="CU.BUSINESS_UNIT_ID" />
+              </Node>
+                   <Node name="BusinessUnitId">
+                        <KeyValue key="SelectClause" value="CU.BUSINESS_UNIT_ID"/>
+                    </Node>
+
+                    <Node name="CustomerId">
+                        <KeyValue key="SelectClause" value="CU.CUSTOMER_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.CUSTOMER_ID"/>
+                    </Node>
+            <Node name="PARTY_ROLE_ID">
+                      <Node name="FromClauses">
+                          <KeyValue key="CUSTOMER_ROLE CR" value="" />
+                      </Node>
+                      <Node name="JoinWhereClauses">
+                          <Node name="InputAttributes">
+                              <KeyValue key="CU.CUSTOMER_ID = CR.CUSTOMER_ID" value="" />
+                          </Node>
+                      </Node>
+                      <KeyValue key="ConditionWhereClause" value="CR.PARTY_ROLE_ID"/>
+                      <KeyValue key="Operator" value="IN" />
+                  </Node>
+                    <Node name="CustomerIdPub">
+                        <KeyValue key="SelectClause" value="CU.CUSTNUM"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.CUSTNUM"/>
+                         <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true" />
+                         <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="5"/>
+                    </Node>
+
+                    <Node name="TechnologyFlavourId">
+                        <KeyValue key="SelectClause" value="CO.SUBM_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.SUBM_ID"/>
+                    </Node>
+
+
+                    <Node name="NetworkId">
+                        <KeyValue key="SelectClause" value="CO.PLCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.PLCODE"/>
+                    </Node>
+
+                    <Node name="POFUContract">
+                        <Node name="FromClauses">
+                            <KeyValue key="PROFILE_SERVICE CCS" value=""/>
+                        </Node>
+                    </Node>
+
+                    <Node name="SnCode">
+                      <Node name="FromClauses">
+                            <KeyValue key="PROFILE_SERVICE CCS" value=""/>
+                        </Node>
+                         <Node name="JoinWhereClauses">
+                          <Node name="InputAttributes">
+                              <KeyValue key="CO.CO_ID=CCS.CO_ID" value=""/>
+                          </Node>
+                          </Node>
+                         <KeyValue key="ConditionWhereClause" value="CCS.SNCODE"/>
+                    </Node>
+
+            <Node name="LAMemberContractInc">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CU.CSLEVEL > 0 and CU.CSLEVEL !=40" value=""/>
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="1"/>
+                    </Node>
+            <Node name="LAMemberContractExc">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CU.CSLEVEL = 0 or CU.CSLEVEL = 40 or CU.CSLEVEL IS NULL" value=""/>
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="1"/>
+
+                    </Node>
+                    <Node name="RelationType">
+                        <KeyValue key="SelectClause" value="CO.CO_REL_TYPE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_REL_TYPE" />
+                    </Node>
+
+                    <Node name="LowerExtension">
+                        <KeyValue key="SelectClause" value="DNB.LOWER_EXTENSION"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER_BLOCK DNB" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CAP.DN_ID=DNB.DN_ID(+)" value=""/>
+                                <KeyValue key="CAP.DN_BLOCK_ID=DNB.DN_BLOCK_ID(+)" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DNB.LOWER_EXTENSION"/>
+                    </Node>
+
+                    <Node name="UpperExtension">
+                        <KeyValue key="SelectClause" value="DNB.UPPER_EXTENSION"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER_BLOCK DNB" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CAP.DN_ID=DNB.DN_ID(+)" value=""/>
+                                <KeyValue key="CAP.DN_BLOCK_ID=DNB.DN_BLOCK_ID(+)" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DNB.UPPER_EXTENSION"/>
+                    </Node>
+
+                    <!--  Using this search, only the contracts with services and directory numbers assigned will be returned.  -->
+                    <Node name="DirectoryNo">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(DN.DN_NUM)  OVER (PARTITION BY CAP.CO_ID ORDER BY CAP.MAIN_DIRNUM, DN.DIRNUM_NPCODE, CAP.SEQNO DESC) AS DN_NUM"/>
+
+                        <Node name="FromClauses">
+                <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+                            <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="OutputAttributes">
+                                <KeyValue key="CO.CO_ID=CAP.CO_ID(+)" value=""/>
+                                <KeyValue key="CAP.DN_ID=DN.DN_ID(+)" value=""/>
+                            </Node>
+
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CAP.CO_ID" value=""/>
+                                <KeyValue key="CAP.DN_ID=DN.DN_ID" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DN.DN_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+
+
+
+            <Node name="DNNumberingPlan">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(DN.DIRNUM_NPCODE)  OVER (PARTITION BY CAP.CO_ID ORDER BY CAP.MAIN_DIRNUM, DN.DIRNUM_NPCODE, CAP.SEQNO DESC) AS DIRNUM_NPCODE"  />
+                        <Node name="FromClauses">
+                <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+                <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="DN.DIRNUM_NPCODE"/>
+                    </Node>
+
+
+
+                    <Node name="CustomerCode">
+                        <KeyValue key="SelectClause" value="CU.CUSTCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.CUSTCODE"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+                      <Node name="CS_STATUS">
+                         <KeyValue key="SelectClause" value="CU.CSTYPE"/>
+                          <KeyValue key="ConditionWhereClause" value="CU.CSTYPE"/>
+                      </Node>
+
+            <Node name="PartyTypeId">
+                        <KeyValue key="SelectClause" value="CU.PARTY_TYPE_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CU.PARTY_TYPE_ID"/>
+                    </Node>
+
+                    <!-- If this criteria is set to true, the Name, Lastname, Firstname, Street, Streetno, Zipcode, City represents the installation address,
+                    otherwise, these tags represents the billing address -->
+            <Node name="UseInstallationAddress">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CC.CCUSER_INST =&apos;X&apos;" value=""/>
+                            </Node>
+                        </Node>
+            </Node>
+            <Node name="CCBILL">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CC.CCBILL =&apos;X&apos;" value=""/>
+                            </Node>
+                        </Node>
+            </Node>
+                    <Node name="Name">
+                        <KeyValue key="SelectClause" value="CC.CCNAME"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCNAME"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="Lastname">
+                        <KeyValue key="SelectClause" value="CC.CCLNAME"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCLNAME"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+
+                    <Node name="Firstname">
+                        <KeyValue key="SelectClause" value="CC.CCFNAME"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCFNAME"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="MatchCode">
+                      <KeyValue key="SelectClause" value="CC.CCLNAMEMC"/>
+                      <KeyValue key="ConditionWhereClause"
+                        value="CC.CCLNAMEMC"/>
+                      <KeyValue key="SupportsWildcardSearch"
+                        type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch"
+                        type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="Street">
+                        <KeyValue key="SelectClause" value="CC.CCSTREET"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCSTREET"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+
+                    <Node name="StreetNo">
+                        <KeyValue key="SelectClause" value="CC.CCSTREETNO"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCSTREETNO"/>
+                    </Node>
+
+                    <Node name="Zipcode">
+                        <KeyValue key="SelectClause" value="CC.CCZIP"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCZIP"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="3"/>
+                    </Node>
+
+                    <Node name="City">
+                        <KeyValue key="SelectClause" value="CC.CCCITY"/>
+                        <KeyValue key="ConditionWhereClause" value="CC.CCCITY"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                    </Node>
+            <Node name="ADR_COMPNO">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSCOMPREGNO"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+                  <Node name="ADR_EMAIL">
+                      <KeyValue key="ConditionWhereClause" value="CC.CCEMAIL"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+            <Node name="ADR_SOCIALSENO">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSSOCIALSECNO"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+                  <Node name="ADR_BIRTHDT">
+                      <KeyValue key="ConditionWhereClause" value="CC.BIRTHDATE"/>
+                  </Node>
+                  <Node name="COUNTRY_ID">
+                      <KeyValue key="ConditionWhereClause" value="CC.COUNTRY"/>
+                  </Node>
+                  <Node name="ADR_DRIVELICENCE">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSDRIVELICENCE"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+            <Node name="ADR_PASSPORTNO">
+              <KeyValue key="ConditionWhereClause" value="CC.PASSPORTNO"/>
+              <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+              <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+            </Node>
+            <Node name="ADR_STATE">
+                      <KeyValue key="ConditionWhereClause" value="CC.CCSTATE"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                  </Node>
+                  <Node name="ADR_TAXNO">
+                      <KeyValue key="ConditionWhereClause" value="CC.CSCOMPTAXNO"/>
+                      <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                      <KeyValue key="SupportsCaseInsensitiveSearch" type="Boolean" value="true"/>
+                  </Node>
+                    <Node name="ContractStatus">
+                        <KeyValue key="SelectClause" value="DECODE(CO.CH_STATUS, &apos;o&apos;,1, &apos;a&apos;, 2, &apos;s&apos;,3,&apos;d&apos;,4) "/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CH_STATUS"/>
+                    </Node>
+
+        <Node name="StorageMediumNo">
+            <KeyValue key="SelectClause" value="CDSP.SM_NUM"/>
+                        <Node name="FromClauses">
+                            <KeyValue key="CURR_CO_DEVICE_SERVICE_PORT CDSP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CDSP.CO_ID" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="CDSP.SM_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+                    </Node>
+
+                    <Node name="MainDirectoryNo">
+                        <Node name="FromClauses">
+              <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+                            <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CAP.CO_ID" value=""/>
+                                <KeyValue key="CAP.DN_ID=DN.DN_ID" value=""/>
+                                <KeyValue key="CAP.MAIN_DIRNUM=&apos;X&apos;" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DN.DN_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+                    </Node>
+
+                    <Node name="BillNo">
+                        <Node name="FromClauses">
+                            <KeyValue key="ORDERHDR_ALL OH" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=OH.CO_ID" value=""/>
+                                <KeyValue key="OH.OHSTATUS=&apos;IN&apos;" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="OH.OHREFNUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+            <Node name="CALL_DETAIL">
+                        <KeyValue key="ConditionWhereClause" value="CO.CDS_GENERATION" />
+                    </Node>
+            <Node name="CALL_DETAIL_ALL">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CDS_GENERATION IS NOT NULL" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                    <Node name="CompositeProduct">
+                        <KeyValue key="SelectClause" value="CO.TMCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.TMCODE"/>
+                    </Node>
+
+                    <Node name="Technology">
+                        <KeyValue key="SelectClause" value="CO.SCCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.SCCODE"/>
+                    </Node>
+
+            <Node name="Port">
+              <KeyValue key="SelectClause" value="PO.PORT_NUM"/>
+                        <Node name="FromClauses">
+                            <KeyValue key="PORT PO" value=""/>
+                            <KeyValue key="CONTR_SERVICES_PORT CSP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="(PO.PORT_ID=CSP.PORT_ID AND CSP.CO_ID=CO.CO_ID)" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="PO.PORT_NUM"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                        <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+                    </Node>
+
+            <Node name="DevPort">
+              <KeyValue key="SelectClause" value="PO.PORT_NUM"/>
+              <Node name="FromClauses">
+                <KeyValue key="PORT PO" value=""/>
+                <KeyValue key="CURR_CO_DEVICE CD" value=""/>
+              </Node>
+              <Node name="JoinWhereClauses">
+                <Node name="InputAttributes">
+                  <KeyValue key="(PO.PORT_ID=CD.PORT_ID AND CD.CO_ID=CO.CO_ID)" value=""/>
+                </Node>
+              </Node>
+              <KeyValue key="ConditionWhereClause" value="PO.PORT_NUM"/>
+              <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+              <KeyValue key="NumberOfCharactersBeforeWildcard" type="Integer" value="7"/>
+            </Node>
+                    <Node name="HlCode">
+                        <KeyValue key="SelectClause" value="CDSP.HLCODE"/>
+                        <Node name="FromClauses">
+                            <KeyValue key="CURR_CO_DEVICE_SERVICE_PORT CDSP" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CDSP.CO_ID" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+
+                    <Node name="DealerId">
+                        <KeyValue key="ConditionWhereClause" value="CO.DEALER_ID"/>
+                    </Node>
+
+                    <Node name="ResultSize">
+                        <KeyValue key="ConditionWhereClause" value="ROWNUM"/>
+                        <KeyValue key="Operator" value="&lt;"/>
+                    </Node>
+
+            <Node name="External">
+              <KeyValue key="SelectClause" value="DECODE(CMV.PROVISION_EXT,null, &apos;False&apos;,&apos;X&apos;, &apos;True&apos;)"/>
+              <Node name="FromClauses">
+                <KeyValue key="RATEPLAN CMV" value=""/>
+              </Node>
+              <Node name="JoinWhereClauses">
+                <Node name="InputAttributes">
+                  <KeyValue key="CO.TMCODE=CMV.TMCODE" value=""/>
+                </Node>
+                <Node name="OutputAttributes">
+                  <KeyValue key="CO.TMCODE=CMV.TMCODE(+)" value=""/>
+                </Node>
+              </Node>
+              <KeyValue key="ConditionWhereClause" value="CMV.PROVISION_EXT" />
+            </Node>
+
+                    <Node name="LinkedPublicNumber">
+                        <KeyValue key="SelectClause" value="DN2.DN_NUM"/>
+
+                        <Node name="FromClauses">
+                            <KeyValue key="DIRECTORY_NUMBER DN2" value=""/>
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_ID=CAP.CO_ID" value=""/>
+                                <KeyValue key="CAP.PUBLIC_NUMBER_DN_ID=DN2.DN_ID" value=""/>
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="DN2.DN_NUM"/>
+                    </Node>
+
+                    <!-- When searching for the external VPN Members, we can get them from the DIRECTORY_NUMBER table-->
+                    <Node name="VPNId">
+                        <KeyValue key="SelectClause" value="FIRST_VALUE(DN.VPN_ID) OVER (PARTITION BY CAP.CO_ID ORDER BY CAP.MAIN_DIRNUM, DN.DIRNUM_NPCODE, CAP.SEQNO DESC)" />
+                        <KeyValue key="ConditionWhereClause" value="DN.VPN_ID"/>
+                    </Node>
+                <Node name="VpnIdPub">
+                    <Node name="FromClauses">
+                        <KeyValue key="VIRTUAL_PRIVATE_NETWORK VPN" type="String" value="" />
+                    </Node>
+                    <Node name="JoinWhereClauses">
+                        <Node name="InputAttributes">
+                            <KeyValue key="CO.CO_ID=CAP.CO_ID (+)" value=""/>
+                            <KeyValue key="VPN.VPN_ID = CAP.VPN_ID" type="String"  value="" />
+                        </Node>
+                    </Node>
+                    <KeyValue key="ConditionWhereClause" type="String" value="VPN.VPN_NAME"  />
+                    <KeyValue key="SupportsWildcardSearch" type="Boolean"  value="true" />
+                </Node>
+                <Node name="VpnPrivateNumber">
+                    <Node name="JoinWhereClauses">
+                        <Node name="InputAttributes">
+                            <KeyValue key="DN.DN_ID = CAP.DN_ID" value="" />
+                            <KeyValue key="DN.VPN_ID IS NOT NULL" value="" />
+                        </Node>
+                    </Node>
+                    <KeyValue key="ConditionWhereClause" value="DN.DN_NUM"/>
+                    <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                </Node>
+                    <!--  When searching for the internal VPN Members, we can get them from the PARAMETER_VALUE table.  -->
+                    <Node name="VPN_Number">
+                        <Node name="FromClauses">
+                            <KeyValue key="PROFILE_SERVICE CCS" value=""/>
+                            <KeyValue key="PARAMETER_VALUE PV" value=""/>
+                            <!-- Contracted Services Table is versionspecific with alias CS -->
+                        </Node>
+
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="PV.PARAMETER_ID in (42,44)" value=""/>
+                                <KeyValue key="PV.PRM_VALUE_ID=CCS.PRM_VALUE_ID" value=""/>
+                                <KeyValue key="CAP.SNCODE = CCS.SNCODE" value="" />
+                                <KeyValue key="CO.CO_ID = CCS.CO_ID" value=""/>
+                                <KeyValue key="CO.CO_ID = PV.CO_ID" value=""/>
+                                <KeyValue key="PV.prm_seqno=( select max(pv2.prm_seqno) from parameter_value pv2 where PV.parameter_id=pv2.parameter_id and PV.prm_value_id=pv2.prm_value_id and PV.prm_no=pv2.prm_no and PV.prm_seqno=pv2.prm_seqno and PV.complex_seqno=pv2.complex_seqno and PV.parent_seqno=pv2.parent_seqno and PV.sibling_seqno=pv2.sibling_seqno and PV.value_seqno=pv2.value_seqno)" value="" />
+                            </Node>
+                        </Node>
+
+                        <KeyValue key="ConditionWhereClause" value="PV.PRM_VALUE_STRING"/>
+                    </Node>
+
+                    <!-- When searching for the VPN Members I need to avoid getting also the VPN Administrator-->
+                    <Node name="Avoid_VPN_Admin_SCCODE">
+                        <KeyValue key="ConditionWhereClause" value="CO.SCCODE"/>
+                        <KeyValue key="Operator" value="!="/>
+                    </Node>
+
+                    <Node name="DESCRIPTION">
+                        <KeyValue key="SelectClause" value="CO.DESCRIPTION"/>
+                <KeyValue key="ConditionWhereClause" value="CO.DESCRIPTION"/>
+                <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+            </Node>
+            <Node name="DirNoCurrentAssigned">
+                        <KeyValue key="SelectClause"  value="FIRST_VALUE(DECODE(CAP.CS_DEACTIV_DATE,null,&apos;True&apos;,&apos;False&apos;)) OVER(PARTITION BY CAP.CO_ID ORDER BY CAP.MAIN_DIRNUM, DN.DIRNUM_NPCODE, CAP.SEQNO DESC) AS DirNoCurrentAssigned"  />
+                        <Node name="FromClauses">
+                <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+                <KeyValue key="CURR_CONTR_SERVICES_CAP CAP" value=""/>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="DN.DN_STATUS"/>
+                    </Node>
+            <Node name="MarkedForRerating">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.RR_CANDIDATE IS NOT NULL" value=""/>
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="1"/>
+                    </Node>
+            <Node name="NotMarkedForRerating">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.RR_CANDIDATE IS NULL" value=""/>
+                            </Node>
+                        </Node>
+                        <KeyValue key="ConditionWhereClause" value="1"/>
+                    </Node>
+                </Node>
+            </Node>
+
+    <!-- ===================================================================================== -->
+            <!--  Settings for the Contract Search  -  This version will find all the contracts which have services and DN assigned. -->
+            <!--  This version of searching is whithout outer joins, so is the best from the performance point of view.        -->
+            <!-- ===================================================================================== -->
+            <Node name="PendingRatePlanContractSearch">
+                <KeyValue key="MaxResultSetSize" type="Integer" value="500"/>
+                <KeyValue key="DefaultResultSetSize" type="Integer" value="50"/>
+                <KeyValue key="DefaultOutput" value="BusinessUnitId, ContractType, ContractTypeId,  ContractId, ContractStatus, TechnologyFlavourId, NetworkId, DirectoryNo, CustomerId, RelationType, Tmcode,ActivationDate"/>
+                <KeyValue key="BaseTable" value="CONTRACT_ALL" />
+                <KeyValue key="BaseTableAlias" value="CO" />
+                <KeyValue key="DefaultNumberOfCharactersBeforeWildcard" type="Integer" value="3"/>
+                 <KeyValue key="FromClauseOrder" value="CONTR_SERVICES_CAP CAP, CONTRACT_ALL CO, DIRECTORY_NUMBER DN" />
+                <!--<KeyValue key="Hint" value="/*+ RULE */" />-->
+
+                <Node name="MandatoryCriteriaCombinations">
+                    <Node name="Combination1">
+                        <KeyValue key="DirectoryNo" value=""/>
+                    </Node>
+                </Node>
+                <Node name="Attributes">
+                    <Node name="User">
+                      <KeyValue key="SelectClause" value="CO.CO_USERLASTMOD"/>
+                      <KeyValue key="ConditionWhereClause" value="CO.CO_USERLASTMOD"/>
+                    </Node>
+                    <Node name="CoIdPub">
+                        <KeyValue key="SelectClause" value="CO.CO_CODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_CODE"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+                    <Node name="Tmcode">
+                        <KeyValue key="SelectClause" value="NVL2(CO.PENDING_TMCODE,(-1) * CO.PENDING_TMCODE, CO.TMCODE)"/>
+                    </Node>
+                    <Node name="ActivationDate">
+                        <KeyValue key="SelectClause" value="CO.CO_ACTIVATED"/>
+                    </Node>
+                    <Node name="ContractId">
+                        <KeyValue key="SelectClause" value="CO.CO_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_ID"/>
+                    </Node>
+                    <Node name="ContractTypeId">
+                        <KeyValue key="SelectClause" value="CO.CONTRACT_TYPE_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CONTRACT_TYPE_ID"/>
+                    </Node>
+                    <Node name="ContractTypes">
+                        <KeyValue key="ConditionWhereClause" value="CO.CONTRACT_TYPE_ID"/>
+                        <KeyValue key="Operator" value="IN"/>
+                    </Node>
+                    <Node name="ContractType">
+                        <KeyValue key="SelectClause" value="DECODE(CO.TYPE, &apos;S&apos;, &apos;C&apos;,&apos;A&apos;, &apos;A&apos;)"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.TYPE"/>
+                    </Node>
+                    <Node name="NOT_RELATED">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CO_REL_TYPE IS NULL OR CO.CO_REL_TYPE != &apos;R&apos;" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                    <Node name="BusinessUnitId">
+                        <KeyValue key="SelectClause" value="CO.BUSINESS_UNIT_ID"/>
+                    </Node>
+                   <Node name="filterByUsersBusinessUnit">
+                        <KeyValue key="Operator" value="IN" />
+                        <KeyValue key="ConditionWhereClause" value="CO.BUSINESS_UNIT_ID" />
+                  </Node>
+                    <Node name="CustomerId">
+                        <KeyValue key="SelectClause" value="CO.CUSTOMER_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CUSTOMER_ID"/>
+                    </Node>
+                    <Node name="TechnologyFlavourId">
+                        <KeyValue key="SelectClause" value="CO.SUBM_ID"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.SUBM_ID"/>
+                    </Node>
+                    <Node name="NetworkId">
+                        <KeyValue key="SelectClause" value="CO.PLCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.PLCODE"/>
+                    </Node>
+
+
+             <Node name="DirectoryNo">
+                <KeyValue key="SelectClause" value="DN.DN_NUM"/>
+
+                <Node name="FromClauses">
+                    <KeyValue key="DIRECTORY_NUMBER DN" value=""/>
+                    <KeyValue key="CONTR_SERVICES_CAP CAP" value="" />
+                </Node>
+                <Node name="JoinWhereClauses">
+                     <Node name="OutputAttributes">
+                        <KeyValue key="CO.CO_ID=CAP.CO_ID" value=""/>
+                        <KeyValue key="CAP.DN_ID=DN.DN_ID" value=""/>
+                     </Node>
+
+                    <Node name="InputAttributes">
+                        <KeyValue key="CO.CO_ID=CAP.CO_ID" value=""/>
+                        <KeyValue key="CAP.DN_ID=DN.DN_ID" value=""/>
+                    </Node>
+                </Node>
+
+                <KeyValue key="ConditionWhereClause" value="DN.DN_NUM"/>
+                <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+            </Node>
+
+
+                    <Node name="RelationType">
+                        <KeyValue key="SelectClause" value="CO.CO_REL_TYPE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CO_REL_TYPE" />
+                    </Node>
+                    <Node name="ContractStatus">
+                        <KeyValue key="SelectClause" value="DECODE(CO.CH_STATUS, &apos;o&apos;,1, &apos;a&apos;, 2, &apos;s&apos;,3,&apos;d&apos;,4) "/>
+                        <KeyValue key="ConditionWhereClause" value="CO.CH_STATUS"/>
+                    </Node>
+                    <Node name="CALL_DETAIL">
+                                <KeyValue key="ConditionWhereClause" value="CO.CDS_GENERATION" />
+                    </Node>
+                    <Node name="CALL_DETAIL_ALL">
+                        <Node name="JoinWhereClauses">
+                            <Node name="InputAttributes">
+                                <KeyValue key="CO.CDS_GENERATION IS NOT NULL" value=""/>
+                            </Node>
+                        </Node>
+                    </Node>
+                    <Node name="CompositeProduct">
+                        <KeyValue key="SelectClause" value="CO.TMCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.TMCODE"/>
+                    </Node>
+                    <Node name="Technology">
+                        <KeyValue key="SelectClause" value="CO.SCCODE"/>
+                        <KeyValue key="ConditionWhereClause" value="CO.SCCODE"/>
+                    </Node>
+                    <Node name="DealerId">
+                        <KeyValue key="ConditionWhereClause" value="CO.DEALER_ID"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="false"/>
+                    </Node>
+                            <Node name="ResultSize">
+                                <KeyValue key="ConditionWhereClause" value="ROWNUM"/>
+                                <KeyValue key="Operator" value="&lt;"/>
+                            </Node>
+                    <Node name="DESCRIPTION">
+                        <KeyValue key="ConditionWhereClause" value="CO.DESCRIPTION"/>
+                        <KeyValue key="SupportsWildcardSearch" type="Boolean" value="true"/>
+                    </Node>
+                </Node> <!-- Attributes -->
+            </Node> <!--  PendingRatePlanContractSearch -->
+
+        </Node><!-- CMS Settings -->
+
+    </ComponentRegistry>

@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: eric-bss-eb-allow-data-server
+spec:
+  podSelector:
+    matchLabels:
+      eric-bss-eb-network-data-server: 'true'
+  policyTypes:
+    - Ingress
+# Uncomment when HA is supported:
+#    - Egress
+#  egress:
+#    - to:
+#        - podSelector:
+#            matchLabels:
+#              eric-bss-eb-network-data-server: 'true'
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              eric-bss-eb-network-data-client: 'true'
+      # Note: If TLS connection is enabled DaTA uses dataPort+2
+      ports:
+        - protocol: TCP
+          port: {{ required "A valid .Values.global.dataClusterPort entry is required!" .Values.global.dataClusterPort }}
+        - protocol: TCP
+          port: {{ add .Values.global.dataClusterPort 2 }}
+    - ports:
+        - protocol: TCP
+          port: {{ required "A valid .Values.global.dataClusterPort entry is required!" .Values.global.dataClusterPort }}
+        - protocol: TCP
+          port: {{ add .Values.global.dataClusterPort 2 }}
+

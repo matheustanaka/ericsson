@@ -1,0 +1,134 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-cms-registry-fms.xml
+data:
+  Registry_FMS.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE ComponentRegistry PUBLIC 'ComponentRegistry.dtd' "ComponentRegistry.dtd" >
+    <ComponentRegistry>
+
+      <Node name="FUNC_FRMWK_SRV">
+      <Node name="ServiceLayerAdapterNames" >
+          <KeyValue key="com.lhs.fm.transaction.services.AssociatedFinancialTransactionsRead" value="" />
+          <KeyValue key="com.lhs.fm.transaction.services.FinancialTransactionRead" value="" />
+          <KeyValue key="com.lhs.fm.transaction.services.FinancialTransactionWrite" value="" />
+          <KeyValue key="com.lhs.fm.transaction.services.FinancialTransactionSearch" value="" />
+          <KeyValue key="com.lhs.fm.transaction.services.FinancialTransactionDetailRead" value="" />
+          <KeyValue key="com.lhs.fm.transaction.services.FinancialTransactionTypeRead" value="" />
+          <KeyValue key="com.lhs.fm.transaction.services.FinancialUseCaseTransactionRead" value="" />
+          <KeyValue key="com.lhs.fm.tax.services.TaxationCalculate" value="" />
+          <KeyValue key="com.lhs.fm.tax.services.TaxCategoryRead" value="" />
+          <KeyValue key="com.lhs.fm.paymentcond.services.CashDiscountCalculate" value="" />
+          <KeyValue key="com.lhs.fm.document.services.FinancialDocumentDelete" value="" />
+          <KeyValue key="com.lhs.fm.document.services.FinancialDocumentDetailRead" value="" />
+          <KeyValue key="com.lhs.fm.document.services.FinancialDocumentSearch" value="" />
+          <KeyValue key="com.lhs.fm.document.services.FinancialDocumentRead" value="" />
+          <KeyValue key="com.lhs.fm.document.services.FinancialDocumentItemDetailRead" value="" />
+          <KeyValue key="com.lhs.fm.document.services.FinancialDocumentWrite" value="" />
+          <KeyValue key="com.lhs.fm.document.services.CustomerPaymentStatusRead" value="" />
+          <KeyValue key="com.lhs.fm.document.services.ComplaintReasonRead" value="" />
+          <KeyValue key="com.lhs.fm.common.services.BatchNumberCreate" value="" />
+          <KeyValue key="com.lhs.fm.common.services.FinancialSettingRead" value="" />
+                <KeyValue key="com.lhs.fm.common.services.HandlingReasonRead" value="" />
+          <KeyValue key="com.lhs.fm.paymentinstr.services.PaymentInstructionDelete" value="" />
+          <KeyValue key="com.lhs.fm.paymentinstr.services.PaymentInstructionRead" value="" />
+          <KeyValue key="com.lhs.fm.paymentinstr.services.PaymentInstructionSearch" value="" />
+          <KeyValue key="com.lhs.fm.paymentinstr.services.PaymentInstructionWrite" value="" />
+          <KeyValue key="com.lhs.fm.common.services.ProcessStateRead" value=""/>
+      </Node> <!-- End of ServiceLayerAdapterNames -->
+
+      <Node name="ApplicationContextConfigs">
+        <KeyValue key="rootApplicationContext-fms.xml" value="" comment="An application context configuration file of the server" />
+      </Node>
+
+      <Node name="Persistence">
+        <Node name="RefreshReferenceData">
+            <Node name="RuleEngineConfigurationData" >
+               <KeyValue key="CLASS" value="com.lhs.fm.finance.allocation.ruleengine.dtrules.DTRulesRefreshHolder" />
+                <KeyValue key="ABSOLUTE" type="Boolean" value="true"/>
+                <KeyValue key="PERIOD" type="Integer" value="20000"/>
+                <KeyValue key="START" type="Integer" value="240000" comment=""/>
+                <KeyValue key="READ_ONLY_ACTION" type="Boolean" value="false"/>
+                <KeyValue key="METHOD" value="refresh" comment=""/>
+            </Node>
+        </Node>
+
+        <Node name="NEXTFREE">
+          <Node name="FetchSizePerSequence">
+              </Node>
+          </Node>
+
+          <Node name="PackageNamesForBORegistry">
+              <KeyValue key="com.lhs.fm.common" value="" />
+              <KeyValue key="com.lhs.fm.paymentinstr" value="" />
+          </Node>
+
+          <Node name="OraConstraintViolation">
+                <!--  constraint violation that are translated in domain specific error codes. E.g. for a duplicate public key the constraint violation is
+                        translated into a more meaningful error message -->
+                <Node name="constraints">
+                        <Node name="UC_ORDERTRLRTI_CHAR_1">
+                          <KeyValue key="errorCode" value="FMS.FinancialDocumentItemTaxItemCharacteristics.AlreadyExists" />
+                          <KeyValue key="privateKey" value="OTXACT" />
+                          <KeyValue key="publicKey" value="OTI_SEQNO" />
+                          <KeyValue key="column" value="CHAR_ID" />
+                        </Node>
+                        <Node name="FK_ORDERTRLRTICHAR_ORDERTRLTI">
+                          <KeyValue key="errorCode" value="FMS.FinancialDocumentItemTaxItem.NotFound" />
+                          <KeyValue key="privateKey" value="OTXACT" />
+                          <KeyValue key="publicKey" value="OTI_SEQNO" />
+                          <KeyValue key="column" value="CHAR_ID" />
+                        </Node>
+                        <Node name="UC_ORDERTI_CHAR_1">
+                          <KeyValue key="errorCode" value="FMS.FinancialDocumentTaxItemCharacteristics.AlreadyExists" />
+                          <KeyValue key="privateKey" value="OTXACT" />
+                          <KeyValue key="publicKey" value="OTI_SEQNO" />
+                          <KeyValue key="column" value="CHAR_ID" />
+                        </Node>
+                        <Node name="FK_ORDERTICHAR_ORDRTAXITM">
+                          <KeyValue key="errorCode" value="FMS.FinancialDocumentTaxItem.NotFound" />
+                          <KeyValue key="privateKey" value="OTXACT" />
+                          <KeyValue key="publicKey" value="OTI_SEQNO" />
+                          <KeyValue key="column" value="EXT_ID" />
+                        </Node>
+                        <Node name="UC_ORDERTRLR_CHAR_1">
+                          <KeyValue key="errorCode" value="FMS.FinancialDocumentItemCharacteristics.AlreadyExists" />
+                          <KeyValue key="privateKey" value="OTXACT" />
+                          <KeyValue key="publicKey" value="OTSEQ" />
+                          <KeyValue key="column" value="CHAR_ID" />
+                        </Node>
+                        <Node name="FK_ORDERTRLRCHAR_ORDRTRAL">
+                          <KeyValue key="errorCode" value="FMS.FinancialDocumentItem.NotFound" />
+                          <KeyValue key="privateKey" value="OTXACT" />
+                          <KeyValue key="publicKey" value="OTSEQ" />
+                          <KeyValue key="column" value="EXT_ID" />
+                        </Node>
+                      <Node name="UC_ORDERHDR_CHAR_1">
+                          <KeyValue key="errorCode" value="FMS.FinancialDocumentCharacteristics.AlreadyExists" />
+                          <KeyValue key="privateKey" value="OHXACT" />
+                          <KeyValue key="publicKey" value="CHAR_ID" />
+                          <KeyValue key="column" value="EXT_ID" />
+                      </Node>
+                      <Node name="UC_CASHRECEIPT_CHAR_1">
+                          <KeyValue key="errorCode" value="FMS.FinancialTransactionCharacteristics.AlreadyExists" />
+                          <KeyValue key="privateKey" value="CAXACT" />
+                          <KeyValue key="publicKey" value="CHAR_ID" />
+                          <KeyValue key="column" value="EXT_ID" />
+                      </Node>
+                </Node>
+          </Node>
+      </Node> <!--  End of Persistence -->
+
+        <Node name="StartupListeners" >
+        <KeyValue key="com.lhs.fm.common.FMSInitializer" value=""/>
+        <KeyValue key="com.lhs.ccb.sfw.spring.SpringIntegrationServerEventListener" type="String" value=""/>
+        </Node>
+
+      </Node> <!-- End of FUNC_FRMWK_SRV -->
+
+      <Node name="FMS Settings">
+{{ .Values.fmsSettings | indent 8 }}
+      </Node> <!-- End of FMS Settings -->
+
+    </ComponentRegistry>

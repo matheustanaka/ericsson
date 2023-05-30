@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-bss-eb-ff-registry.xml
+data:
+  Registry.xml: |
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE Registry PUBLIC 'Registry.dtd' "Registry.dtd">
+
+    <!-- Registry for FederatedFactory -->
+    <Registry>
+
+        <!-- Common registry files -->
+        <Link location="FUNC_FRMWK_CMN_Registry.xml" />
+        <Link location="FUNC_FRMWK_SRV_Registry.xml" />
+
+        <!-- Application settings for FederatedFactory -->
+        <Link location="Registry_FF.xml" />
+
+    </Registry>

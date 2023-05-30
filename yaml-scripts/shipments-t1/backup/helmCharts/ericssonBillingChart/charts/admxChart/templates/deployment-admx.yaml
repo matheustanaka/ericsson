@@ -1,0 +1,254 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eric-bss-eb-admx
+  labels:
+    app: eb-java-admx
+    chart: {{ template "eric-bss-eb-admx.chart" . }}
+    {{- include "eric-bss-eb-admx.kubernetesIoInfo" . | nindent 4 }}
+    heritage: {{ .Release.Service }}
+  annotations:
+  {{- include "eric-bss-eb-admx.productInfo" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount | default 1}}
+  selector:
+    matchLabels:
+      app: eb-java-admx
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: eb-java-admx
+        eric-bss-eb-network-soi-client: 'true'
+        eric-bss-eb-network-web-client: 'true'
+        {{- include "eric-bss-eb-admx.kubernetesIoInfo" . | nindent 8 }}
+      annotations:
+      {{- include "eric-bss-eb-admx.productInfo" . | indent 8 }}
+    spec:
+      securityContext:
+        {{- include "eric-bss-eb-admx.checkPodUserLoginData" . | nindent 8 }}
+      {{- if $.Values.global.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imageCredentials.pullSecret }}
+      {{- end }}
+      initContainers:
+        - name: admx-webapps-init
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "admx-webapps-init" }}
+          image: "{{ template "eric-bss-eb-admx.registryUrl" $templDict }}/{{ template "eric-bss-eb-admx.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-admx.pullPolicy" $templDict }}
+          command: ["/bin/sh"]
+          args: ["-c","tar xzf /webapps.tar.gz -C /webapps && sed s/{HOSTNAME}/$HOSTNAME/g /apache-tomcat/webapps/admx_full/WEB-INF/classes/logging.properties >> /apache-tomcat/conf/logging.properties && mkdir -p /log/admx -m 750"]
+          volumeMounts:
+          - mountPath: /webapps
+            name: webapps-volume
+          - name: init-logging-properties-volume
+            mountPath: /apache-tomcat/conf
+          - name: logging-properties-volume
+            mountPath: /apache-tomcat/webapps/admx_full/WEB-INF/classes/logging.properties
+            subPath: logging.properties
+          - name: logs-volume
+            mountPath: /log
+        {{ if eq .Values.global.useDeploymentMode "eb" }}
+        - name: admx-config-init
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "admx-config-init" }}
+          image: "{{ template "eric-bss-eb-admx.registryUrl" $templDict }}/{{ template "eric-bss-eb-admx.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-admx.pullPolicy" $templDict }}
+          command: ["/bin/sh"]
+          args: ["-c","rm -Rf webapps/admx_full/help && unzip -o /configuration.zip -d /webapps/admx_full/"]
+          volumeMounts:
+          - mountPath: /webapps
+            name: webapps-volume
+        {{ end }}
+        {{ if index .Values "images" "admx-init-customized" "name" }}
+        - name: admx-init-customized
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "admx-init-customized" }}
+          image: "{{ template "eric-bss-eb-admx.registryUrl" $templDict }}/{{ template "eric-bss-eb-admx.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-admx.pullPolicy" $templDict }}
+          command: ["/bin/sh"]
+          args: ["-c","tar xzf {{ index .Values "images" $templDict.containerKey "directory" }}/webapps.tar.gz -C /webapps"]
+          volumeMounts:
+          - mountPath: /webapps
+            name: webapps-volume
+        {{ end }}
+      {{- if .Values.global.rbac.sa_roles_create }}
+      serviceAccountName: {{ .Chart.Name }}-sa
+      {{- end }}
+      containers:
+        - name: eric-bss-eb-admx
+          # containerKey identifies the section inside .Values.images and .Values.imageCredentials to be used here
+          {{ $templDict := dict "Values" .Values "containerKey" "eb-java-admx" }}
+          image: "{{ template "eric-bss-eb-admx.registryUrl" $templDict }}/{{ template "eric-bss-eb-admx.repoPath" $templDict }}{{ index .Values "images" $templDict.containerKey "name" }}:{{ index .Values "images" $templDict.containerKey "tag" }}"
+          imagePullPolicy: {{ template "eric-bss-eb-admx.pullPolicy" $templDict }}
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /admx_full
+              {{ if .Values.tomcat.secretName }}
+              scheme: HTTPS
+              {{ else }}
+              scheme: HTTP
+              {{ end }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /admx_full/health
+              {{ if .Values.tomcat.secretName }}
+              scheme: HTTPS
+              {{ else }}
+              scheme: HTTP
+              {{ end }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          resources:
+            limits:
+              memory: "{{ .Values.resources.limits.memory}}"
+              cpu: "{{ .Values.resources.limits.cpu}}"
+            requests:
+              memory: "{{ .Values.resources.requests.memory}}"
+              cpu: "{{ .Values.resources.requests.cpu}}"
+          env:
+          - name: K8S_NAMING_SERVICE_LIST
+            value: "{{ .Values.global.k8sNamingServiceList }}"
+          {{ if .Values.global.bee.mdcSecretName }}
+          - name: MONITOR_CERT_INPUT
+            value: "/bee/jobInput/monitorDigitalCertificates"
+          {{ end }}
+          - name: TZ
+            value: "{{ .Values.global.timezone }}"
+          volumeMounts:
+          - name: admx-jacorb-properties-volume
+            mountPath: /ericssonbilling/jacorb.properties
+            subPath: jacorb.properties
+          - name: init-logging-properties-volume
+            mountPath: /apache-tomcat/conf/logging.properties
+            subPath: logging.properties
+          - name: logs-volume
+            mountPath: /log
+          - name: admx-registry-volume
+            mountPath: /apache-tomcat/webapps/admx_full/WEB-INF/classes/Registry/ADMX_Registry.xml
+            subPath: ADMX_Registry.xml
+          - name: admx-integration-volume
+            mountPath: /apache-tomcat/webapps/admx_full/WEB-INF/classes/Registry/ADMX_Integration.xml
+            subPath: ADMX_Integration.xml
+          - name: tomcat-server-volume
+            mountPath: /apache-tomcat/conf/server.xml
+            subPath: server.xml
+          - name: applicationcontext-cfw-security-xml-volume
+            mountPath: /apache-tomcat/webapps/admx_full/WEB-INF/classes/applicationContext-cfw-security.xml
+            subPath: applicationContext-cfw-security.xml
+          {{ if .Values.global.bee.mdcSecretName }}
+          - name: batch-mdc-input-volume
+            mountPath: /bee/jobInput/monitorDigitalCertificates/BATCH_MDC_INPUT.csv
+            subPath: BATCH_MDC_INPUT.csv
+          {{ end }}
+          - name: webapps-volume
+            mountPath: /apache-tomcat/webapps
+          - name: tomcat-conf-catalina-volume
+            mountPath: /apache-tomcat/conf/Catalina
+          - name: tomcat-work-volume
+            mountPath: /apache-tomcat/work
+          - mountPath: /bee/jobInput
+            name: bee-jobs-input-volume
+          - mountPath: /bee/jobOutput
+            name: bee-jobs-output-volume
+          {{ if .Values.tomcat.secretName }}
+          - name: key-store-volume
+            mountPath: "/ssl_tomcat"
+            readOnly: true
+          {{ end }}
+          {{ if .Values.global.forgerock.secretName }}
+          - name: openam-key-store-volume
+            mountPath: "/ssl_openam"
+            readOnly: true
+          {{ end }}
+          ports:
+          - name: http-admx
+            containerPort: 8080
+          command: ["/bin/bash"]
+          args: ["-c","${JAVA_HOME}/bin/java \
+                       {{ .Values.args.javaDebugOpts }} \
+                       -cp ${CATALINA_HOME}/bin/bootstrap.jar:\
+                           ${CATALINA_HOME}/bin/tomcat-juli.jar \
+                       -Dcatalina.base=${CATALINA_HOME} \
+                       -Dcatalina.home=${CATALINA_HOME} \
+                       -Dignore.endorsed.dirs= \
+                       -Djdk.tls.ephemeralDHKeySize={{ .Values.args.ephemeralDHKeySize }} \
+                       -Dtomcat.maxThreads={{ .Values.tomcat.connector.maxThreads }} \
+                       -Dtomcat.keystoreFile={{ .Values.tomcat.connector.keystoreFile }} \
+                       -Dtomcat.keystorePass={{ .Values.tomcat.connector.keystorePass }} \
+                       -Dorg.apache.catalina.security.SecurityListener.UMASK=0027 \
+                       -Dcustom.props=/ericssonbilling/jacorb.properties \
+                       -Djava.util.logging.config.file=${CATALINA_HOME}/conf/logging.properties \
+                       -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager \
+                       -Djava.protocol.handler.pkgs=org.apache.catalina.webresources \
+                       -Djava.io.tmpdir=/log/admx org.apache.catalina.startup.Bootstrap start"]
+      {{- if .Values.nodeSelector }}
+      nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector: {{ toYaml .Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity: {{ toYaml .Values.affinity | nindent 8 }}
+      {{- else if .Values.global.affinity }}
+      affinity: {{ toYaml .Values.global.affinity | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: admx-jacorb-properties-volume
+        configMap:
+           name: eric-bss-eb-admx-jacorb.properties
+      - name: logging-properties-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.loggingProperties | default "eric-bss-eb-admx-logging.properties" }}
+      - name: tomcat-server-volume
+        configMap:
+          name: eric-bss-eb-admx-tomcat-server.xml
+      - name: admx-registry-volume
+        configMap:
+          name: {{ .Values.overrideConfigmap.registryXml | default "eric-bss-eb-admx-registry.xml" }}
+      - name: admx-integration-volume
+        configMap:
+          name: eric-bss-eb-admx-integration.xml
+      - name: applicationcontext-cfw-security-xml-volume
+        configMap:
+          name: eric-bss-eb-admx-applicationcontext-cfw-security.xml
+      - name: batch-mdc-input-volume
+        configMap:
+          name: eric-bss-eb-admx-batch-mdc-input.csv
+      - name: webapps-volume
+        emptyDir: {}
+      - name: bee-jobs-input-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-beejobsinput
+      - name: bee-jobs-output-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-beejobsoutput
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: eric-bss-eb-pvc-logs
+      - name: init-logging-properties-volume
+        emptyDir: {}
+      - name: tomcat-conf-catalina-volume
+        emptyDir: {}
+      - name: tomcat-work-volume
+        emptyDir: {}
+      {{ if .Values.tomcat.secretName }}
+      - name: key-store-volume
+        secret:
+          secretName: {{ .Values.tomcat.secretName }}
+      {{ end }}
+      {{ if .Values.global.forgerock.secretName }}
+      - name: openam-key-store-volume
+        secret:
+          secretName: {{ .Values.global.forgerock.secretName }}
+      {{ end }}
