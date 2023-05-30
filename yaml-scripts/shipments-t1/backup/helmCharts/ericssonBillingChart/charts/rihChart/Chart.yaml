@@ -1,5 +1,0 @@
-apiVersion: v2
-appVersion: "1.0"
-description: A Helm chart for Rating Input Handler (RIH)
-name: eric-bss-eb-rih
-version: 22.15.12+0

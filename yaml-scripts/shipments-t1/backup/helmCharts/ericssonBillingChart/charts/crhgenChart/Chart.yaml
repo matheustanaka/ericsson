@@ -1,5 +1,0 @@
-apiVersion: v2
-appVersion: "1.0"
-description: A Helm chart for Common Request Handler - Generate (CRHGEN) Processes
-name: eric-bss-eb-crhgen
-version: 22.15.12+0

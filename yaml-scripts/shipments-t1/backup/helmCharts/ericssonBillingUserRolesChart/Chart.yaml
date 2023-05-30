@@ -1,5 +1,0 @@
-apiVersion: v2
-appVersion: "1.0"
-description: A Helm chart defining user roles in Ericsson Billing
-name: eric-bss-eb-user-roles
-version: 22.15.12+0

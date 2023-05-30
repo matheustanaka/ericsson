@@ -1,5 +1,0 @@
-apiVersion: v2
-appVersion: "1.0"
-description: A Helm chart for Data Information Update Handler (DIUH) Processes
-name: eric-bss-eb-diuh
-version: 22.15.12+0

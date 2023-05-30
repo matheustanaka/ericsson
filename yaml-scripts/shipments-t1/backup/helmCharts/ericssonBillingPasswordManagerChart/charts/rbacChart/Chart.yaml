@@ -1,5 +1,0 @@
-apiVersion: v2
-appVersion: "1.0"
-description: A Helm chart for Kubernetes RBAC for password manager in Ericsson Billing
-name: eric-bss-eb-pwdmgr-rbac
-version: 22.15.12+0

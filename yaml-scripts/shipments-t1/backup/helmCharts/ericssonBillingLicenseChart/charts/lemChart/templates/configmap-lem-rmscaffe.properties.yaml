@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: eric-bss-eb-lem-rmscaffe.properties
-data:
-  rmscaffe.properties: |-
-    lhs.linux.rms.client.library.name=$LHS_LIC_3PP/liblssrv64.so

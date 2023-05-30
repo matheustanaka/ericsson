@@ -1,2 +1,0 @@
-1. This Helm deployment provide a POD to execute Ericsson Billing Password Manager.
-

@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: eric-bss-eb-admx-batch-mdc-input.csv
-data:
-  BATCH_MDC_INPUT.csv: |-
-{{ tpl .Values.global.bee.mdcSecureInterface . | indent 4 }}

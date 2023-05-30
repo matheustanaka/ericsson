@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: eric-bss-eb-vmdrep-vmdrep.ini
-data:
-  vmdrep.ini: |-
-{{ tpl .Values.vmdrep.ini . | indent 4 }}

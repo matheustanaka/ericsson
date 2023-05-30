@@ -1,3 +1,0 @@
-1. This Federated Factory has to be deployed after the Naming Service.
-   If the deployment of both, the Naming Service and Federated Factory is successful,
-   the Customer Management Server CMS can be deployed.

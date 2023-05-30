@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: eric-bss-eb-sms-tnsnames.ora
-data:
-  tnsnames.ora: |-
-    bscsdb =
-{{ tpl .Values.tnsnames.bscsdb . | indent 6 }}
-

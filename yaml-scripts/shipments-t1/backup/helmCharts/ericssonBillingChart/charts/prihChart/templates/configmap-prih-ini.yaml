@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: eric-bss-eb-prih.ini
-data:
-  prih.ini: |
-    LOG_FILTER_LEVEL={{$.Values.prihLogFilterLevel}}

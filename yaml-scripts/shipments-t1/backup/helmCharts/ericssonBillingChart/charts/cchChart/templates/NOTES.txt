@@ -1,1 +1,0 @@
-1. This Helm deployment starts the Cost Control Handler (CCH)".

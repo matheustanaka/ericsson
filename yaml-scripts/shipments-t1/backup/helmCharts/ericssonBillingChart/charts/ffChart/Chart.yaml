@@ -1,5 +1,0 @@
-apiVersion: v2
-appVersion: "1.0"
-description: A Helm chart for Federated Factory (FF)
-name: eric-bss-eb-ff
-version: 22.15.12+0

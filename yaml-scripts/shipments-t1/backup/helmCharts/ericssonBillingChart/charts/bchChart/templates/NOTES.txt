@@ -1,1 +1,0 @@
-1. This Helm deployment starts the Bill Cycle Handler (BCH)".
