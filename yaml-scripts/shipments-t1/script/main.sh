@@ -1,10 +1,14 @@
 #!/bin/bash
-source addNewField.sh
-source mapDirWithoutDeploy.sh
-source listTolerationFiles.sh
+source ./bin/addNewField.sh
+source ./bin/mapDirWithoutDeploy.sh
+source ./bin/listTolerationFiles.sh
 
 main() {
 
+cd ../
+
+echo "Diretório de execucão: $PWD"
+echo ""
 echo "Selecione um número para executar uma funcão"
 
 actions=("Adicionar nova TAG" "Mapear arquivos sem o arquivo de Deploy" "Listar arquivos com a TAG Toleration" "Sair")
