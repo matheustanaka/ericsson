@@ -1,7 +1,7 @@
 #!/bin/bash
-source ./bin/addNewField.sh
-source ./bin/mapDirWithoutDeploy.sh
-source ./bin/listTolerationFiles.sh
+source addNewField.sh
+source mapDirWithoutDeploy.sh
+source listTolerationFiles.sh
 
 main() {
 
